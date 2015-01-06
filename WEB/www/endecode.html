@@ -1,0 +1,478 @@
+<!DOCTYPE HTML>
+<html> <!-- Reproduced or quoted, please indicate the source. 空域 - http://www.skyzone.url.tw/ -->
+  <head>
+    <title>Datetime Transform</title>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/>
+    <meta name='description' content='程式開發輔助工具，尤其是網頁開發。program develop tool, especially in web design.'/>
+    <meta name='keywords' content='編碼, 解碼, encoding, decoding, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop, HTML, Javascript, CSS'/>
+    <meta name='author' content='RZ Fang'/>
+    <link rel='icon' href='favicon.ico' type='image/ico'/>
+    <style type='text/css'>
+    <!--
+      body { font-size: 16px; font-family: monospace; color: #404040;  }
+      input { font-size: 16px; max-width: 70px; }
+      textarea { margin: 5px 0px; }
+      .Title { display: inline-block; min-width: 50px;}
+      .Block { display: inline-block; padding: 5px; vertical-align: top; white-space: nowrap; }
+
+      body > div:first-child > div.Block { margin: 5px; }
+    -->
+    </style>
+    <script type='text/javascript' src='resource/z.min.js'></script>
+    <script type='text/javascript'>
+    <!--
+      function URIEnDeCode(Flg)
+      {
+        var Txt = Z('#IptTxt')[0].value,
+            Cpn = Z('#Cpn')[0].checked;
+
+        if (Flg === 1)
+        { Txt = Cpn ? encodeURIComponent(Txt) : encodeURI(Txt); }
+        else
+        { Txt = Cpn ? decodeURIComponent(Txt) : decodeURI(Txt); }
+
+        Z('#OptTxt')[0].value = Txt;
+      }
+
+      function UnicodeEnDeCode(Flg)
+      {
+        var Txt = Z('#IptTxt')[0].value,
+            Ipt = Z('input'),
+            Md = [];
+
+        for (var i in Ipt)
+        {
+          if (Ipt[i].type === 'radio' && Ipt[i].checked)
+          {
+            Md = Ipt[i].value;
+            break;
+          }
+        }
+
+        Z('#OptTxt')[0].value = (Md == 0) ? XMLEnDeCode(Flg, Txt) : JSONEnDeCode(Flg, Txt);
+      }
+
+      function XMLEnDeCode(Flg, Txt)
+      {
+        var EDS = ''; // 'EDS' = Encode Decode String.
+
+        if (Flg > 0)
+        {
+          for (var i in Txt)
+          {
+            var Cd = Txt.charCodeAt(i);
+
+            switch (Cd)
+            {
+              case 34: EDS += '&quot;'; break;
+              case 38: EDS += '&amp;';  break;
+              case 39: EDS += '&apos;'; break;
+              case 60: EDS += '&lt;';   break;
+              case 62: EDS += '&gt;';   break;
+              default: EDS += (Cd < 32 || Cd > 126) ?
+                              (Flg === 1 ? ('&#' + Cd + ';') : ('&#x' + Cd.toString(16) + ';')) :
+                              Txt.charAt(i);
+            }
+          }
+        }
+        else
+        {
+          var StrA = Txt.split('&#'); // 'StrA' = String Array.
+
+          for (var i = 0; i < StrA.length; i++)
+          {
+            StrA[i] = StrA[i].replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&apos;/g, '\'')
+                             .replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+
+            var EndLtr = StrA[i].indexOf(';'); // 'EndLtr' = End Letter.
+
+            if (EndLtr === -1 || StrA[i].substr(0, EndLtr).match(/^x?\d+/) === null)
+            {
+              EDS += StrA[i];
+              continue;
+            }
+
+            var Otr = StrA[i].substr(EndLtr + 1); // 'Otr' = Other string.
+
+            var ChrCd = (StrA[i].charAt(0).toLowerCase() === 'x') ?
+                        parseInt(StrA[i].substr(1, EndLtr), 16) :
+                        parseInt(StrA[i].substr(0, EndLtr), 10);
+
+            EDS += String.fromCharCode(ChrCd) + Otr;
+          }
+        }
+
+        return EDS;
+      }
+
+      function JSONEnDeCode(Flg, Txt)
+      {
+        var EDS = ''; // 'EDS' = Encode Decode String.
+
+        if (Flg == 1)
+        {
+          Txt = Txt.replace(/\\/g, '\\\\').replace(/\n/g, '\\n');
+
+          for (var i in Txt)
+          {
+            var Cd = Txt.charCodeAt(i);
+
+            EDS += (Cd < 32 || Cd > 126) ? ('\\u' + Cd.toString(16)) : Txt.charAt(i);
+          }
+        }
+        else
+        {
+          var L = Txt.length;
+
+          for (var i  = 0; i < L; i++)
+          {
+            var CSA = [Txt.charAt(i), Txt.charAt(i + 1), Txt.charAt(i + 2), Txt.charAt(i + 3), Txt.charAt(i + 4),
+                       Txt.charAt(i + 5)]; // 'CSA' = Checked String Array.
+
+            if (CSA[0] === '\\' && CSA[1] === 'n')
+            {
+              EDS += "\n";
+              i += 1;
+              continue;
+            }
+
+            if (CSA[0] === '\\' && CSA[1] === '\\')
+            {
+              EDS += '\\';
+              i += 1;
+              continue;
+            }
+
+            if (CSA[0] === '\\' && CSA[1] === 'u')
+            {
+              // for none type reason, using char instead character code to compare. ' ' = 32, '~' = 126
+              if (CSA[2] < ' ' || CSA[2] > '~' || CSA[2] === '\\' || CSA[3] < ' ' || CSA[3] > '~' || CSA[3] === '\\' ||
+                 CSA[4] < ' ' || CSA[4] > '~' || CSA[4] === '\\'  || CSA[5] < ' ' || CSA[5] > '~' || CSA[5] === '\\')
+              {
+                EDS += '\\u';
+                i += 1;
+                continue;
+              }
+
+              var ChrCd = parseInt((CSA[2] + CSA[3] + CSA[4] + CSA[5]), 16);
+
+              EDS += String.fromCharCode(ChrCd);
+              i += 5;
+              continue;
+            }
+
+            EDS += CSA[0];
+          }
+        }
+
+        return EDS;
+      }
+
+      function Base64EnDeCodeEx(Flg)
+      {
+        var Txt = Z('#IptTxt')[0].value,
+            UTF8 = Z('#UTF8')[0].checked;
+
+        Txt = Flg === 1 ? Base64Encode(Txt, UTF8) : Base64Decode(Txt, UTF8);
+
+        Z('#OptTxt')[0].value = Txt;
+
+        return 0;
+
+        /* Pad Characters into a string.
+          'Str' = String.
+          'Lth' = Length. minimum length of string should be padding to.
+          'Chr' = Character. optional, default '0';
+          'Sd' = Side. optional, default 'l'. 'l'|'L': left padding, 'r'|'R': right padding.
+          Return: string after handle. */
+        function CharPad(Str, Lth, Chr, Sd)
+        {
+          if (typeof Str !== 'string')
+          { Str = Str.toString(); }
+
+          if (typeof Lth !== 'number' || Lth < 2 || Str.length >= Lth)
+          { return Str; }
+
+          if (typeof Chr !== 'string' || Chr.length === 0)
+          { Chr = '0'; }
+
+          if (typeof Sd !== 'string')
+          { Sd = 'l'; }
+          else
+          {
+            Sd = Sd.toLowerCase();
+
+            if (Sd !== 'l' && Sd !== 'r')
+            { return Str; }
+          }
+
+          var PN = Lth - Str.length, // 'PN' = Padding Number.
+              PS = ''; // 'PS' = Padding String.
+
+          for (PS = ''; PS.length < PN; PS += Chr);
+
+          if (Sd === 'l')
+          { Str = PS + Str; }
+          else
+          { Str += PS; }
+
+          return Str;
+        }
+
+        /* Base64 Encode.
+          'UTF8' = UTF8 boolean flag. optional.
+          Return: encode string, or empty string as error.
+          Need: CharPad(); */
+        function Base64Encode(Str, UTF8)
+        {
+          var KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', // 'KM' = Key Map.
+              BS = '', // 'BS' = Binary String.
+              PS = '', // 'PS' = Pad String.
+              B64S = ''; // 'B64S' = Base64 String.
+
+          if (typeof UTF8 !== 'boolean')
+          { UTF8 = false; }
+
+          for (var i in Str)
+          {
+            var TN = Str.charCodeAt(i); // 'TN' = Temp unicode Number.
+
+            BS += (UTF8 ? Uni2UTF8(TN) : CharPad(TN.toString(2), 16, '0', 'l'));
+          }
+
+          var PN = BS.length % 6; // 'PN' = Pad Number.
+
+          if (PN > 0)
+          {
+            var TPS = '';
+
+            PN = (6 - PN) / 2;
+
+            while (PN-- > 0)
+            {
+              TPS += '00';
+              PS += '=';
+            }
+
+            BS += TPS;
+          }
+
+          var C = BS.length;
+
+          for (var i = 0; i < C; i += 6)
+          {
+            var TS = BS.substr(i, 6), // 'TS' = Translate String.
+                DN = 0, // 'DN' = Decimal Number.
+                DS = ''; // 'DS' = Decimal String.
+
+            if (TS.substr(0, 1) === '1')
+            { DN += 32; }
+
+            if (TS.substr(1, 1) === '1')
+            { DN += 16; }
+
+            if (TS.substr(2, 1) === '1')
+            { DN += 8; }
+
+            if (TS.substr(3, 1) === '1')
+            { DN += 4; }
+
+            if (TS.substr(4, 1) === '1')
+            { DN += 2; }
+
+            if (TS.substr(5, 1) === '1')
+            { DN += 1; }
+
+            B64S += KM.substr(DN, 1);
+          }
+
+          B64S += PS;
+
+          return B64S;
+
+          /* convert Unicode number to be UTF-8 number in binary string.
+            'UN' = Unicode Number.
+            Return: binary string. */
+          function Uni2UTF8(UN)
+          {
+            if (typeof UN !== 'number')
+            { return ''; }
+
+            var BS = UN.toString(2),
+                TS = '';
+
+            if (UN < 128)
+            { BS = CharPad(BS, 8, '0', 'l'); }
+            else if (UN >= 128 && UN <= 2047)
+            {
+              TS = CharPad(BS, 11, '0', 'l');
+              BS = '110' + TS.substr(0, 5) + '10' + TS.substr(5);
+            }
+            else if ((UN >= 2048 && UN <= 55295) || (UN >= 57344 && UN <= 65535))
+            {
+              TS = CharPad(BS, 16, '0', 'l');
+              BS = '1110' + TS.substr(0, 4) + '10' + TS.substr(4, 6) + '10' + TS.substr(10, 6);
+            }
+            else if (UN >= 65536 && UN <= 1114111)
+            {
+              TS = CharPad(BS, 21, '0', 'l');
+              BS = '11110' + TS.substr(0, 3) + '10' + TS.substr(3, 6) + '10' + TS.substr(9, 6) + '10' + TS.substr(15, 6);
+            }
+
+            return BS;
+          }
+        }
+
+        /* Base64 Decode.
+          'UTF8' = UTF8 boolean flag. optional.
+          Return: encode string, or empty string as error.
+          Need: CharPad(); */
+        function Base64Decode(Str, UTF8)
+        {
+          var KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', // 'KM' = Key Map.
+              BS = ''; // 'BS' = Binary String.
+
+          if (typeof UTF8 !== 'boolean')
+          { UTF8 = false; }
+
+          Str = Str.replace(/=+$/, '');
+
+          var C = Str.length; // 'C' = Count.
+
+          for (var i = 0; i < C; i++)
+          {
+            var TBS = CharPad(KM.indexOf(Str.substr(i, 1)).toString(2), 8, '0', 'l');
+
+            BS += TBS.substr(2, 6);
+          }
+
+          return UTF8 ? Bin2TxtUTF8(BS) : Bin2Txt(BS);
+
+          function Bin2Txt(BinStr)
+          {
+            var RT = '', // 'RT' = Result Text.
+                L = BinStr.length; // 'L' = Length.
+
+            for (var i = 0; i < L; i += 16)
+            { RT += String.fromCharCode(parseInt(BinStr.substr(i, 16), 2)); }
+
+            return RT;
+          }
+
+          function Bin2TxtUTF8(BinStr)
+          {
+            var RT = '', // 'RT' = Result Text.
+                L = BinStr.length; // 'L' = Length.
+
+            for (var i = 0; i < L; i += 8)
+            {
+              var TBS = BinStr.substr(i, 8); // 'TBS' = Temp Binary String.
+
+              if (TBS.substr(0, 1) === '0')
+              {
+                var TN = parseInt(TBS, 2); // 'TN' = Text Number.
+
+                if (TN > 0)
+                { RT += String.fromCharCode(TN); }
+              }
+              else if (TBS.substr(0, 5) === '11110') // 4 byte.
+              {
+                TBS = BinStr.substr(i + 5, 3) + BinStr.substr(i + 10, 6) + BinStr.substr(i + 18, 6) + BinStr.substr(i + 26, 6);
+                RT += String.fromCharCode(parseInt(TBS, 2));
+                i += 24;
+              }
+              else if (TBS.substr(0, 4) === '1110') // 3 byte.
+              {
+                TBS = BinStr.substr(i + 4, 4) + BinStr.substr(i + 10, 6) + BinStr.substr(i + 18, 6);
+                RT += String.fromCharCode(parseInt(TBS, 2));
+                i += 16;
+              }
+              else if (TBS.substr(0, 3) === '110') // 2 byte.
+              {
+                TBS = BinStr.substr(i + 3, 5) + BinStr.substr(i + 10, 6);
+                RT += String.fromCharCode(parseInt(TBS, 2));
+                i += 8;
+              }
+            }
+
+            return RT;
+          }
+        }
+      }
+
+      function HTMLSpecialCharsEnDeCode(Flg)
+      {
+        var Txt = Z('#IptTxt')[0].value;
+
+        Txt = Flg === 1 ? HTMLSpecialCharsEncode(Txt) : HTMLSpecialCharsDecode(Txt);
+
+        Z('#OptTxt')[0].value = Txt;
+
+        return 0;
+
+        function HTMLSpecialCharsEncode(Txt)
+        {
+          return Txt.replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+
+        }
+
+        function HTMLSpecialCharsDecode(Txt)
+        {
+          return Txt.replace(/&amp;/g, '&')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&#0?39;/g, '\'');
+        }
+      }
+    -->
+    </script>
+  </head>
+  <!--
+    20111224 by RZ.
+    'wrap' attribute in element 'textarea' is not in W3C standard until HTML5 with value 'hard' & 'soft',
+    but not all browser support.
+    'on' / 'off' is fine for now.
+  -->
+  <body>
+    <div>
+    	<div class='Block' style='border: 1px solid; border-radius: 5px;'>
+    		encodeURI | decodeURI <br/>
+    	  <label>Component : <input id='Cpn' type='checkbox' value='Test' checked='true'/></label><br/>
+    		<input type='button' value='Encode' onclick='URIEnDeCode(1);'/>
+    		<input type='button' value='Decode' onclick='URIEnDeCode(0);'/><br/>
+    	</div>
+    	<div class='Block' style='border: 1px solid; border-radius: 5px;'>
+        Unicode Encode | Decode<br/>
+        <label><input type='radio' name='Md' value='0' checked='true'/>XML (&amp;#????;)</label> <!-- reference: http://coderstoolbox.net/string/ -->
+        <label><input type='radio' name='Md' value='1'/>JSON (\u????)</label><br/>
+        <input type='button' value='Encode' onclick='UnicodeEnDeCode(1);'/>
+        <input type='button' value='Encode - HEX' style='max-width: 120px;' onclick='UnicodeEnDeCode(2);'/>
+        <input type='button' value='Decode' onclick='UnicodeEnDeCode(0);'/><br/>
+    	</div>
+      <div class='Block' style='border: 1px solid; border-radius: 5px;'>
+        Base64 Encode | Decode<br/>
+        <label>UTF-8 : <input id='UTF8' type='checkbox' value='UTF-8' checked='true'/></label><br/> <!-- reference: Wikipedia: UTF-8, Base64 & http://5566.appspot.com/base64 -->
+        <input type='button' value='Encode' onclick='Base64EnDeCodeEx(1);'/>
+        <input type='button' value='Decode' onclick='Base64EnDeCodeEx(0);'/>
+        (Beta)<br/>
+      </div>
+      <div class='Block' style='border: 1px solid; border-radius: 5px;'>
+        HTML Special Chars Encode | Decode<br/>
+        <input type='button' value='Encode' onclick='HTMLSpecialCharsEnDeCode(1);'/>
+        <input type='button' value='Decode' onclick='HTMLSpecialCharsEnDeCode(0);'/>
+      </div>
+    </div>
+    <div>
+      <textarea id='IptTxt' cols='70' rows='5'></textarea><br/>
+      <textarea id='OptTxt' cols='70' rows='5' readonly='true' wrap='off'></textarea><br/>
+      <hr/>
+      This is for some string temp putting.<br/>
+      <textarea cols='70' rows='5'></textarea>
+    </div>
+  </body>
+</html>

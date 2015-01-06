@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html> <!-- Reproduced or quoted, please indicate the source. 空域 - http://www.skyzone.url.tw/ -->
+  <head>
+    <title>File to Data URI</title>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/>
+    <meta name='description' content='程式開發輔助工具，尤其是網頁開發。program develop tool, especially in web design.'/>
+    <meta name='keywords' content='資料, 轉換, datauri, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop, HTML, Javascript, CSS'/>
+    <meta name='author' content='RZ Fang'/>
+    <link rel='icon' href='favicon.ico' type='image/ico'/>
+    <style type='text/css'>
+    <!--
+      body { text-align: center; }
+      table { display: inline-block; }
+      table tr > td { text-align: left; }
+      table tr > td:first-child { text-align: right; }
+    -->
+    </style>
+    <script type='text/javascript' src='resource/z.min.js'></script>
+    <script type='text/javascript'>
+    <!--
+      function Convert(Obj)
+      {
+        var FlsBx = Z('input[type=file]')[0],
+            Fls = FlsBx.files;
+
+        if (Fls.length === 0)
+        {
+          alert('尚未選擇檔案。');
+
+          return -1;
+        }
+
+        var Fl = Fls[0],
+            FR = new FileReader();
+
+        FR.onloadend = function()
+          {
+            var Flds = Z('table > tbody > tr > td:nth-child(2)');
+
+            Flds[0].innerHTML = Fl.name;
+            Flds[1].innerHTML = this.result.substr(0, 64).replace(/^data:(.+);base64,.+$/, '$1')
+            Z('textarea')[0].value = this.result;
+          }
+
+        FR.readAsDataURL(Fl);
+      }
+    -->
+    </script>
+  </head>
+  <body>
+    <input type='file'/>
+    <input type='button' value='convert' onclick='Convert(this);'/>
+    <hr/>
+    <table>
+      <tbody>
+        <tr><td>File Name:</td><td></td></tr>
+        <tr><td>Mime Type:</td><td></td></tr>
+      </tbody>
+    </table><br/>
+    <textarea rows='10' cols='50'>
+    </textarea>
+  </body>
+</html>

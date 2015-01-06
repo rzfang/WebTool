@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html> <!-- Reproduced or quoted, please indicate the source. 空域 - http://www.skyzone.url.tw/ -->
+  <head>
+    <title>Key Code Detect</title>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/>
+    <meta name='description' content='程式開發輔助工具，尤其是網頁開發。program develop tool, especially in web design.'/>
+    <meta name='keywords' content='送出資料, form, post, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop, HTML, Javascript, CSS'/>
+    <meta name='author' content='RZ Fang'/>
+    <link rel='icon' href='favicon.ico' type='image/ico'/>
+    <style type='text/css'>
+    <!--
+      .Title { display: inline-block; width: 100px; }
+    -->
+    </style>
+    <script type='text/javascript' src='resource/z.min.js'></script>
+    <script type='text/javascript'>
+    <!--
+
+      function Trim(Str)
+      {
+        return Str.replace(/^\s+|\s+$/g, '');
+      }
+
+      function RowAdd()
+      {
+        var Nm = Z('#Nm')[0].value,
+            Bx = document.createElement('div');
+
+        if (Nm.length === 0)
+        { return 0; }
+
+        Bx.innerHTML = '<span class="Title">' + Nm + '</span>' +
+                       '<input type="text" name="' + Nm + '" id="' + Nm + '"/>' +
+                       '<input type="button" value="Delete">';
+
+        Z('#PstDataBx')[0].Append(Bx);
+        Bx.LastChild().onclick = function (Evt) { console.log(Bx.Children()); Bx.Remove(); };
+
+        var Txt = Bx.Children()[1];
+        Txt.onkeypress = function(Evt){ if (Evt.keyCode === 13){ return false; } };
+        Txt.focus();
+      }
+
+      function Key2RowAdd(Evt)
+      {
+        if (Evt.keyCode !== 13)
+        { return 0; }
+
+        RowAdd();
+      }
+
+      function PostData()
+      {
+        var URL = Trim(Z('#URL')[0].value),
+            Frm = Z('#PstDataBx')[0];
+
+        Frm.action = URL;
+        Frm.submit();
+      }
+    -->
+    </script>
+  </head>
+  <body>
+    Name: <input type="text" id='Nm' onkeypress='Key2RowAdd(event);'/>
+    <input type='button' value='Add Row' onclick='RowAdd();'/><br/>
+    <br/><hr/><br/>
+    <form id='PstDataBx' method='POST' target='_blank' action="#">
+      <div id='ValueBox'>?</div>
+    </form><br/>
+    <span class='Title'>URL</span> <input type='text' id='URL' style='width: 300px;'/>
+    <input type='submit' value='Send Out' onclick='PostData();'/>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "Package":    "Webtool",
+  "Version":    "1.0.3",
+  "Pack":       {
+    "Entry":    "../",
+    "Exclude":  ["DOC",
+                 "RLS",
+                 "RSC",
+                 "SRC",
+                 "UTL"]
+  },
+  "Install":    {
+    "Entry":    "/home/rzfang/Website/Webtool/",
+    "Backup":   []
+  }
+}

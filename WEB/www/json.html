@@ -1,0 +1,437 @@
+<!DOCTYPE HTML>
+<html> <!-- Reproduced or quoted, please indicate the source. 空域 - http://www.skyzone.url.tw/ -->
+  <head>
+    <title>JSON Editor</title>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/>
+    <meta name='description' content='程式開發輔助工具，尤其是網頁開發。program develop tool, especially in web design.'/>
+    <meta name='keywords' content='JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop, HTML, Javascript, CSS'/>
+    <meta name='author' content='RZ Fang'/>
+    <link rel='icon' href='favicon.ico' type='image/ico'/>
+    <style type='text/css'>
+    <!--
+      .Grid { display: table; }
+      .Grid > .Cell { display: table-cell; vertical-align: middle; }
+
+      #FctnBx > textarea { vertical-align: top; }
+      #FctnBx .Grid > .Cell { padding: 5px; }
+      #FctnBx .Grid > .Cell:first-child { border-right: 1px solid; }
+      #FctnBx .Grid > .Cell > * { vertical-align: top; }
+      #IptBx { display: none; position: absolute; top: 0px; left: 0px; background-color: rgba(255, 255, 255, 0.9); }
+      #IptBx > div { display: inline-block; vertical-align: top; }
+      #Rt { display: inline-block; }
+      #Rt * { line-height: 1.5em; }
+      #Rt .EdtNd,
+      #Rt .TglNd { padding-right: 10px; cursor: pointer; }
+      #Rt .TglNd::after { content: attr(data-suffix); margin-left: 10px; }
+      #Rt ul { margin: 0px; padding-left: 20px; list-style-type: none; }
+      #Rt pre { display: inline-block; margin: 0px; vertical-align: top; }
+      #Rt li:not(:last-child) > ul ~ span::after { content: ','; }
+    -->
+    </style>
+    <script type='text/javascript' src='resource/json5.js'></script>
+    <script type='text/javascript' src='resource/z.min.js'></script>
+    <script type='text/javascript'>
+    <!--
+      window.onload = function (Evt)
+        {
+          var FctnBx = Z('#FctnBx')[0],
+              IptBtns = Z('#IptBx > div > input[type=button]'),
+              RtNd = Z('#Rt')[0];
+
+          FctnBx.Find('input[type=file]')[0].onchange = JSONLoad;
+          FctnBx.Find('input[type=button]')[0].onclick = JSONRead;
+          FctnBx.Find('input[type=button]')[1].onclick = JSONToString;
+          RtNd.AddEvent('click', DataEdit)
+              .AddEvent('click', TreeToggle);
+          IptBtns[0].onclick = DataReplace;
+          IptBtns[1].onclick = function (Evt) { this.Above(2).style.display = 'none'; };
+
+          Z('#IptBx > textarea')[0].onkeyup = function (Evt)
+            {
+              switch (Evt.keyCode)
+              {
+                case 27:
+                  this.Above().style.display = 'none';
+                  break;
+              }
+            };
+        };
+
+      function JSONLoad (Evt)
+      {
+        var Fl = Evt.Element().files[0];
+
+        if (!Fl)
+        {
+          alert('please select a JSON file.');
+
+          return -1;
+        }
+
+        if (Fl.size > 1048576)
+        {
+          alert('the file size is more than 1mb.');
+
+          return -2;
+        }
+
+        var FR = new FileReader();
+
+        FR.onloadend = function(Evt){ JSONRender(this.result); };
+        FR.readAsText(Fl);
+      }
+
+      function JSONRead (Evt)
+      {
+        var Txt = Evt.Element().Prev().value;
+
+        JSONRender(Txt);
+      }
+
+      function JSONRender (string)
+      {
+        var JO = null,
+            Rt = Z('#Rt')[0],
+            Is5 = Z('#FctnBx input[type=checkbox]')[0].checked; // 'Is5' = Is using JSON5.
+
+        try
+        { JO = Is5 ? JSON5.parse(string) : JSON.parse(string); }
+        catch (Ecpt)
+        {
+          alert('the stream is not JSON.');
+
+          return -1;
+        }
+
+        if (JO === null) {
+          alert('the stream is not JSON.');
+
+          return -2;
+        }
+
+        Rt.innerHTML = '';
+        Rt.className = '';
+
+        if (typeof JO === 'number')
+        {
+          Rt.className = 'EdtNd number';
+
+          Rt.appendChild(document.createTextNode(JO.toString()));
+        }
+        else if (typeof JO === 'string')
+        {
+          Rt.className = 'EdtNd string';
+
+          Rt.appendChild(document.createTextNode('"' + JO + '"'));
+        }
+        else if (typeof JO.length === 'number')
+        { QuoteMarkRender(Rt, JO, 'array'); }
+        else
+        { QuoteMarkRender(Rt, JO, 'object'); }
+
+        return 0;
+
+        /*
+          'Rt' = DOM Root node object.
+          'Obj' = Object to render.
+          'Tp' = Type of object. optional, 'object'|'array', default 'object'. */
+        function QuoteMarkRender(Rt, Obj, Tp)
+        {
+          var FstNd = document.createElement('span'),
+              LstNd = document.createElement('span');
+
+          FstNd.className = 'TglNd';
+          FstNd.dataset.suffix = '-';
+
+          if (typeof Rt !== 'object' || typeof Obj !== 'object')
+          { return -1; }
+
+          if (Tp === 'array')
+          {
+            FstNd.textContent = '[';
+            LstNd.textContent = ']';
+            Rt.className = 'array';
+          }
+          else
+          {
+            FstNd.textContent = '{';
+            LstNd.textContent = '}';
+            Rt.className = 'object';
+          }
+
+          Rt.appendChild(FstNd);
+          Rt.appendChild(ObjectRender(Obj));
+          Rt.appendChild(LstNd);
+
+          return 0;
+        }
+
+        function ObjectRender (Obj)
+        {
+          var Rt = document.createElement('ul'),
+              IsA = false;
+
+          if (typeof Obj !== 'object' || Obj === null)
+          { return Nd; }
+
+          if (typeof Obj.length === 'number')
+          { IsA = true; }
+
+          for (var i in Obj)
+          {
+            var NdStt = IsA ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : '),
+                Nd;
+
+            switch (typeof Obj[i])
+            {
+              case 'string':
+                Nd = document.createElement('li');
+                Nd.className = 'string';
+                Nd.innerHTML = NdStt + '<pre class=\'EdtNd\'>"' + Obj[i] + '"</pre>';
+
+                Rt.appendChild(Nd);
+
+                break;
+
+              case 'number':
+                Nd = document.createElement('li');
+                Nd.className = 'number';
+                Nd.innerHTML = NdStt + '<span class=\'EdtNd\'>' + Obj[i] + '</span>';
+
+                Rt.appendChild(Nd);
+
+                break;
+
+              case 'object':
+                Nd = document.createElement('li');
+
+                if (typeof Obj[i].length === 'number')
+                {
+                  Nd.innerHTML = NdStt;
+
+                  QuoteMarkRender(Nd, Obj[i], 'array');
+                }
+                else
+                {
+                  Nd.innerHTML = NdStt;
+
+                  QuoteMarkRender(Nd, Obj[i], 'object');
+                }
+
+                Rt.appendChild(Nd);
+
+                break;
+
+              default:
+            }
+          }
+
+          return Rt;
+        }
+      }
+
+      function DataEdit (Evt)
+      {
+        var Nd = Evt.Element(),
+            IptBx = Z('#IptBx')[0],
+            IptNd = IptBx.Children('textarea')[0];
+
+        if (Nd.className.indexOf('EdtNd') < 0)
+        { return -1; }
+
+        IptNd.style.width = (Nd.offsetWidth * 1.3) + 'px';
+        IptNd.style.height = Nd.offsetHeight + 'px';
+        IptNd.value = Nd.textContent;
+        IptBx.style.left = Nd.offsetLeft + 'px';
+        IptBx.style.top = Nd.offsetTop + 'px';
+        IptBx.style.display = 'inline-block';
+        IptBx.target = Nd;
+
+        IptNd.focus();
+
+        return 0;
+      }
+
+      function TreeToggle (Evt)
+      {
+        var Nd = Evt.Element(),
+            TrNd;
+
+        if (Nd.className.indexOf('TglNd') < 0)
+        { return -1; }
+
+        TrNd = Nd.Above().Children('ul')[0];
+
+        if (TrNd.style.display === 'none')
+        {
+          Nd.dataset.suffix = '-';
+          TrNd.style.display = '';
+        }
+        else
+        {
+          Nd.dataset.suffix = '+';
+          TrNd.style.display = 'none';
+        }
+
+        return 0;
+      }
+
+      function DataReplace (Evt)
+      {
+        var IptStr = '',
+            TgtNd = null,
+            IptBx = this.Above().Process(function (Self) { IptStr = Self.Prev().value; })
+                                .Above().Process(function (Self) { TgtNd = Self.target; });
+
+        if (!TgtNd)
+        {
+          alert('there\'s no target you point.');
+
+          return -1;
+        }
+
+        if (IptStr.length === 0)
+        {
+          alert('you should never give a empty string.')
+
+          return -2;
+        }
+
+        TgtNd.textContent = IptStr;
+        IptBx.style.display = 'none';
+
+        return 0;
+      }
+
+      function JSONToString (Evt)
+      {
+        var RtNd = Z('#Rt')[0],
+            Obj = RtNd.className === 'array' ? [] : {},
+            Nds = RtNd.Children('ul')[0].Children();
+
+        NodesLoop(Nds, Obj);
+
+        Z('#FctnBx textarea')[1].value = JSON.stringify(Obj);
+
+        return;
+
+        /*
+          'Nds' = Nodes array.
+          'Obj' = Object to collect JSON data. */
+        function NodesLoop (Nds, Obj)
+        {
+          if (typeof Nds !== 'object' || typeof Nds.length !== 'number')
+          { return -1; }
+
+          for (var i = 0; i < Nds.length; i++)
+          {
+            if (Nds[i].nodeType !== 1 || Nds[i].nodeName !== 'LI')
+            { return -2; }
+
+            DataFetch(Nds[i], Obj);
+          }
+
+          return 0;
+        }
+
+        /*
+          'RtNd' = Root Node.
+          'Obj' = Object to collect JSON data. */
+        function DataFetch(RtNd, Obj)
+        {
+          if (typeof RtNd !== 'object' || typeof RtNd.nodeName !== 'string' || typeof Obj !== 'object')
+          { return -1; }
+
+          var Nds = RtNd.Children();
+
+          if (Nds.length === 0)
+          { return -2; }
+
+          if (Nds[0].textContent.length === 0) // is array.
+          {
+            switch (RtNd.className)
+            {
+              case 'string':
+                Obj.push(Nds[1].textContent.replace(/^"(.?)"$/, "\$1"));
+                break;
+
+              case 'number':
+                Obj.push(window.parseFloat(Nds[1].textContent));
+                break;
+
+              case 'array':
+                Obj.push([]);
+                NodesLoop(Nds[2].Children(), Obj[Obj.length - 1]);
+                break;
+
+              case 'object':
+                Obj.push({});
+                NodesLoop(Nds[2].Children(), Obj[Obj.length - 1]);
+                break;
+
+              default:
+            }
+          }
+          else
+          {
+            switch (RtNd.className)
+            {
+              case 'string':
+                Obj[Nds[0].textContent] = Nds[1].textContent.replace(/^"|"$/g, '');
+                break;
+
+              case 'number':
+                Obj[Nds[0].textContent] = window.parseFloat(Nds[1].textContent);
+                break;
+
+              case 'array':
+                Obj[Nds[0].textContent] = [];
+                NodesLoop(Nds[2].Children(), Obj[Nds[0].textContent]);
+                break;
+
+              case 'object':
+                Obj[Nds[0].textContent] = {};
+                NodesLoop(Nds[2].Children(), Obj[Nds[0].textContent]);
+                break;
+
+              default:
+            }
+          }
+
+          return 0;
+        }
+      }
+    -->
+    </script>
+  </head>
+  <body>
+    <div id='FctnBx'>
+      <div class='Grid'>
+        <div class='Cell'>
+          use
+          <a href='http://json5.org/' title='what is JSON5?' target='_blank'>JONS5</a>
+          <input type='checkbox' checked='true'/><br/>
+          select a local JSON file:
+          <input type='file'/><br/>
+          or<br/>
+          paste a JSON string:
+          <textarea cols='20' rows='2'></textarea>
+          <input type='button' value='parse'/>
+        </div>
+        <div class='Cell'>
+          <input type='button' value='export'/><br/>
+          <textarea cols='20' rows='4'></textarea>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div id='Rt'></div>
+    <div id='IptBx'>
+      <textarea rows='1'></textarea>
+      <div>
+      	<input type='button' value='OK'/><br/>
+      	<input type='button' value='Cancel'/>
+      </div>
+    </div>
+  </body>
+</html>
