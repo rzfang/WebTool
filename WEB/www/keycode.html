@@ -12,14 +12,15 @@
       .Title { display: inline-block; width: 100px; }
     -->
     </style>
+    <script type='text/javascript' src='resource/z.min.js'></script>
     <script type='text/javascript'>
     <!--
       function KeyCodeGet(Evt, ID)
       {
         /*==== current state show. ====*/
 
-        var Elt = document.getElementById(ID),
-            KyStr = 'keyCode: ' + Evt.keyCode + ' (0x' + Evt.keyCode.toString(16) + ')';
+        var Elt = Z('#' + ID)[0], // 'Elt' = Element.
+            KyStr = 'keyCode: ' + Evt.keyCode + ' (0x' + Evt.keyCode.toString(16) + ')'; // 'KyStr' = Key String.
 
         if (Evt.keyCode === 0)
         { KyStr += ', charCode: ' + Evt.charCode + ' (0x' + Evt.charCode.toString(16) + ')'; }
@@ -29,23 +30,28 @@
         /*==== history log process. ====*/
 
         var ChkIDMpO = {'KeyDown': 'LgDwnChk', 'KeyPress': 'LgPrsChk', 'KeyUp': 'LgUpChk'},
-            ChkDOM = document.getElementById(ChkIDMpO[ID]);
+            ChkElt = Z('#' + ChkIDMpO[ID])[0],
+            HstElt,
+            LgElt; // 'LgElt' = Log Element.
 
-        if (!ChkDOM.checked)
+
+        if (!ChkElt.checked)
         { return -1; }
 
-        var Hst = document.getElementById('Hst'),
-            HstStr = ID + ': ' + KyStr + "\n" + Hst.innerHTML;
+        HstElt = Z('#Hst')[0],
+        LgElt = Z.NewNode('tr'),
+        LgElt.innerHTML = '<td>' + ID + '</td><td>' + KyStr + '</td>';
 
-        if (HstStr.match(/[\da-f]\)\n/g).length > 20)
-        { HstStr = HstStr.substr(0, HstStr.lastIndexOf("\nKey")); }
-
-        Hst.innerHTML = HstStr;
+        HstElt.Prepend(LgElt);
+        
+        HstElt.Children()
+              .Some(function (Elt, Idx) { return (Idx > (20 - 1)); })
+              .Each(function (Elt, Idx) { Elt.Remove(); });
       }
 
       function HistoryClear()
       {
-        document.getElementById('Hst').innerHTML = '';
+        Z('#Hst')[0].innerHTML = '';
       }
     -->
     </script>
@@ -58,13 +64,15 @@
     <span class='Title'>Key Up:</span><span id='KeyUp'>?</span>
     <hr/>
     History:<br/>
-    <pre id='Hst' style='display: inline-block;'></pre>
-    <span style='display: inline-block; padding: 5px; border: 1px solid; border-radius: 5px; vertical-align: top;'>
+    <table style='display: inline-block;'>
+      <tbody id='Hst'></tbody>
+    </table>
+    <div style='display: inline-block; padding: 5px; border: 1px solid; border-radius: 5px; vertical-align: top;'>
       Log with:<br/>
       <label><input type='checkbox' id='LgDwnChk' checked='true'/> KeyDown</label><br/>
       <label><input type='checkbox' id='LgPrsChk' checked='true'/> KeyPress</label><br/>
       <label><input type='checkbox' id='LgUpChk' checked='true'/> KeyUp</label><br/>
       <input type='button' value='Clear' onclick='HistoryClear();'/>
-    </span>
+    </div>
   </body>
 </html>
