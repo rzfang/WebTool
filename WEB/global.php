@@ -7,7 +7,7 @@ define('WEB_PTH', RT_PTH);
 
 // website info.
 define('WEBSITE', 'Web Tool - ZII');
-define('COPYRIGHT', '©2011-2014 RZ Fang');
+define('COPYRIGHT', '©2011-2015 RZ Fang');
 
 //======================================================================================================================
 ?>
