@@ -74,7 +74,7 @@ require('../global.php');
         		<option value='re.html'>Regular Expression Test</option>
         		<option value='datetime.html'>Datetime Transform</option>
         		<option value='convert.html'>Convert List</option>
-        		<option value='colorlist.html'>Color Conside</option>
+        		<option value='colors.html'>Color Conside</option>
         		<option value='endecode.html'>String EnDecode</option>
         		<option value='post.html'>POST to a Page</option>
         		<option value='window.html'>Window Open Script</option>
