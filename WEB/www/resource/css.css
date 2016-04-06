@@ -1,1 +1,20 @@
-body{margin:0px;padding:0px;font-size:16px;font-family:monospace;color:#202020}a,input,option,button{font-size:16px}a{text-decoration:none}a:hover{text-decoration:underline}div,span{border:0px solid #202020}ul,ol{margin:5px 0px 10px 0px}header{position:relative}header>span{display:inline-block}header>span:first-of-type{font-size:64px;font-style:italic}header>span:last-of-type{position:absolute;right:0;top:0;font-size:14px}header>menu{z-index:1;display:inline-block;position:absolute;right:0;bottom:0;margin:0;margin-bottom:-1px;padding:5px;border:1px solid;border-right:0px;border-bottom-color:#ffffff}#Main{position:relative;min-height:600px;border-top-width:1px}#Main>iframe{width:100%;min-height:600px;border-width:0}footer{border-top-width:1px;border-top-style:solid;text-align:center}.Block{display:inline-block;vertical-align:top}.Tab:hover{background-color:#c0c0c0}.ClickItem{cursor:pointer}.ClickItem:hover{color:#ff0000}.TextTitle{display:inline-block;min-width:79px;text-align:center;vertical-align:middle}.Icon0{max-width:20px;max-height:20px;vertical-align:middle}.Icon1{max-width:28px;max-height:28px;vertical-align:middle}.Icon2{max-width:36px;max-height:36px;vertical-align:middle}
+/*==== Normal Element ================================================================================================*/
+body { margin: 0px; padding: 0px; font-size: 16px; font-family: monospace; color: #202020; }
+a, input, option, button { font-size: 16px; }
+a { text-decoration: none; } a:hover { text-decoration: underline; }
+div, span { border: 0px solid #202020; }
+ul, ol { margin: 5px 0px 10px 0px; }
+/*==== Structure =====================================================================================================*/
+header { position: relative; } header > span { display: inline-block; } header > span:first-of-type { font-size: 64px; font-style: italic; } header > span:last-of-type { position: absolute; right: 0; top: 0; font-size: 14px; } header > menu { z-index: 1; display: inline-block; position: absolute; right: 0; bottom: 0; margin: 0; margin-bottom: -1px; padding: 5px; border: 1px solid; border-right: 0px; border-bottom-color: #ffffff; }
+#Main { position: relative; min-height: 600px; border-top-width: 1px; } #Main > iframe { width: 100%; min-height: 600px; border-width: 0; }
+footer { border-top-width: 1px; border-top-style: solid; text-align: center; }
+/*==== Class =========================================================================================================*/
+.Block { display: inline-block; vertical-align: top; }
+.Tab:hover { background-color: #c0c0c0; }
+.ClickItem { cursor: pointer; } .ClickItem:hover { color: #ff0000; }
+.TextTitle { display: inline-block; min-width: 79px; text-align: center; vertical-align: middle; }
+.Icon0 { max-width: 20px; max-height: 20px; vertical-align: middle; }
+.Icon1 { max-width: 28px; max-height: 28px; vertical-align: middle; }
+.Icon2 { max-width: 36px; max-height: 36px; vertical-align: middle; }
+/*==== Programer Tool Case ===========================================================================================*/
+/*====================================================================================================================*/
