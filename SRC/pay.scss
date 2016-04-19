@@ -1,0 +1,68 @@
+@media screen and (min-width: 1000px) {
+  body {
+    position: relative;
+    width: 1000px;
+    margin: 0 auto;
+  }
+}
+
+body { border: 1px solid rgba(0, 0, 0, .3); }
+
+.Btn {
+  display: inline-block;
+  margin: 3px;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.Pymnt {
+  .Edtr {
+    &.Bckbrd {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      background-color: rgba(0, 0, 0, .5);
+    }
+
+    .FrntBrd {
+      display: inline-block;
+      width: 300px;
+      margin-top: 20px;
+      border-radius: 3px;
+      padding: 5px;
+      text-align: left;
+      background-color: white;
+
+      >div:first-child {
+        font-weight: bold;
+        font-size: 1.2rem
+      }
+
+      >div:last-child {
+        text-align: right;
+      }
+    }
+  }
+
+  .ByrLst, .ItmLst { margin-top: 5px; }
+
+  .ItmLst {
+
+    width: 100%;
+
+    .Itm {
+      &:not(:first-child) {
+        cursor: pointer;
+      }
+
+      >td {
+        border: 1px solid;
+      }
+    }
+  }
+}

@@ -23,4 +23,5 @@ function JsCompress (FrmPthA, ToPth)
 }
 
 SCSS_CSS(RtPth + 'SRC/css.scss', RtPth + 'WEB/www/resource/css.css');
-// JsCompress([RtPth + 'SRC/api.js'], RtPth + 'WEB/www/resource/api.min.js');
+SCSS_CSS(RtPth + 'SRC/pay.scss', RtPth + 'WEB/www/resource/pay.css');
+JsCompress([RtPth + 'SRC/RZ-Js-Is.js', RtPth + 'SRC/RZ-Js-Obj.js'], RtPth + 'WEB/www/resource/include.js');
