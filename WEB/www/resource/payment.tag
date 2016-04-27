@@ -1,135 +1,177 @@
 <payment class='Pymnt'>
-  <buyerlist byrs={Data.Byrs} />
-  <itemlist itms={Data.Itms}></itemlist>
-  <editor />
-</payment>
-
-<buyerlist>
-  Buyers:
-  <span each={opts.byrs} class='Btn' onclick={BuyerEdit}>{Nm}</span>
-  <span class='Btn' onclick={BuyerAdd}>+</span>
+  <div>
+    <span class='Btn' onclick={Save}>Save</span>
+    <span class="Btn">Check</span>
+  </div>
+  <buyerlist byrs={opts.byrs} edit={BuyerEdit} add={BuyerAdd} />
+  <itemlist itms={opts.itms} edit={ItemEdit} add={ItemAdd}></itemlist>
+  <editor byrs={opts.byrs} itms={opts.itms} md={false} ttl='' info={null} save={null} />
 
   <script>
-    let self = this,
-        Edtr = this.parent.tags.editor;
+    let self = this;
 
     BuyerEdit (Evt) {
       let Save = function (Rst) {
+        self.tags.editor.opts.md = false;
         Evt.item.Nm = Rst;
 
-        self.parent.update();
-        Edtr.Cancel();
+        self.update();
       };
 
-      Edtr.update({opts: {Ttl: 'Buyer Edit', Md: 'BUYER', Info: Evt.item, Save: Save}});
+      this.tags.editor.update({
+        opts: {
+          ttl: 'Buyer Edit',
+          md: 'BUYER',
+          info: Evt.item,
+          save: Save}});
     }
 
     BuyerAdd () {
       let Save = function (Rst) {
+        self.tags.editor.opts.md = false;
+
         self.opts.byrs.push({Nm: Rst});
-        self.parent.update();
-        Edtr.Cancel();
+        self.tags.buyerlist.update();
       };
 
-      Edtr.update({opts: {Ttl: 'Buyer Add', Md: 'BUYER', Info: null, Save: Save}});
+      this.tags.editor.update({
+        opts: {
+          ttl: 'Buyer Add',
+          md: 'BUYER',
+          info: null,
+          save: Save}});
+    }
+
+    ItemEdit (Evt) {
+      let Save = (Rst) => {
+        self.tags.editor.opts.md = false;
+
+        Z.Obj.Combine(Evt.item, Rst, true);
+        self.tags.itemlist.update();
+      };
+
+      this.tags.editor.update({
+        opts: {
+          byrs: this.opts.byrs,
+          itms: this.opts.itms,
+          ttl: 'Item Edit',
+          md: 'ITEM',
+          info: Evt.item,
+          save: Save}});
+    }
+
+    ItemAdd () {
+      let Save = (Rst) => {
+        self.tags.editor.opts.md = false;
+
+        self.opts.itms.push(Rst);
+        self.tags.itemlist.update();
+      };
+
+      this.tags.editor.update({
+        opts: {
+          byrs: this.opts.byrs,
+          itms: this.opts.itms,
+          ttl: 'Item Add',
+          md: 'ITEM',
+          info: null,
+          save: Save}});
+    }
+
+    Save () {
+
+    }
+
+    Check () {
+
     }
   </script>
+</payment>
+
+<buyerlist class='ByrLst'>
+  Buyers:
+  <span each={opts.byrs} class='Btn' onclick={parent.opts.edit}>{Nm}</span>
+  <span class='Btn' onclick={opts.add}>+</span>
 </buyerlist>
 
 <itemlist>
   <table class='ItmLst'>
     <tbody>
       <tr class="Itm">
-        <td>Datetime</td>
         <td>Item</td>
         <td>Price</td>
         <td>Buyer</td>
-        <td>Comment</td>
       </tr>
-      <tr each={opts.itms} class="Itm" onclick={ItemEdit}>
-        <td>{Dt}</td>
+      <tr each={opts.itms} class="Btn Itm" onclick={parent.opts.edit}>
         <td>{Itm}</td>
         <td>{Prc}</td>
         <td>{Byr.Nm}</td>
-        <td>{Cmt}</td>
       </tr>
     </tbody>
   </table>
   <div>
-    <span class='Btn' onclick={ItemAdd}>+</span>
+    <span class='Btn' onclick={opts.add}>+</span>
   </div>
-
-  <script>
-    let self = this,
-        Edtr = this.parent.tags.editor;
-
-    ItemEdit (Evt) {
-      let Save = (Rst) => {
-        Rst.Byr = {Nm: Rst.Byr};
-
-        Z.Obj.Merge(Evt.item, Rst);
-        self.parent.update();
-        Edtr.Cancel();
-      };
-
-      Edtr.update({opts: {Ttl: 'Item Edit', Md: 'ITEM', Info: Evt.item, Save: Save}});
-    }
-
-    ItemAdd () {
-      let Save = (Rst) => {
-        Rst.Byr = {Nm: Rst.Byr};
-
-        this.opts.itms.push(Rst);
-        self.parent.update();
-        Edtr.Cancel();
-      };
-
-      Edtr.update({opts: {Ttl: 'Item Add', Md: 'ITEM', Info: null, Save: Save}});
-    }
-  </script>
 </itemlist>
 
-<editor class='Edtr Bckbrd' if={opts.Md}>
+<editor if={opts.md} class='Edtr Bckbrd'>
   <div class='FrntBrd'>
-    <div>{opts.Ttl}</div>
-    <buyerform if={opts.Md === 'BUYER'} info={opts.Info} />
-    <itemform if={opts.Md === 'ITEM'} info={opts.Info} />
+    <div>{opts.ttl}</div>
+    <buyerform if={opts.md === 'BUYER'} info={opts.info} save={Save} />
+    <itemform if={opts.md === 'ITEM'} info={opts.info} byrs={Byrs} />
     <div>
       <span class='Btn' onclick={Cancel}>Cancel</span>
-      <span class='Btn' onclick={Delete}>Delete</span>
+      <span if={opts.info} class='Btn' onclick={Delete}>Delete</span>
       <span class='Btn' onclick={Save}>Save</span>
     </div>
   </div>
 
   <script>
-    Cancel () {
-      this.opts.Md = '';
+    let self = this,
+        Byrs = this.opts.byrs,
+        Itms = this.opts.itms;
 
-      this.update();
+    Cancel (Evt) {
+      this.update({opts: {md: ''}});
     }
 
-    Delete () {
-      let TgtData = this.opts.Md === 'BUYER' ? Data.Byrs : Data.Itms;
+    Delete (Evt) {
+      let TgtData = this.opts.md === 'BUYER' ? Byrs : Itms;
 
-      TgtData.splice(TgtData.indexOf(this.opts.Info), 1);
+      TgtData.splice(TgtData.indexOf(this.opts.info), 1);
 
-      this.opts.Md = '';
+      this.opts.md = '';
 
       this.parent.update();
     }
 
     Save (Evt) {
-      let TgtRst = this.opts.Md === 'BUYER' ? this.tags.buyerform.DataGet() : this.tags.itemform.DataGet();
+      let TgtRst = self.opts.md === 'BUYER' ? self.tags.buyerform.DataGet() : self.tags.itemform.DataGet();
 
-      this.opts.Save(TgtRst);
+      self.opts.save(TgtRst);
     }
   </script>
 </editor>
 
 <buyerform>
-  <input type="text" name="ByrNm" value={opts.Info.Nm} />
+  <input type="text" name="ByrNm" value={opts.info.Nm} />
 
   <script>
+    this.on('update', function (Data) {
+      if (!Data || !Data.opts.md) {
+        this.ByrNm.value = '';
+
+        return;
+      }
+
+      setTimeout(
+        () => {
+          this.ByrNm.focus();
+          this.ByrNm.select();
+        },
+        0);
+    });
+
     DataGet () {
       return this.ByrNm.value;
     }
@@ -137,15 +179,53 @@
 </buyerform>
 
 <itemform>
-  <input type="date" name="Dt" value={opts.Info.Dt} />
-  <input type="text" name="Itm" value={opts.Info.Itm} />
-  <input type="number" name="Prc" value={opts.Info.Prc} />
-  <input type="text" name="Byr" value={opts.Info.Byr.Nm} />
-  <input type="text" name="Cmt" value={opts.Info.Cmt} />
+  <table>
+    <tbody>
+      <tr><td>Datetime</td><td><input type="date" name="Dt" value={opts.info.Dt} /></td></tr>
+      <tr><td>Item</td><td><input type="text" name="Itm" value={opts.info.Itm} /></td>
+      <tr><td>Price</td><td><input type="number" name="Prc" value={opts.info.Prc} /></td>
+      <tr>
+        <td>Buyer</td>
+        <td>
+          <select name="Byr">
+            <option each={opts.byrs} value={Nm} selected={Nm === parent.opts.info.Byr.Nm}>{Nm}</option>
+          </select>
+        </td>
+      <tr><td>Comment</td><td><input type="text" name="Cmt" value={opts.info.Cmt} /></td>
+    </tbody>
+  </table>
 
   <script>
+    this.on(
+      'update',
+      (Data) => {
+        if (!Data || !Data.opts.md) {
+          this.Dt.value = '';
+          this.Itm.value = '';
+          this.Prc.value = '';
+          this.Cmt.value = '';
+
+          return;
+        }
+
+        setTimeout(
+          () => {
+            this.Dt.focus();
+            this.Dt.select();
+          },
+          0);
+      });
+
     DataGet () {
-      let Rst = {Dt: this.Dt.value, Itm: this.Itm.value, Prc: this.Prc.value, Byr: this.Byr.value, Cmt: this.Cmt.value};
+      let Rst = {Dt: this.Dt.value, Itm: this.Itm.value, Prc: this.Prc.value, Byr: this.opts.byrs[0], Cmt: this.Cmt.value};
+
+      for (let i = 1; i < this.opts.byrs.length; i++) {
+        if (this.opts.byrs[i].Nm === this.Byr.value) {
+          Rst.Byr = this.opts.byrs[i];
+
+          break;
+        }
+      }
 
       return Rst;
     }

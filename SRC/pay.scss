@@ -6,21 +6,34 @@
   }
 }
 
-body { border: 1px solid rgba(0, 0, 0, .3); }
+body {
+  background-color: #f8f8f8;
 
-.Btn {
-  display: inline-block;
-  margin: 3px;
-  border: 1px solid;
+  >header { font-style: italic; }
+}
+
+.Btn, .Btn>td {
+  border: 1px solid #d0d0ff;
   border-radius: 3px;
   padding: 3px;
   cursor: pointer;
+  background-color: #f0f0ff
+}
+
+.Btn { margin: 3px; }
+
+.Btn:not(tr) {
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
 }
 
 .Pymnt {
+  >div { text-align: right; }
+
   .Edtr {
     &.Bckbrd {
-      position: absolute;
+      position: fixed;
       left: 0;
       top: 0;
       width: 100%;
@@ -49,20 +62,17 @@ body { border: 1px solid rgba(0, 0, 0, .3); }
     }
   }
 
-  .ByrLst, .ItmLst { margin-top: 5px; }
+  .ByrLst {
+    display: block;
+    margin-top: 5px;
+  }
 
   .ItmLst {
-
+    margin-top: 5px;
     width: 100%;
 
     .Itm {
-      &:not(:first-child) {
-        cursor: pointer;
-      }
-
-      >td {
-        border: 1px solid;
-      }
+      &:not(:first-child) { cursor: pointer; }
     }
   }
 }

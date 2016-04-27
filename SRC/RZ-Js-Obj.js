@@ -4,28 +4,22 @@
   /* Combine the seconde object into first object.
     'BsObj' = Base Object.
     'ExtObj' = Extend Object.
-    'Md' = Mode, 0: Union mode in default, 1: Intersection mode.
+    'Md' = Mode, 0: always create another object, 1: overwrite the BsObj.
     Return: new object after combined, or null as error.
     Note: this is not perfect. */
   function Combine (BsObj, ExtObj, Md) {
-    var RstObj = {};
+    var RstObj;
 
     if (typeof BsObj !== 'object' || typeof ExtObj !== 'object') { return null; }
 
-    if (typeof Md !== 'number') { Md = 0; }
+    if (!Md) {
+      RstObj = {};
 
-    for (var i in BsObj) { RstObj[i] = BsObj[i]; }
-
-    if (Md === 0) {
-      for (var i in ExtObj) { RstObj[i] = ExtObj[i];}
+      for (var i in BsObj) { RstObj[i] = BsObj[i]; }
     }
-    else {
-      for (var i in ExtObj) {
-        if (typeof RstObj[i] === 'undefined') { continue; }
+    else { RstObj = BsObj; }
 
-        RstObj[i] = ExtObj[i];
-      }
-    }
+    for (var i in ExtObj) { RstObj[i] = ExtObj[i]; }
 
     return RstObj;
   }
