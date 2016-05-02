@@ -1,3 +1,5 @@
+$border: 1px solid #d0d0ff;
+
 @media screen and (min-width: 1000px) {
   body {
     position: relative;
@@ -13,7 +15,7 @@ body {
 }
 
 .Btn, .Btn>td {
-  border: 1px solid #d0d0ff;
+  border: $border;
   border-radius: 3px;
   padding: 3px;
   cursor: pointer;
@@ -30,6 +32,18 @@ body {
 
 .Pymnt {
   >div { text-align: right; }
+
+  .TbBx .Tb {
+    margin: 3px;
+    padding: 3px;
+    color: #c0c0c0;
+
+    &.Pckd {
+      border-bottom: $border;
+      color: #000000;
+      cursor: default;
+    }
+  }
 
   .Edtr {
     &.Bckbrd {

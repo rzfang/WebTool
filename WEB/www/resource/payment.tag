@@ -1,21 +1,26 @@
-<payment class='Pymnt'>
+<payment class='Pymnt {opts.class}'>
   <div>
     <span class='Btn' onclick={Save}>Save</span>
     <span class="Btn">Check</span>
   </div>
-  <buyerlist byrs={opts.byrs} edit={BuyerEdit} add={BuyerAdd} />
-  <itemlist itms={opts.itms} edit={ItemEdit} add={ItemAdd}></itemlist>
-  <editor byrs={opts.byrs} itms={opts.itms} md={false} ttl='' info={null} save={null} />
+  <tabbox dftidx={1}>
+    <buyerlist if={Idx === 0}  class='ByrLst' tbnm="Buyers" byrs={parent.Byrs} edit={parent.BuyerEdit} add={parent.BuyerAdd}/>
+    <itemlist if={Idx === 1}  class='ItmLst' tbnm="Items" itms={parent.Itms} edit={parent.ItemEdit} add={parent.ItemAdd}/>
+  </tabbox>
+  <editor class='Edtr' byrs={Byrs} itms={Itms} md={false} ttl='' info={null} save={null}/>
 
   <script>
     let self = this;
+
+    this.Byrs = this.opts.byrs || [];
+    this.Itms = this.opts.itms || [];
 
     BuyerEdit (Evt) {
       let Save = function (Rst) {
         self.tags.editor.opts.md = false;
         Evt.item.Nm = Rst;
 
-        self.update();
+        self.tags.tabbox.tags.buyerlist.update({opts: {byrs: self.Byrs}});
       };
 
       this.tags.editor.update({
@@ -30,8 +35,8 @@
       let Save = function (Rst) {
         self.tags.editor.opts.md = false;
 
-        self.opts.byrs.push({Nm: Rst});
-        self.tags.buyerlist.update();
+        self.Byrs.push({Nm: Rst});
+        self.tags.tabbox.tags.buyerlist.update();
       };
 
       this.tags.editor.update({
@@ -47,13 +52,13 @@
         self.tags.editor.opts.md = false;
 
         Z.Obj.Combine(Evt.item, Rst, true);
-        self.tags.itemlist.update();
+        self.tags.tabbox.tags.itemlist.update();
       };
 
       this.tags.editor.update({
         opts: {
-          byrs: this.opts.byrs,
-          itms: this.opts.itms,
+          byrs: this.Byrs,
+          itms: this.Itms,
           ttl: 'Item Edit',
           md: 'ITEM',
           info: Evt.item,
@@ -64,14 +69,14 @@
       let Save = (Rst) => {
         self.tags.editor.opts.md = false;
 
-        self.opts.itms.push(Rst);
-        self.tags.itemlist.update();
+        self.Itms.push(Rst);
+        self.tags.tabbox.tags.itemlist.update();
       };
 
       this.tags.editor.update({
         opts: {
-          byrs: this.opts.byrs,
-          itms: this.opts.itms,
+          byrs: this.Byrs,
+          itms: this.Itms,
           ttl: 'Item Add',
           md: 'ITEM',
           info: null,
@@ -88,37 +93,95 @@
   </script>
 </payment>
 
-<buyerlist class='ByrLst'>
-  Buyers:
-  <span each={opts.byrs} class='Btn' onclick={parent.opts.edit}>{Nm}</span>
+<tabbox class='TbBx'>
+  <ul>
+    <li each={Tbs} class="Tb {Pckd ? 'Pckd' : ''}" onclick={Switch}>{Nm}</li>
+  </ul>
+  <yield/>
+
+  <script>
+    this.Idx = Z.Is.Number(this.opts.dftidx) ? this.opts.dftidx : 0;
+    this.Tbs = [];
+
+    this.on('before-mount', () => {
+      for (let i in this.tags) {
+        let Tb = this.tags[i];
+
+        this.Tbs.push({Nm: Tb.opts && Tb.opts.tbnm || '?', Pckd: false});
+      }
+
+      this.Tbs[this.Idx].Pckd = true;
+    });
+
+    Switch (Evt) {
+      this.Tbs[this.Idx].Pckd = false;
+      this.Idx = this.Tbs.indexOf(Evt.item);
+      this.Tbs[this.Idx].Pckd = true;
+
+      this.update();
+    }
+  </script>
+
+  <style>
+    .TbBx>ul:first-child { margin: 0; padding: 0; }
+    .TbBx>ul:first-child>li { display: inline-block; cursor: pointer; }
+  </style>
+</tabbox>
+
+<buyerlist>
+  <span each={opts.byrs} class='Btn' onclick={Edit}>{Nm}</span>
   <span class='Btn' onclick={opts.add}>+</span>
+
+  <script>
+    let self = this;
+
+    Edit (Evt) {
+      self.opts.edit(Evt);
+    }
+  </script>
 </buyerlist>
 
 <itemlist>
-  <table class='ItmLst'>
+  <table>
     <tbody>
       <tr class="Itm">
+        <td>Datetime</td>
         <td>Item</td>
         <td>Price</td>
         <td>Buyer</td>
+        <td>Comment</td>
       </tr>
-      <tr each={opts.itms} class="Btn Itm" onclick={parent.opts.edit}>
+      <tr each={opts.itms} class="Btn Itm" onclick={Edit}>
+        <td>{Dt}</td>
         <td>{Itm}</td>
         <td>{Prc}</td>
         <td>{Byr.Nm}</td>
+        <td>{Cmt}</td>
       </tr>
     </tbody>
   </table>
   <div>
     <span class='Btn' onclick={opts.add}>+</span>
   </div>
+
+  <script>
+    let self = this;
+
+    Edit (Evt) {
+      self.opts.edit(Evt);
+    }
+  </script>
+
+  <style>
+    itemlist>table { width: 100%; }
+  </style>
 </itemlist>
 
 <editor if={opts.md} class='Edtr Bckbrd'>
   <div class='FrntBrd'>
     <div>{opts.ttl}</div>
-    <buyerform if={opts.md === 'BUYER'} info={opts.info} save={Save} />
-    <itemform if={opts.md === 'ITEM'} info={opts.info} byrs={Byrs} />
+    <buyerform if={opts.md === 'BUYER'} info={opts.info} save={Save}/>
+    <itemform if={opts.md === 'ITEM'} info={opts.info} byrs={Byrs}/>
     <div>
       <span class='Btn' onclick={Cancel}>Cancel</span>
       <span if={opts.info} class='Btn' onclick={Delete}>Delete</span>
@@ -154,7 +217,7 @@
 </editor>
 
 <buyerform>
-  <input type="text" name="ByrNm" value={opts.info.Nm} />
+  <input type="text" name="ByrNm" value={opts.info.Nm}/>
 
   <script>
     this.on('update', function (Data) {
@@ -181,9 +244,9 @@
 <itemform>
   <table>
     <tbody>
-      <tr><td>Datetime</td><td><input type="date" name="Dt" value={opts.info.Dt} /></td></tr>
-      <tr><td>Item</td><td><input type="text" name="Itm" value={opts.info.Itm} /></td>
-      <tr><td>Price</td><td><input type="number" name="Prc" value={opts.info.Prc} /></td>
+      <tr><td>Datetime</td><td><input type="date" name="Dt" value={opts.info.Dt}/></td></tr>
+      <tr><td>Item</td><td><input type="text" name="Itm" value={opts.info.Itm}/></td>
+      <tr><td>Price</td><td><input type="number" name="Prc" value={opts.info.Prc}/></td>
       <tr>
         <td>Buyer</td>
         <td>
@@ -191,7 +254,7 @@
             <option each={opts.byrs} value={Nm} selected={Nm === parent.opts.info.Byr.Nm}>{Nm}</option>
           </select>
         </td>
-      <tr><td>Comment</td><td><input type="text" name="Cmt" value={opts.info.Cmt} /></td>
+      <tr><td>Comment</td><td><input type="text" name="Cmt" value={opts.info.Cmt}/></td>
     </tbody>
   </table>
 
