@@ -13,8 +13,7 @@ header('Content-Type: text/html; charset=utf-8');
     <link rel='stylesheet' type='text/css' href='resource/pay.css'/>
     <style type='text/css'></style>
     <script src='resource/include.js'></script>
-    <script src="https://cdn.jsdelivr.net/immutable.js/3.8.1/immutable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/riot/2.3/riot+compiler.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/riot/2.4/riot+compiler.min.js"></script>
     <script src='resource/payment.tag' type='riot/tag'></script>
   </head>
   <body>
@@ -27,8 +26,7 @@ header('Content-Type: text/html; charset=utf-8');
     <script>
       (function run () {
         var RAF = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                  window.webkitRequestAnimationFrame || window.msRequestAnimationFrame,
-            Data;
+                  window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
         window.requestAnimationFrame = RAF;
 
@@ -38,16 +36,7 @@ header('Content-Type: text/html; charset=utf-8');
           return;
         }
 
-        Data = window.localStorage.getItem('Data') || {Byrs: [], Itms: []};
-
-        // window.Byrs = [{Nm: 'RZ'}, {Nm: 'Amanda'}];
-
-        // window.Data = {
-        //   Byrs: Byrs,
-        //   Itms: [{ Dt: '2016-04-10', Itm: 'Apple', Prc: '1000', Byr: Byrs[0], Cmt: 'this is an apple' }]
-        // };
-
-        riot.mount('#Bs', 'payment', {byrs: Data.Byrs, itms: Data.Itms});
+        riot.mount('#Bs', 'payment');
       })();
     </script>
   </body>

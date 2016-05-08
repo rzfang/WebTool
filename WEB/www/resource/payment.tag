@@ -1,26 +1,56 @@
-<payment class='Pymnt {opts.class}'>
+<payment class='Pymnt'>
   <div>
     <span class='Btn' onclick={Save}>Save</span>
-    <span class="Btn">Check</span>
   </div>
-  <tabbox dftidx={1}>
+  <tabbox class='TbBx' dftidx={1}>
     <buyerlist if={Idx === 0}  class='ByrLst' tbnm="Buyers" byrs={parent.Byrs} edit={parent.BuyerEdit} add={parent.BuyerAdd}/>
     <itemlist if={Idx === 1}  class='ItmLst' tbnm="Items" itms={parent.Itms} edit={parent.ItemEdit} add={parent.ItemAdd}/>
   </tabbox>
   <editor class='Edtr' byrs={Byrs} itms={Itms} md={false} ttl='' info={null} save={null}/>
 
   <script>
-    let self = this;
+    let self = this,
+        LclStrgKy = 'PaymentData';
 
-    this.Byrs = this.opts.byrs || [];
-    this.Itms = this.opts.itms || [];
+    (() => {
+      let Data = window.localStorage.getItem(LclStrgKy);
+
+      if (Data) { Data = JSON.parse(Data); }
+
+      if (!Data || typeof Data !== 'object') {
+        this.Byrs = [];
+        this.Itms = [];
+
+        return;
+      }
+
+      this.Byrs = Data.Byrs || [],
+      this.Itms = Data.Itms || [];
+
+      for (let i = 0; i < this.Itms.length; i++) {
+        let ItmByr = this.Itms[i] && this.Itms[i].Byr || null,
+            ItmByrNm = ItmByr && ItmByr.Nm || null,
+            IsMtchd = false;
+
+        for (let j = 0; j < this.Byrs.length; j++) {
+          if (this.Byrs[j] && this.Byrs[j].Nm && this.Byrs[j].Nm === ItmByrNm) {
+            this.Itms[i].Byr = this.Byrs[j];
+            IsMtchd = true;
+
+            break;
+          }
+        }
+
+        if (!IsMtchd && ItmByr) { this.Byrs.push(ItmByr); }
+      }
+    })();
 
     BuyerEdit (Evt) {
-      let Save = function (Rst) {
+      let Save = (Rst) => {
         self.tags.editor.opts.md = false;
         Evt.item.Nm = Rst;
 
-        self.tags.tabbox.tags.buyerlist.update({opts: {byrs: self.Byrs}});
+        self.tags.tabbox.tags.buyerlist.update();
       };
 
       this.tags.editor.update({
@@ -32,7 +62,7 @@
     }
 
     BuyerAdd () {
-      let Save = function (Rst) {
+      let Save = (Rst) => {
         self.tags.editor.opts.md = false;
 
         self.Byrs.push({Nm: Rst});
@@ -84,16 +114,14 @@
     }
 
     Save () {
+      let Data = JSON.stringify({Byrs: this.Byrs, Itms: this.Itms});
 
-    }
-
-    Check () {
-
+      window.localStorage.setItem(LclStrgKy, Data);
     }
   </script>
 </payment>
 
-<tabbox class='TbBx'>
+<tabbox>
   <ul>
     <li each={Tbs} class="Tb {Pckd ? 'Pckd' : ''}" onclick={Switch}>{Nm}</li>
   </ul>
@@ -129,7 +157,11 @@
 </tabbox>
 
 <buyerlist>
-  <span each={opts.byrs} class='Btn' onclick={Edit}>{Nm}</span>
+  <ul>
+    <li each={opts.byrs}>
+      <span class='Btn' onclick={Edit}>{Nm}</span>
+    </li>
+  </ul>
   <span class='Btn' onclick={opts.add}>+</span>
 
   <script>
@@ -217,22 +249,18 @@
 </editor>
 
 <buyerform>
-  <input type="text" name="ByrNm" value={opts.info.Nm}/>
+  <input type="text" name="ByrNm" value={Nm}/>
 
   <script>
+    this.Nm = this.opts.info && this.opts.info.Nm || '';
+
     this.on('update', function (Data) {
-      if (!Data || !Data.opts.md) {
-        this.ByrNm.value = '';
+      this.Nm = Z.Obj.Dig(Data, ['opts', 'info', 'Nm'], '');
+    });
 
-        return;
-      }
-
-      setTimeout(
-        () => {
-          this.ByrNm.focus();
-          this.ByrNm.select();
-        },
-        0);
+    this.on('updated', () => {
+        this.ByrNm.focus();
+        this.ByrNm.select();
     });
 
     DataGet () {
@@ -244,39 +272,34 @@
 <itemform>
   <table>
     <tbody>
-      <tr><td>Datetime</td><td><input type="date" name="Dt" value={opts.info.Dt}/></td></tr>
-      <tr><td>Item</td><td><input type="text" name="Itm" value={opts.info.Itm}/></td>
-      <tr><td>Price</td><td><input type="number" name="Prc" value={opts.info.Prc}/></td>
+      <tr><td>Datetime</td><td><input type="date" name="Dt" placeholder="YYYY-MM-DD" value={Info.Dt}/></td></tr>
+      <tr><td>Item</td><td><input type="text" name="Itm" value={Info.Itm}/></td>
+      <tr><td>Price</td><td><input type="number" name="Prc" value={Info.Prc}/></td>
       <tr>
         <td>Buyer</td>
         <td>
           <select name="Byr">
-            <option each={opts.byrs} value={Nm} selected={Nm === parent.opts.info.Byr.Nm}>{Nm}</option>
+            <option each={opts.byrs} value={Nm} selected={Nm === parent.Info.Byr.Nm}>{Nm}</option>
           </select>
         </td>
-      <tr><td>Comment</td><td><input type="text" name="Cmt" value={opts.info.Cmt}/></td>
+      <tr><td>Comment</td><td><input type="text" name="Cmt" value={Info.Cmt}/></td>
     </tbody>
   </table>
 
   <script>
+    this.Info = this.opts.info;
+
     this.on(
       'update',
       (Data) => {
-        if (!Data || !Data.opts.md) {
-          this.Dt.value = '';
-          this.Itm.value = '';
-          this.Prc.value = '';
-          this.Cmt.value = '';
+        this.Info = Z.Obj.Dig(Data, ['opts', 'info'], {});
+      });
 
-          return;
-        }
-
-        setTimeout(
-          () => {
-            this.Dt.focus();
-            this.Dt.select();
-          },
-          0);
+    this.on(
+      'updated',
+      () => {
+        this.Dt.focus();
+        this.Dt.select();
       });
 
     DataGet () {

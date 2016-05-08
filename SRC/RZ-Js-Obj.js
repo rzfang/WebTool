@@ -24,6 +24,27 @@
     return RstObj;
   }
 
+  /* dig the children of given object.
+    'Obj' = Object. the origin object which will be digged.
+    'Pth' = Path. an array records each level of paht.
+    'Flbck' = Fallback. optional, default undefined.
+    Return: sub object, or fallback value. */
+  function Dig (Obj, Pth, Flbck) {
+    var Chld = Obj;
+
+    if (!(Pth instanceof Array) || Pth.length === 0) { return Flbck; }
+
+    if (!Obj || typeof Obj !== 'object') { return Flbck; }
+
+    for (var i = 0; i < Pth.length; i++) {
+      if (!Chld || !Chld.hasOwnProperty(Pth[i])) { return Flbck; }
+
+      Chld = Chld[Pth[i]];
+    }
+
+    return Chld;
+  }
+
   /* Merge the seconde object into first object.
     'BsObj' = Base Object.
     'ExtObj' = Extend Object.
@@ -53,6 +74,7 @@
 
   Obj = {
     Combine: Combine,
+    Dig: Dig,
     Merge: Merge
   };
 
