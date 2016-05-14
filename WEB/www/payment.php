@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
-//======================================================================================================================
+
+require('../global.php');
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -20,9 +21,11 @@ header('Content-Type: text/html; charset=utf-8');
     <header>
       <h2>Web Tool - Payment</h2>
     </header>
-    <nav></nav>
     <main id='Bs'></main>
-    <footer></footer>
+    <footer>
+      Reproduced or quoted, please indicate the source. <a href='index.php'><?= WEBSITE; ?></a>
+      <?= COPYRIGHT; ?>
+    </footer>
     <script>
       (function run () {
         var RAF = window.requestAnimationFrame || window.mozRequestAnimationFrame ||

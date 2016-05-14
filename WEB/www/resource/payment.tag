@@ -4,7 +4,8 @@
   </div>
   <tabbox class='TbBx' dftidx={1}>
     <buyerlist if={Idx === 0}  class='ByrLst' tbnm="Buyers" byrs={parent.Byrs} edit={parent.BuyerEdit} add={parent.BuyerAdd}/>
-    <itemlist if={Idx === 1}  class='ItmLst' tbnm="Items" itms={parent.Itms} edit={parent.ItemEdit} add={parent.ItemAdd}/>
+    <itemlist if={Idx === 1}  class='ItmLst' tbnm="Items" byrs={parent.Byrs} itms={parent.Itms} edit={parent.ItemEdit} add={parent.ItemAdd}/>
+    <check if={Idx === 2} class='Chk' tbnm='Check' byrs={parent.Byrs} itms={parent.Itms}/>
   </tabbox>
   <editor class='Edtr' byrs={Byrs} itms={Itms} md={false} ttl='' info={null} save={null}/>
 
@@ -145,8 +146,6 @@
       this.Tbs[this.Idx].Pckd = false;
       this.Idx = this.Tbs.indexOf(Evt.item);
       this.Tbs[this.Idx].Pckd = true;
-
-      this.update();
     }
   </script>
 
@@ -176,12 +175,12 @@
 <itemlist>
   <table>
     <tbody>
-      <tr class="Itm">
-        <td>Datetime</td>
-        <td>Item</td>
-        <td>Price</td>
-        <td>Buyer</td>
-        <td>Comment</td>
+      <tr>
+        <th>Datetime</th>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Buyer</th>
+        <th>Comment</th>
       </tr>
       <tr each={opts.itms} class="Btn Itm" onclick={Edit}>
         <td>{Dt}</td>
@@ -209,6 +208,57 @@
   </style>
 </itemlist>
 
+<check>
+  <table>
+    <tbody>
+      <tr>
+        <th>Name</th>
+        <th>Amount</th>
+        <th>Balance</th>
+      </tr>
+      <tr each={Chk}>
+        <td>{Nm}</td>
+        <td>{Amnt}</td>
+        <td>{Avrg - Amnt}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td>Total</td>
+        <td>{Ttl}</td>
+        <td>{Avrg}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <script>
+    this.Chk = []; // 'Chk' = Check.
+    this.Ttl = 0; // 'Ttl' = Total.
+    this.Avrg = 0; // 'Avrg' = Average.
+
+    this.on(
+      'update',
+      () => {
+        this.Chk = [];
+        this.Ttl = 0;
+
+        for (let i = 0; i < this.opts.byrs.length; i++) {
+          let Pymnt = {Nm: this.opts.byrs[i].Nm, Amnt: 0}; // 'Pymnt' = Payment. 'Nm' = Name, 'Amnt' = Amount.
+
+          for (let j = 0; j < this.opts.itms.length; j++) {
+            if (this.opts.itms[j].Byr.Nm === Pymnt.Nm) { Pymnt.Amnt += this.opts.itms[j].Prc; }
+          }
+
+          this.Chk.push(Pymnt);
+        }
+
+        for (let i = 0; i < this.opts.itms.length; i++) { this.Ttl += this.opts.itms[i].Prc; }
+
+        this.Avrg = this.Ttl / this.Chk.length;
+      });
+  </script>
+</check>
+
 <editor if={opts.md} class='Edtr Bckbrd'>
   <div class='FrntBrd'>
     <div>{opts.ttl}</div>
@@ -227,7 +277,7 @@
         Itms = this.opts.itms;
 
     Cancel (Evt) {
-      this.update({opts: {md: ''}});
+      this.opts.md = '';
     }
 
     Delete (Evt) {
@@ -241,7 +291,18 @@
     }
 
     Save (Evt) {
-      let TgtRst = self.opts.md === 'BUYER' ? self.tags.buyerform.DataGet() : self.tags.itemform.DataGet();
+      let TgtRst;
+
+      if (self.opts.md === 'BUYER') {
+        TgtRst = self.tags.buyerform.DataGet();
+
+        self.tags.buyerform.Clean();
+      }
+      else {
+        TgtRst = self.tags.itemform.DataGet();
+
+        self.tags.itemform.Clean();
+      }
 
       self.opts.save(TgtRst);
     }
@@ -254,17 +315,25 @@
   <script>
     this.Nm = this.opts.info && this.opts.info.Nm || '';
 
-    this.on('update', function (Data) {
-      this.Nm = Z.Obj.Dig(Data, ['opts', 'info', 'Nm'], '');
-    });
+    this.on(
+      'update',
+      (Data) => {
+        this.Nm = Z.Obj.Dig(Data, ['opts', 'info', 'Nm'], '');
+      });
 
-    this.on('updated', () => {
+    this.on(
+      'updated',
+      () => {
         this.ByrNm.focus();
         this.ByrNm.select();
-    });
+      });
 
     DataGet () {
       return this.ByrNm.value;
+    }
+
+    Clean () {
+      this.ByrNm.value = '';
     }
   </script>
 </buyerform>
@@ -303,7 +372,12 @@
       });
 
     DataGet () {
-      let Rst = {Dt: this.Dt.value, Itm: this.Itm.value, Prc: this.Prc.value, Byr: this.opts.byrs[0], Cmt: this.Cmt.value};
+      let Rst = {
+            Dt: this.Dt.value,
+            Itm: this.Itm.value,
+            Prc: parseInt(this.Prc.value, 10),
+            Byr: this.opts.byrs[0],
+            Cmt: this.Cmt.value};
 
       for (let i = 1; i < this.opts.byrs.length; i++) {
         if (this.opts.byrs[i].Nm === this.Byr.value) {
@@ -314,6 +388,13 @@
       }
 
       return Rst;
+    }
+
+    Clean () {
+      this.Dt.value = '';
+      this.Itm.value = '';
+      this.Prc.value = '';
+      this.Cmt.value = '';
     }
   </script>
 </itemform>

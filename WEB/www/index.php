@@ -46,15 +46,19 @@ require('../global.php');
       {
         var OptA = Evt.Element().Children();
 
-        OptA.Each(function(Obj, Idx)
-          {
-            if (Obj.selected)
-            {
-              window.location = '#' + Obj.value.replace('.html', '');
+        OptA.Each(function(Obj, Idx) {
+          if (Obj.selected) {
+            if (Obj.value.indexOf('.php') > 0) {
+              window.location = Obj.value;
 
               return false;
             }
-          });
+
+            window.location = '#' + Obj.value.replace('.html', '');
+
+            return false;
+          }
+        });
       }
     -->
     </script>
@@ -80,7 +84,9 @@ require('../global.php');
         		<option value='window.html'>Window Open Script</option>
         		<option value='ipv426.html'>IP v4 to v6 Convert</option>
         		<option value='datauri.html'>File to Data URI</option>
-        		<option value='json.html'>JSON Editor</option>
+            <option value='json.html'>JSON Editor</option>
+            <option disabled>-----------------------</option>
+        		<option value='payment.php'>Payment</option>
         	</select>
         </menu>
       </header>

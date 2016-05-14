@@ -9,9 +9,21 @@ $border: 1px solid #d0d0ff;
 }
 
 body {
+  margin: 0 auto;
+  padding: 5px;
   background-color: #f8f8f8;
 
   >header { font-style: italic; }
+
+  >main { margin-bottom: 60px; }
+
+  >footer {
+    z-index: -1;
+    position: fixed;
+    bottom: 0;
+    padding: 5px 0;
+    background: #ffffff;
+  }
 }
 
 .Btn, .Btn>td {
@@ -31,14 +43,22 @@ body {
 }
 
 .Pymnt {
-  >div { text-align: right; }
+  position: relative;
+
+  >div {
+    position: absolute;
+    right: 0;
+  }
 
   .TbBx .Tb {
     margin: 3px;
+    border: $border;
+    border-radius: 3px;
     padding: 3px;
     color: #c0c0c0;
 
     &.Pckd {
+      border: 0;
       border-bottom: $border;
       color: #000000;
       cursor: default;
@@ -88,5 +108,13 @@ body {
     .Itm {
       &:not(:first-child) { cursor: pointer; }
     }
+  }
+
+  .Chk {
+    td { text-align: right; }
+
+    th:first-child, td:first-child { text-align: center; }
+
+    tfoot>tr>td { border-top: 1px solid; }
   }
 }
