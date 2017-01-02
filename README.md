@@ -8,13 +8,19 @@ a website to provide many developing, daily tool.
 * [SASS](http://sass-lang.com/)
 * [Riot](http://riotjs.com/)
 * [npm](https://www.npmjs.com/)
+* [PM2](http://pm2.keymetrics.io/)
 
-## install
+## set up dev environment
 ```
-./UTL/precompile.js
+cd UTL; npm i; ./precompile.js; cd ..
 ```
 
 ## run dev server
+for PHP:
 ```
 ./UTL/dev_run.sh
+```
+for node.js:
+```
+./UTL/dev_node_run.sh
 ```

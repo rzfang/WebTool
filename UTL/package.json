@@ -1,0 +1,31 @@
+{
+  "name": "web_tool",
+  "version": "0.0.1",
+  "description": "web tool",
+  "main": "server.js",
+  "dependencies": {
+    "node-sass": "^3.4.2",
+    "uglify-js": "^2.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  },
+  "scripts": {
+    "dev": "nodemon -d 3 -e js,css,html,tag -w ../SRC/ -w server.js server.js",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rzfang/WebTool.git"
+  },
+  "keywords": [
+    "web",
+    "tool"
+  ],
+  "author": "RZ Fang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rzfang/WebTool/issues"
+  },
+  "homepage": "https://github.com/rzfang/WebTool#readme"
+}
