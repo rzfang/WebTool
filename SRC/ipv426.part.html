@@ -1,0 +1,120 @@
+<div id='Main'>
+  <style type='text/css'>
+  <!--
+    #Hst > div { margin: 10px 0px; }
+  -->
+  </style>
+  <script type='text/javascript' src='resource/z.min.js'></script>
+  <script type='text/javascript'>
+  <!--
+    function RECheck(Ptm, Str)
+    {
+      if ((typeof Ptm != 'function' && //for chrome, a RegExp is a function.
+          typeof Ptm != 'object' && typeof Ptm != 'string') || typeof Str != 'string')
+      { return false; }
+
+      var RE = new RegExp(Ptm);
+
+      return RE.test(Str);
+    }
+
+    function CharPad(Str, Lth, Chr, Sd)
+    {
+      if (typeof Str !== 'string')
+      { Str = Str.toString(); }
+
+      if (typeof Lth !== 'number' || Lth < 2 || Str.length >= Lth)
+      { return Str; }
+
+      if (typeof Chr !== 'string' || Chr.length === 0)
+      { Chr = '0'; }
+
+      if (typeof Sd !== 'string')
+      { Sd = 'l'; }
+      else
+      {
+        Sd = Sd.toLowerCase();
+
+        if (Sd !== 'l' && Sd !== 'r')
+        { return Str; }
+      }
+
+      var PN = Lth - Str.length, // 'PN' = Padding Number.
+          PS = ''; // 'PS' = Padding String.
+
+      for (PS = ''; PS.length < PN; PS += Chr);
+
+      if (Sd === 'l')
+      { Str = PS + Str; }
+      else
+      { Str += PS; }
+
+      return Str;
+    }
+
+    function Convert()
+    {
+      var V4 = Z('#V4Str')[0].value,
+          V6 = '0000:0000:0000:0000:0000:0000:';
+
+      if (V4.length === 0 || !RECheck(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/, V4))
+      {
+        alert('Please give a IPv4 string.');
+        return 0;
+      }
+
+      var V4SA = V4.split('.');
+
+      for (var i in V4SA)
+      {
+        if (parseInt(V4SA[i], 10) > 255)
+        {
+          alert('Please give a IPv4 string.');
+          return 0;
+        }
+      }
+
+      V6 += CharPad(parseInt(V4SA[0], 10).toString(16), 2) + CharPad(parseInt(V4SA[1], 10).toString(16), 2) + ':' +
+            CharPad(parseInt(V4SA[2], 10).toString(16), 2) + CharPad(parseInt(V4SA[3], 10).toString(16), 2);
+
+      var HstA = Z('#Hst > div'),
+          RS = V4 + '  ->  ' + V6 + '  ->  ';
+
+      for (var i = HstA.length - 1; i > 0; i--)
+        HstA[i].textContent = HstA[i - 1].textContent;
+
+      HstA[0].textContent = RS + V6.replace(/:0+/g, ':').replace(/^0+:/, ':').replace(/:{2,}/, '::');
+    }
+
+    function KeyToConvert(Evt)
+    {
+      if (Evt.keyCode !== 13)
+        return 0;
+
+      Convert();
+    }
+  -->
+  </script>
+
+  IPv4: <input type='text' id='V4Str' maxlength='15' onkeypress='KeyToConvert(event);'/>
+  <input type='button' id='CvtBtn' value='Covert' onclick='Convert();'/>
+  <hr/>
+  History:
+  <div id='Hst'>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>

@@ -1,0 +1,191 @@
+<div id='Main'>
+  <style type='text/css'>
+  <!--
+    input { font-size: 16px; }
+    .Title { display: inline-block; min-width: 50px; }
+    .Title1 { display: inline-block; min-width: 160px; }
+    #DtStrBx > input { max-width: 50px; }
+  -->
+  </style>
+  <script type='text/javascript'>
+  <!--
+    window.onload = function()
+      {
+        setTimeout(DateUpdate, 999);
+      };
+
+    /* Pad Characters into a string.
+      'Str' = String.
+      'Lth' = Length. minimum length of string should be padding to.
+      'Chr' = Character. optional, default '0';
+      'Sd' = Side. optional, default 'l'. 'l'|'L': left padding, 'r'|'R': right padding.
+      Return: string after handle. */
+    function CharPad(Str, Lth, Chr, Sd)
+    {
+      if (typeof Str !== 'string')
+      { Str = Str.toString(); }
+
+      if (typeof Lth !== 'number' || Lth < 2 || Str.length >= Lth)
+      { return Str; }
+
+      if (typeof Chr !== 'string' || Chr.length === 0)
+      { Chr = '0'; }
+
+      if (typeof Sd !== 'string')
+      { Sd = 'l'; }
+      else
+      {
+        Sd = Sd.toLowerCase();
+
+        if (Sd !== 'l' && Sd !== 'r')
+        { return Str; }
+      }
+
+      var PN = Lth - Str.length, // 'PN' = Padding Number.
+          PS = ''; // 'PS' = Padding String.
+
+      for (PS = ''; PS.length < PN; PS += Chr);
+
+      if (Sd === 'l')
+      { Str = PS + Str; }
+      else
+      { Str += PS; }
+
+      return Str;
+    }
+
+    /* get a Data String by giving Second number.
+      'Scd' = Second, float to include millisecond.
+      'Fmt' = Format.
+        0: YYYY-MM-DD HH:II:SS.CCC+ZZ. (default)
+        1: YYYY-MM-DD HH:II:SS.CCC+ZZ (W).
+        2: YYYYMMDDHHIISS.
+      Return: datatime string.
+      Need: CharPad(). */
+    function Scd2DtStr(Scd, Fmt)
+    {
+
+      var Dt = new Date(Scd * 1000), // 'Dt' = Date.
+          DtStr = '',
+          TZOM = Dt.getTimezoneOffset(), // 'TZOM' = Time Zone Offset Minute.
+          TZOH = TZOM / 60; // 'TZOH' = Time Zone Offset Hour.
+
+      Scd = parseFloat(Scd);
+
+      if (typeof Fmt !== 'number')
+      { Fmt = 0; }
+
+      TZOH = (TZOH > 0 ? '-' : '+') + CharPad(Math.abs(TZOH), 2);
+
+      switch (Fmt)
+      {
+        case 1:
+          Dt.setMinutes(Dt.getMinutes() - TZOM);
+
+          DtStr = Dt.toJSON().substr(0, 19).replace('T', ' ') + ' (' + Dt.getDay() + ')';
+          break;
+
+        case 2:
+          DtStr = '' + Dt.getFullYear() + CharPad((Dt.getMonth() + 1), 2) + CharPad(Dt.getDate(), 2) +
+                  CharPad(Dt.getHours(), 2) + CharPad(Dt.getMinutes(), 2) + CharPad(Dt.getSeconds(), 2);
+          break;
+
+        case 0:
+        default:
+          DtStr = Dt.getFullYear() + '-' + CharPad((Dt.getMonth() + 1), 2) + '-' + CharPad(Dt.getDate(), 2) +
+                  ' ' + CharPad(Dt.getHours(), 2) + ':' + CharPad(Dt.getMinutes(), 2) + ':' +
+                  CharPad(Dt.getSeconds(), 2) + '.' + CharPad(Dt.getMilliseconds(), 3) + TZOH;
+      }
+
+      return DtStr;
+    }
+
+    function DateUpdate()
+    {
+      var Dt = new Date(),
+          Scd = Dt.getTime().toString(), // 'Scd' = Second.
+          TZOH = Dt.getTimezoneOffset() / 60; // 'TZOH' = Time Zone Offset Hour.
+
+      Scd = Scd.substr(0, Scd.length - 3) + '.' + Scd.substr(Scd.length - 3);
+      Z('#NowDateScd')[0].innerHTML = Scd;
+
+      TZOH = (TZOH > 0 ? '-' : '+') + CharPad(Math.abs(TZOH), 2);
+
+      var DtStr = '';
+
+      Z('#NowDate')[0].innerHTML = Scd2DtStr(Dt.getTime() / 1000, 1);
+
+      var DtStr = Dt.getUTCFullYear() + '-' + CharPad((Dt.getUTCMonth() + 1), 2) + '-' +
+                  CharPad(Dt.getUTCDate(), 2) + ' ' + CharPad(Dt.getUTCHours(), 2) + ':' +
+                  CharPad(Dt.getUTCMinutes(), 2) + ':' + CharPad(Dt.getUTCSeconds(), 2) + '.' +
+                  CharPad(Dt.getUTCMilliseconds(), 3) + '--00 (' + Dt.getUTCDay() + ')';
+
+      Z('#UTCDate')[0].innerHTML = DtStr;
+
+      Z('#DftFmt')[0].innerHTML =
+        '<span class="Title1">toString</span>: ' + Dt.toString() + '<br/>' +
+        '<span class="Title1">toDateString</span>: ' + Dt.toDateString() + '<br/>' +
+        '<span class="Title1">toTimeString</span>: ' + Dt.toTimeString() + '<br/>' +
+        '<span class="Title1">toLocaleString</span>: ' + Dt.toLocaleString() + '<br/>' +
+        '<span class="Title1">toLocaleDateString</span>: ' + Dt.toLocaleDateString() + '<br/>' +
+        '<span class="Title1">toLocaleTimeString</span>: ' + Dt.toLocaleTimeString() + '<br/>' +
+        '<span class="Title1">toUTCString</span>: ' + Dt.toUTCString();
+    }
+
+    function SecondToDateString(OS)
+    {
+      var Dt = new Date(parseInt(Z(OS)[0].value, 10)), // 'Dt' = Date.
+          Fmt = parseInt(Z('#FmtBx')[0].value, 10);
+
+      Z('#DtStr0')[0].innerHTML = Scd2DtStr(Dt.getTime(), Fmt);
+    }
+
+    function DateToSecond(OS)
+    {
+      var DtA = Z(OS)[0].Children();
+
+      var Dt = new Date(DtA[0].value, (DtA[1].value - 1), DtA[2].value, DtA[3].value, DtA[4].value, DtA[5].value,
+                        DtA[6].value);
+
+      Z('#Scd1')[0].innerHTML = Dt.getTime() / 1000;
+    }
+  -->
+  </script>
+
+  <div>
+    Now Date: <br/>
+    <span class='Title'>Local</span> : <span id='NowDate'></span> --- <span id='NowDateScd'></span><br/>
+    <span class='Title'>UTC</span> : <span id='UTCDate'></span><br/><br/>
+    Default Format:<br/>
+    <span id='DftFmt' class="Title"></span><br/><br/>
+    <input type='button' value='update' onclick='DateUpdate();'/>
+  </div>
+
+  <br/><hr/><br/>
+
+  <div>
+    Second <---> Date String<br/><br/>
+    <span class='Title1'>Format</span>
+    <select id='FmtBx'>
+      <option value='0'>YYYY-MM-DD HH:II:SS.CCC+ZZ</option>
+      <option value='1'>YYYY-MM-DD HH:II:SS.CCC+ZZ (W)</option>
+      <option value='2'>YYYYMMDDHHIISS</option>
+    </select><br/>
+    <span class='Title1'>Second</span> <input type='text' id='Scd0' maxlength=10/>
+    <input type='button' value=' > ' onclick='SecondToDateString("#Scd0");'/>
+    <span id='DtStr0'>???</span><br/><br/>
+
+    <span class='Title1'>Date</span>
+    <span id='DtStrBx'>
+      <input type='text' maxlength=4 value='2011'/>-
+      <input type='text' maxlength=2 value='06'/>-
+      <input type='text' maxlength=2 value='27'/>_
+      <input type='text' maxlength=2 value='03'/>:
+      <input type='text' maxlength=2 value='45'/>:
+      <input type='text' maxlength=2 value='00'/>.
+      <input type='text' maxlength=3 value='000'/>
+    </span>
+    <input type='button' value=' > ' onclick='DateToSecond("#DtStrBx");'/>
+    <span id='Scd1'>???</span>
+  </div>
+</div>

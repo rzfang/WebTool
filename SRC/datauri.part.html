@@ -1,0 +1,51 @@
+<div id='Main'>
+  <style type='text/css'>
+  <!--
+    table { display: inline-block; }
+    table tr > td { text-align: left; }
+    table tr > td:first-child { text-align: right; }
+  -->
+  </style>
+  <script type='text/javascript'>
+  <!--
+    function Convert(Obj)
+    {
+      var FlsBx = Z('input[type=file]')[0],
+          Fls = FlsBx.files;
+
+      if (Fls.length === 0)
+      {
+        alert('尚未選擇檔案。');
+
+        return -1;
+      }
+
+      var Fl = Fls[0],
+          FR = new FileReader();
+
+      FR.onloadend = function()
+        {
+          var Flds = Z('table > tbody > tr > td:nth-child(2)');
+
+          Flds[0].innerHTML = Fl.name;
+          Flds[1].innerHTML = this.result.substr(0, 64).replace(/^data:(.+);base64,.+$/, '$1')
+          Z('textarea')[0].value = this.result;
+        }
+
+      FR.readAsDataURL(Fl);
+    }
+  -->
+  </script>
+
+  <input type='file'/>
+  <input type='button' value='convert' onclick='Convert(this);'/>
+  <hr/>
+  <table>
+    <tbody>
+      <tr><td>File Name:</td><td></td></tr>
+      <tr><td>Mime Type:</td><td></td></tr>
+    </tbody>
+  </table><br/>
+  <textarea rows='10' cols='50'>
+  </textarea>
+</div>
