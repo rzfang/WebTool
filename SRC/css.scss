@@ -9,50 +9,53 @@ body
   color: #202020;
 }
 
-a, input, option, button
-{
+a, input, option, button {
   font-size: 16px;
 }
 
-a
-{
+a {
   text-decoration: none;
 
-  &:hover
-  { text-decoration: underline; }
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
-div, span
-{ border: 0px solid #202020; }
+div, span {
+  border: 0px solid #202020;
+}
 
-ul, ol
-{ margin: 5px 0px 10px 0px; }
+ul, ol {
+  margin: 5px 0px 10px 0px;
+}
 
 /*==== Structure =====================================================================================================*/
 
-#Base
-{
+#Base {
   max-width: 1000px;
   margin: 0 auto;
 }
 
-header
-{
+header {
   position: relative;
   border-bottom: 1px solid;
 
-  > span
-  { display: inline-block;
-
-    &:first-of-type
-    { font-size: 64px; font-style: italic; }
-
-    &:last-of-type
-    { position: absolute; right: 0; top: 0; font-size: 14px; }
+  h2 {
+    display: inline-block;
+    margin: 0;
+    font-size: 48px;
+    font-style: italic;
   }
 
-  > menu
-  {
+  > span {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 14px;
+  }
+
+  > menu {
     z-index: 1;
     display: inline-block;
     position: absolute;
@@ -67,22 +70,13 @@ header
   }
 }
 
-#Main
-{
+#Main {
   position: relative;
   min-height: 600px;
   padding: 5px;
-
-  > iframe
-  {
-    width: 100%;
-    min-height: 600px;
-    border-width: 0;
-  }
 }
 
-footer
-{
+footer {
   border-top-width: 1px;
   border-top-style: solid;
   text-align: center;
@@ -90,54 +84,9 @@ footer
 
 /*==== Class =========================================================================================================*/
 
-.Block
-{
+.Block {
   display: inline-block;
   vertical-align: top;
 }
 
-.Tab
-{
-  &:hover
-  { background-color: #c0c0c0; }
-}
-
-.ClickItem
-{
-  cursor: pointer;
-
-  &:hover
-  { color: #ff0000; }
-}
-
-.TextTitle
-{
-  display: inline-block;
-  min-width: 79px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.Icon0
-{
-  max-width: 20px;
-  max-height: 20px;
-  vertical-align: middle;
-}
-
-.Icon1
-{
-  max-width: 28px;
-  max-height: 28px;
-  vertical-align: middle;
-}
-
-.Icon2
-{
-  max-width: 36px;
-  max-height: 36px;
-  vertical-align: middle;
-}
-
-/*==== Programer Tool Case ===========================================================================================*/
 /*====================================================================================================================*/
