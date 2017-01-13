@@ -106,6 +106,10 @@ module.exports = {
     favicon: '',
     css: ['/resource/css.css'],
     js: ['/resource/z.min.js'],
-    body: []
+    body: [
+      'header.part.html',
+      'keycode.part.html',
+      'footer.part.html'
+    ]
   }
 }

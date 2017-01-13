@@ -1,7 +1,6 @@
 ==== To Do =============================================================================================================
 
 * 20160102
-  response static files with cache (http code 304).
   pm2 log rotation.
   ssh with pubkey.
 

@@ -197,19 +197,13 @@ function Render (Rspns, PthNm) {
 
 function Rout (Rqst, Rspns) {
   let URLInfo = url.parse(Rqst.url);
-  let SttcFlChk = /[^\/]+\.(js|css|tag|html)$/.exec(URLInfo.pathname); // static file check.
+  let SttcFlChk = /[^\/]+\.(js|css|tag)$/.exec(URLInfo.pathname); // static file check.
 
   if (SttcFlChk && SttcFlChk.length && SttcFlChk.length > 1) {
     let MmTp = {
           js: 'application/javascript',
           css: 'text/css',
-          tag: 'text/plain',
-          html: 'text/html' }; // mine type.
-
-    switch (SttcFlChk[1]) {
-      case 'html':
-        return StaticFileResponse(Rspns, RtPth + 'WEB/www/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
-    }
+          tag: 'text/plain' }; // mine type.
 
     return StaticFileResponse(Rspns, RtPth + 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
   }
