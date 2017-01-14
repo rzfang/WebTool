@@ -4,99 +4,116 @@ let async = require('async'),
     // riot = require('riot'),
     url = require('url');
 let Pgs = require('../SRC/pages'); // page info object.
-let FlCch = {}, // file cache.
-    RtPth = __dirname + '/../'; // root path.
+let RtPth = __dirname + '/../'; // root path.
 
-/*
-  @ file path.
-  @ callback (error code, result data).
-  */
-function CacheOrFileLoad (FlPth, Clbck) {
-  if (FlCch[FlPth]) {
-    Clbck(1, FlCch[FlPth]);
+function Log (Info, Lv = 2) {
+  switch (Lv) {
+    case 0:
+    case 'error':
+      console.error('\n---- [ERROR] ----');
+      console.error(Info);
+      break;
 
-    console.log('----');
-    console.log(FlPth);
-    console.log('load file from the cache.');
+    case 1:
+    case 'warn':
+      console.warn('\n---- [WARN ] ----');
+      console.warn(Info);
+      break;
 
-    return;
+    case 2:
+    case 'log':
+      console.log('\n---- [LOG  ] ----');
+      console.log(Info);
+      break;
+
+    case 3:
+    case 'debug':
+      console.debug('\n---- [DEBUG] ----');
+      console.debug(Info);
+      break;
   }
+}
 
-  fs.readFile(FlPth, 'utf8', function (Err, FlStr) { // error, file string.
-    if (Err) {
-      Clbck(-1);
+let CacheFile = {
+  FlCch: {}, // file cache.
+  Load: function (FlPth, Clbck) { // file path, callback (error code, result data).
+    let This = this;
 
-      console.log('----');
-      console.log(FlPth);
-      console.log('can not found the content.');
+    if (this.FlCch[FlPth]) {
+      Clbck(1, this.FlCch[FlPth]);
+      Log(FlPth + "\nload file from the cache.");
 
       return;
     }
 
-    Clbck(0, FlStr);
-
-    FlCch[FlPth] = FlStr;
-
-    console.log('----');
-    console.log(FlPth);
-    console.log('load file and store into the cache.');
-  });
-}
-
-function MultiCacheOrFileLoad (FlPths, Clbck) {
-  let Tsks = [], // tasks.
-      Cchs = []; // caches.
-
-  function Load (FlPth, Clbck) {
-    CacheOrFileLoad(
+    fs.readFile(
       FlPth,
-      function (Err, Rst) {
-        if (Err < 0) {
-          console.log('----');
-          console.log(FlPth);
-          console.log('can not load the file.');
-          Clbck('can not load the file.', '');
+      'utf8',
+      function (Err, FlStr) { // error, file string.
+        if (Err) {
+          Clbck(-1);
+          Log(FlPth + "\ncan not found the content.", 'warn');
 
           return;
         }
 
-        Clbck(null, Rst);
+        This.FlCch[FlPth] = FlStr;
+
+        Clbck(0, FlStr);
+        Log(FlPth + "\nload file and store into the cache.");
+      });
+  },
+  MultipleLoad: function (FlPths, Clbck) { // file paths, callback (error code, result data).
+    let This = this,
+        Tsks = []; // tasks.
+
+    function Load (FlPth, Clbck) {
+      This.Load(
+        FlPth,
+        function (Err, Rst) {
+          if (Err < 0) {
+            Clbck('can not load the file.', '');
+            Log(FlPth + "\ncan not load the file.", 'warn');
+
+            return;
+          }
+
+          Clbck(null, Rst);
+        });
+    }
+
+    if (!Array.isArray(FlPths)) {
+      Clbck(-1, '');
+      Log('body files format is unexpected.', 'error');
+
+      return;
+    }
+
+    Tsks = FlPths.map(function(FlPth) {
+      return Load.bind(null, FlPth);
+    });
+
+    async.parallel(
+      Tsks,
+      function (Err, Rst) {
+        if (Err) {
+          Clbck(-2, null);
+          Log('load files failed.', 'error');
+
+          return;
+        }
+
+        Clbck(0, Rst);
       });
   }
-
-  if (!Array.isArray(FlPths)) {
-    console.log('----');
-    console.log('body files format is unexpected.');
-    Clbck(-1, '');
-
-    return;
-  }
-
-  Tsks = FlPths.map(function(FlPth) {
-    return Load.bind(null, FlPth);
-  });
-
-  async.parallel(
-    Tsks,
-    function (Err, Rst) {
-      if (Err) {
-        console.log('----');
-        console.log('load files failed.');
-        Clbck(-2, null);
-
-        return;
-      }
-
-      Clbck(0, Rst);
-    });
-}
+};
 
 /*
   @ response object.
   @ file path.
   @ mine type. */
 function StaticFileResponse (Rspns, FlPth, MmTp) {
-  CacheOrFileLoad(
+  CacheFile.Load(
     FlPth,
     function (Err, Str) {
       if (Err < 0) {
@@ -104,7 +121,7 @@ function StaticFileResponse (Rspns, FlPth, MmTp) {
         Rspns.write('can not found the content.');
       }
       else {
-        Rspns.writeHead(Err === 1 ? 304 : 200, {'Content-Type': MmTp});
+        Rspns.writeHead(200, {'Content-Type': MmTp});
         Rspns.write(Str);
       }
 
@@ -120,13 +137,10 @@ function Render (Rspns, PthNm) {
       BdyFlPths = []; // body file paths.
 
   if (!Pg.body) {
-    Rspns.writeHead(404, {"Content-Type": "text/html"});
+    Rspns.writeHead(404, {'Content-Type': 'text/html'});
     Rspns.write('can not found the content.');
     Rspns.end();
-
-    console.log('----');
-    console.log(PthNm);
-    console.log('can not found the body file for this path name.');
+    Log(PthNm + '\ncan not found the body file for this path name.', 'warn');
 
     return;
   }
@@ -135,25 +149,22 @@ function Render (Rspns, PthNm) {
     BdyFlPths.push(RtPth + 'SRC/' + Pg.body[i]);
   }
 
-  MultiCacheOrFileLoad(
+  CacheFile.MultipleLoad(
     BdyFlPths,
     function (Err, BdStrs) { // error, body strings.
       let HdStr = ''; // head string.
 
       if (Err < 0) {
-        Rspns.writeHead(404, {"Content-Type": "text/html"});
+        Rspns.writeHead(404, {'Content-Type': 'text/html'});
         Rspns.write('can not found the content.');
         Rspns.end();
-
-        console.log('----');
-        console.log(PthNm + ' ' + Pg.body);
-        console.log('load the body file failed.');
+        Log(PthNm + ' ' + Pg.body + '\nload the body file failed.', 'warn');
 
         return;
       }
 
       if (Pg.title) {
-        HdStr += "<title>" + Pg.title + "</title>\n";
+        HdStr += '<title>' + Pg.title + "</title>\n";
       }
 
       if (Pg.description) {
@@ -184,20 +195,20 @@ function Render (Rspns, PthNm) {
         }
       }
 
-      Rspns.writeHead(200, {"Content-Type": "text/html"});
-      Rspns.write("<!DOCTYPE HTML>\n<html>\n<head>\n");
+      Rspns.writeHead(200, {'Content-Type': 'text/html'});
+      Rspns.write('<!DOCTYPE HTML>\n<html>\n<head>\n');
       Rspns.write("<meta http-equiv='content-type' content='text/html; charset=utf-8'/>\n");
       Rspns.write(HdStr);
       Rspns.write("</head>\n<body>\n<div id='Base'>\n");
-      Rspns.write(BdStrs.join("\n"));
-      Rspns.write("</div>\n</body>\n</html>\n");
+      Rspns.write(BdStrs.join('\n'));
+      Rspns.write('</div>\n</body>\n</html>\n');
       Rspns.end();
     });
 }
 
 function Rout (Rqst, Rspns) {
-  let URLInfo = url.parse(Rqst.url);
-  let SttcFlChk = /[^\/]+\.(js|css|tag)$/.exec(URLInfo.pathname); // static file check.
+  let URLInfo = url.parse(Rqst.url),
+      SttcFlChk = /[^\/]+\.(js|css|tag)$/.exec(URLInfo.pathname); // static file check.
 
   if (SttcFlChk && SttcFlChk.length && SttcFlChk.length > 1) {
     let MmTp = {
@@ -213,4 +224,4 @@ function Rout (Rqst, Rspns) {
 
 http.createServer(Rout).listen(9001, '127.0.0.1');
 
-console.log("server has started.");
+Log('server has started.');
