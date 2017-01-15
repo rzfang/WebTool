@@ -1,9 +1,8 @@
 <header>
   <h2>Web Tool</h2>
-  <span></span>
   <menu>
     Tool :
-    <select id='Menu' style='vertical-align: middle;' onchange='ToolChange(event);'>
+    <select ref='Menu' onchange='{ToolChange}'>
       <option value='keycode'>keyCode Detect</option>
       <option value='re'>Regular Expression Test</option>
       <option value='datetime'>Datetime Transform</option>
@@ -20,12 +19,16 @@
     </select>
   </menu>
   <script>
-    let Pth = location.pathname.substr(1), // path name.
-        Idx = Z('header select>option[value="' + Pth + '"]')[0].Index(); // index of the current option.
+    this.on('mount', function () {
+      if (typeof window !== 'undefined') {
+        let Pth = location.pathname.substr(1), // path name.
+            Idx = Z('header select>option[value="' + Pth + '"]')[0].Index(); // index of the current option.
 
-    Z('header select')[0].selectedIndex = Idx;
+        Z('header select')[0].selectedIndex = Idx;
+      }
+    });
 
-    function ToolChange(Evt) {
+    ToolChange (Evt) {
       let OptA = Evt.Element().Children();
 
       OptA.Each(function(Obj, Idx) {

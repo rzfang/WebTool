@@ -1,10 +1,10 @@
-let async = require('async'),
-    fs = require('fs'),
-    http = require('http'),
-    // riot = require('riot'),
-    url = require('url');
-let Pgs = require('../SRC/pages'); // page info object.
-let RtPth = __dirname + '/../'; // root path.
+const async = require('async'),
+      fs = require('fs'),
+      http = require('http'),
+      riot = require('riot'),
+      url = require('url');
+const Pgs = require('../SRC/pages'); // page info object.
+const RtPth = __dirname + '/../'; // root path.
 
 function Log (Info, Lv = 2) {
   switch (Lv) {
@@ -34,14 +34,14 @@ function Log (Info, Lv = 2) {
   }
 }
 
-let CacheFile = {
-  FlCch: {}, // file cache.
-  Load: function (FlPth, Clbck) { // file path, callback (error code, result data).
-    let This = this;
+let Cache = {
+  Cchs: { Fls: {}, Mdls: {} }, // caches.
+  FileLoad: function (FlPth, Clbck) { // file path, callback (error code, result data).
+    const This = this;
 
-    if (this.FlCch[FlPth]) {
-      Clbck(1, this.FlCch[FlPth]);
-      Log(FlPth + "\nload file from the cache.");
+    if (this.Cchs.Fls[FlPth]) {
+      Clbck(1, this.Cchs.Fls[FlPth]);
+      Log(FlPth + '\nload file from the cache.');
 
       return;
     }
@@ -52,59 +52,46 @@ let CacheFile = {
       function (Err, FlStr) { // error, file string.
         if (Err) {
           Clbck(-1);
-          Log(FlPth + "\ncan not found the content.", 'warn');
+          Log(FlPth + '\ncan not found the content.', 'warn');
 
           return;
         }
 
-        This.FlCch[FlPth] = FlStr;
+        This.Cchs.Fls[FlPth] = FlStr;
 
         Clbck(0, FlStr);
-        Log(FlPth + "\nload file and store into the cache.");
+        Log(FlPth + '\nload file and store into the cache.');
       });
   },
-  MultipleLoad: function (FlPths, Clbck) { // file paths, callback (error code, result data).
-    let This = this,
-        Tsks = []; // tasks.
+  ModuleRequire: function (FlPth, Clbck) {
+    const This = this;
 
-    function Load (FlPth, Clbck) {
-      This.Load(
-        FlPth,
-        function (Err, Rst) {
-          if (Err < 0) {
-            Clbck('can not load the file.', '');
-            Log(FlPth + "\ncan not load the file.", 'warn');
-
-            return;
-          }
-
-          Clbck(null, Rst);
-        });
-    }
-
-    if (!Array.isArray(FlPths)) {
-      Clbck(-1, '');
-      Log('body files format is unexpected.', 'error');
+    if (this.Cchs.Mdls[FlPth]) {
+      Clbck(0, this.Cchs.Mdls[FlPth]);
 
       return;
     }
 
-    Tsks = FlPths.map(function(FlPth) {
-      return Load.bind(null, FlPth);
-    });
+    setTimeout(
+      function () {
+        let Mdl;
 
-    async.parallel(
-      Tsks,
-      function (Err, Rst) {
-        if (Err) {
-          Clbck(-2, null);
-          Log('load files failed.', 'error');
+        try {
+          Mdl = require(FlPth);
+        }
+        catch (Err) {
+          Clbck(-1, Err.message);
+          Log(Err.message, 'error');
 
           return;
         }
 
-        Clbck(0, Rst);
-      });
+        This.Cchs.Mdls[FlPth] = Mdl;
+
+        Clbck(0, Mdl);
+        Log(FlPth + '\nrequire module and store into the cache.');
+      },
+      0);
   }
 };
 
@@ -113,7 +100,7 @@ let CacheFile = {
   @ file path.
   @ mine type. */
 function StaticFileResponse (Rspns, FlPth, MmTp) {
-  CacheFile.Load(
+  Cache.FileLoad(
     FlPth,
     function (Err, Str) {
       if (Err < 0) {
@@ -145,13 +132,69 @@ function Render (Rspns, PthNm) {
     return;
   }
 
-  for (let i = 0; i < Pg.body.length; i++) {
-    BdyFlPths.push(RtPth + 'SRC/' + Pg.body[i]);
-  }
+  async.map(
+    Pg.body,
+    function (Bd, Clbck) { // body info object|string, callback function.
+      const Tp = typeof Bd;
 
-  CacheFile.MultipleLoad(
-    BdyFlPths,
-    function (Err, BdStrs) { // error, body strings.
+      if (Tp === 'string') {
+        Cache.FileLoad(
+          RtPth + 'SRC/' + Bd,
+          function (Err, FlStr) { // error, file string.
+            if (Err < 0) {
+              Clbck('FileLoad', '<!-- can not load this module. -->');
+              Log(Bd + '\nload file failed.', 'error');
+
+              return;
+            }
+
+            Clbck(null, FlStr);
+          });
+
+        return;
+      }
+      else if (Tp !== 'object' || !Bd.type || !Bd.source || typeof Bd.type !== 'string' || typeof Bd.source !== 'string') {
+        Clbck('bad format', '<!-- can not load this module. -->');
+        Log(JSON.stringify(Bd) + '\ncan not load this module.', 'error');
+
+        return;
+      }
+
+      Cache.ModuleRequire(
+        RtPth + 'SRC/' + Bd.source + '.tag',
+        function (Err, Mdl) {
+          if (Err < 0) {
+            Clbck('ModuleRequire', '<!-- can not load this module. -->');
+            Log(Bd.source + '\ncan not load this module.', 'error');
+
+            return;
+          }
+
+          if (Bd.type === 'riot') {
+            let MdlStr = riot.render(Mdl, Bd.data || {});
+
+            if (!MdlStr) {
+              Clbck('ModuleRequire', '<!-- can not render this module. -->');
+              Log('can not render this module.', 'error');
+
+              return;
+            }
+
+            MdlStr = MdlStr +
+              `\n<script type='riot/tag' src='${Bd.source}.tag'></script>` +
+              `\n<script>riot.mount('${Bd.source}', '${Bd.source}');</script>`;
+
+            Clbck(null, MdlStr);
+
+            return;
+          }
+
+          Clbck('ModuleRequire', '<!-- can not render this module. -->');
+          Log('do not know how to deal this module.', 'error');
+        }
+      )
+    },
+    function (Err, BdStrs) {
       let HdStr = ''; // head string.
 
       if (Err < 0) {
@@ -211,10 +254,19 @@ function Rout (Rqst, Rspns) {
       SttcFlChk = /[^\/]+\.(js|css|tag)$/.exec(URLInfo.pathname); // static file check.
 
   if (SttcFlChk && SttcFlChk.length && SttcFlChk.length > 1) {
-    let MmTp = {
-          js: 'application/javascript',
-          css: 'text/css',
-          tag: 'text/plain' }; // mine type.
+    const MmTp = {
+            js: 'application/javascript',
+            css: 'text/css',
+            tag: 'text/plain' }; // mine type.
+
+    // this is a special case for old PHP page.
+    if (URLInfo.pathname.indexOf('payment.tag') > -1) {
+      return StaticFileResponse(Rspns, RtPth + 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+    }
+
+    if (SttcFlChk[1] === 'tag') {
+      return StaticFileResponse(Rspns, RtPth + 'SRC/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+    }
 
     return StaticFileResponse(Rspns, RtPth + 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
   }
