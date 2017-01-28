@@ -14,21 +14,21 @@
   <!--
     function URIEnDeCode(Flg)
     {
-      var Txt = Z('#IptTxt')[0].value,
-          Cpn = Z('#Cpn')[0].checked;
+      var Txt = Z.DOM.Find('#IptTxt')[0].value,
+          Cpn = Z.DOM.Find('#Cpn')[0].checked;
 
       if (Flg === 1)
       { Txt = Cpn ? encodeURIComponent(Txt) : encodeURI(Txt); }
       else
       { Txt = Cpn ? decodeURIComponent(Txt) : decodeURI(Txt); }
 
-      Z('#OptTxt')[0].value = Txt;
+      Z.DOM.Find('#OptTxt')[0].value = Txt;
     }
 
     function UnicodeEnDeCode(Flg)
     {
-      var Txt = Z('#IptTxt')[0].value,
-          Ipt = Z('input'),
+      var Txt = Z.DOM.Find('#IptTxt')[0].value,
+          Ipt = Z.DOM.Find('input'),
           Md = [];
 
       for (var i in Ipt)
@@ -40,7 +40,7 @@
         }
       }
 
-      Z('#OptTxt')[0].value = (Md == 0) ? XMLEnDeCode(Flg, Txt) : JSONEnDeCode(Flg, Txt);
+      Z.DOM.Find('#OptTxt')[0].value = (Md == 0) ? XMLEnDeCode(Flg, Txt) : JSONEnDeCode(Flg, Txt);
     }
 
     function XMLEnDeCode(Flg, Txt)
@@ -161,12 +161,12 @@
 
     function Base64EnDeCodeEx(Flg)
     {
-      var Txt = Z('#IptTxt')[0].value,
-          UTF8 = Z('#UTF8')[0].checked;
+      var Txt = Z.DOM.Find('#IptTxt')[0].value,
+          UTF8 = Z.DOM.Find('#UTF8')[0].checked;
 
       Txt = Flg === 1 ? Base64Encode(Txt, UTF8) : Base64Decode(Txt, UTF8);
 
-      Z('#OptTxt')[0].value = Txt;
+      Z.DOM.Find('#OptTxt')[0].value = Txt;
 
       return 0;
 
@@ -393,11 +393,11 @@
 
     function HTMLSpecialCharsEnDeCode(Flg)
     {
-      var Txt = Z('#IptTxt')[0].value;
+      var Txt = Z.DOM.Find('#IptTxt')[0].value;
 
       Txt = Flg === 1 ? HTMLSpecialCharsEncode(Txt) : HTMLSpecialCharsDecode(Txt);
 
-      Z('#OptTxt')[0].value = Txt;
+      Z.DOM.Find('#OptTxt')[0].value = Txt;
 
       return 0;
 

@@ -21,14 +21,13 @@
   -->
   </style>
   <script type='text/javascript' src='resource/json5.js'></script>
-  <script type='text/javascript' src='resource/z.min.js'></script>
   <script type='text/javascript'>
   <!--
     window.onload = function (Evt)
       {
-        var FctnBx = Z('#FctnBx')[0],
-            IptBtns = Z('#IptBx > div > input[type=button]'),
-            RtNd = Z('#Rt')[0];
+        var FctnBx = Z.DOM.Find('#FctnBx')[0],
+            IptBtns = Z.DOM.Find('#IptBx > div > input[type=button]'),
+            RtNd = Z.DOM.Find('#Rt')[0];
 
         FctnBx.Find('input[type=file]')[0].onchange = JSONLoad;
         FctnBx.Find('input[type=button]')[0].onclick = JSONRead;
@@ -38,7 +37,7 @@
         IptBtns[0].onclick = DataReplace;
         IptBtns[1].onclick = function (Evt) { this.Above(2).style.display = 'none'; };
 
-        Z('#IptBx > textarea')[0].onkeyup = function (Evt)
+        Z.DOM.Find('#IptBx > textarea')[0].onkeyup = function (Evt)
           {
             switch (Evt.keyCode)
             {
@@ -83,8 +82,8 @@
     function JSONRender (string)
     {
       var JO = null,
-          Rt = Z('#Rt')[0],
-          Is5 = Z('#FctnBx input[type=checkbox]')[0].checked; // 'Is5' = Is using JSON5.
+          Rt = Z.DOM.Find('#Rt')[0],
+          Is5 = Z.DOM.Find('#FctnBx input[type=checkbox]')[0].checked; // 'Is5' = Is using JSON5.
 
       try
       { JO = Is5 ? JSON5.parse(string) : JSON.parse(string); }
@@ -225,7 +224,7 @@
     function DataEdit (Evt)
     {
       var Nd = Evt.Element(),
-          IptBx = Z('#IptBx')[0],
+          IptBx = Z.DOM.Find('#IptBx')[0],
           IptNd = IptBx.Children('textarea')[0];
 
       if (Nd.className.indexOf('EdtNd') < 0)
@@ -297,13 +296,13 @@
 
     function JSONToString (Evt)
     {
-      var RtNd = Z('#Rt')[0],
+      var RtNd = Z.DOM.Find('#Rt')[0],
           Obj = RtNd.className === 'array' ? [] : {},
           Nds = RtNd.Children('ul')[0].Children();
 
       NodesLoop(Nds, Obj);
 
-      Z('#FctnBx textarea')[1].value = JSON.stringify(Obj);
+      Z.DOM.Find('#FctnBx textarea')[1].value = JSON.stringify(Obj);
 
       return;
 

@@ -10,7 +10,7 @@
   <!--
     function Convert(Obj)
     {
-      var FlsBx = Z('input[type=file]')[0],
+      var FlsBx = Z.DOM.Find('input[type=file]')[0],
           Fls = FlsBx.files;
 
       if (Fls.length === 0)
@@ -25,11 +25,11 @@
 
       FR.onloadend = function()
         {
-          var Flds = Z('table > tbody > tr > td:nth-child(2)');
+          var Flds = Z.DOM.Find('table > tbody > tr > td:nth-child(2)');
 
           Flds[0].innerHTML = Fl.name;
           Flds[1].innerHTML = this.result.substr(0, 64).replace(/^data:(.+);base64,.+$/, '$1')
-          Z('textarea')[0].value = this.result;
+          Z.DOM.Find('textarea')[0].value = this.result;
         }
 
       FR.readAsDataURL(Fl);

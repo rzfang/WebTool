@@ -16,17 +16,22 @@
       <option value='json'>JSON Editor</option>
       <option disabled>-----------------------</option>
       <option value='payment.php'>Payment</option>
+      <option value='read'>Read</option>
     </select>
   </menu>
   <script>
-    this.on('mount', function () {
-      if (typeof window !== 'undefined') {
-        let Pth = location.pathname.substr(1), // path name.
-            Idx = Z('header select>option[value="' + Pth + '"]')[0].Index(); // index of the current option.
+    this.on(
+      'mount',
+      function () {
+        if (typeof window === 'undefined') {
+          return;
+        }
 
-        Z('header select')[0].selectedIndex = Idx;
-      }
-    });
+        let Pth = location.pathname.substr(1), // path name.
+            Idx = Z.DOM.Find('header select>option[value="' + Pth + '"]')[0].Index(); // index of the current option.
+
+        Z.DOM.Find('header select')[0].selectedIndex = Idx;
+      });
 
     ToolChange (Evt) {
       let OptA = Evt.Element().Children();

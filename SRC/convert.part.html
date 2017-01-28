@@ -10,7 +10,7 @@
   <!--
     window.onload = function()
       {
-        var MnBtnA = Z('#List')[0].Children('input');
+        var MnBtnA = Z.DOM.Find('#List')[0].Children('input');
 
         for (var i in MnBtnA)
         { MnBtnA[i].onclick = TableSwitch; }
@@ -27,7 +27,7 @@
 
       this.disabled = 'true';
 
-      var A = Z('#Table')[0].Children('div');
+      var A = Z.DOM.Find('#Table')[0].Children('div');
 
       for (var i = A.length; i-- > 0; A[i].style.display = 'none');
 

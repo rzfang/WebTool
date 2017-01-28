@@ -26,7 +26,7 @@
 
   /* dig the children of given object.
     'Obj' = Object. the origin object which will be digged.
-    'Pth' = Path. an array records each level of paht.
+    'Pth' = Path. an array records each level of path.
     'Flbck' = Fallback. optional, default undefined.
     Return: sub object, or fallback value. */
   function Dig (Obj, Pth, Flbck) {
@@ -78,7 +78,7 @@
     Merge: Merge
   };
 
-  if (typeof exports !== 'undefined') { exports = Obj; }
+  if (typeof module !== 'undefined') { module.exports = Obj; }
   else if (typeof window !== 'undefined') {
     if (!window.Z || typeof window.Z !== 'object') { window.Z = {Obj: Obj}; }
     else { window.Z.Obj = Obj; }

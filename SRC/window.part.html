@@ -4,14 +4,13 @@
     table td { max-width: 500px; margin: 0px; padding: 5px; border: 1px solid; }
   -->
   </style>
-  <script type='text/javascript' src='resource/z.min.js'></script>
   <script type='text/javascript'>
   <!--
     /* Parse each Option to string.
       Return: string of option. */
     function OptionParse()
     {
-      var TRA = Z('tr'),
+      var TRA = Z.DOM.Find('tr'),
           Info = '';
 
       TRA = TRA.slice(1);
@@ -42,17 +41,17 @@
     function ScriptMake()
     {
       var Info = OptionParse(),
-          URL = Z('#URL')[0].value,
-          Nm = Z('#Nm')[0].value;
+          URL = Z.DOM.Find('#URL')[0].value,
+          Nm = Z.DOM.Find('#Nm')[0].value;
 
-      Z('#ScptBx')[0].innerHTML = 'window.open(\'' + URL + '\', \'' + Nm + '\', \'' + Info + '\');';
+      Z.DOM.Find('#ScptBx')[0].innerHTML = 'window.open(\'' + URL + '\', \'' + Nm + '\', \'' + Info + '\');';
     }
 
     function Test()
     {
       var Info = OptionParse(),
-          URL = Z('#URL')[0].value,
-          Nm = Z('#Nm')[0].value;
+          URL = Z.DOM.Find('#URL')[0].value,
+          Nm = Z.DOM.Find('#Nm')[0].value;
 
       window.open(URL, Nm, Info);
     }

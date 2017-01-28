@@ -69,6 +69,13 @@ module.exports = {
       { type: 'riot', source: 'header' },
       're.part.html',
       'footer.part.html' ]},
+  '/read': {
+    title: 'Feed Read - Web Tool',
+    keywords: '閱讀器, RSS, Atom, 網頁, 工具, Web, Tool',
+    body: [
+      { type: 'riot', source: 'header' },
+      { type: 'riot', source: 'read' },
+      'footer.part.html' ]},
   '/window': {
     title: 'Window Open Script - Web Tool',
     keywords: '開新視窗, window.open, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
@@ -85,7 +92,7 @@ module.exports = {
     css: [ '/resource/css.css' ],
     js: [
       'https://cdn.jsdelivr.net/riot/3.0/riot+compiler.min.js',
-      '/resource/z.min.js' ],
+      '/resource/include.js' ],
     body: [
       { type: 'riot', source: 'header' },
       'keycode.part.html',

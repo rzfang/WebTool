@@ -4,7 +4,6 @@
     .Title { display: inline-block; width: 100px; }
   -->
   </style>
-  <script type='text/javascript' src='resource/z.min.js'></script>
   <script type='text/javascript'>
   <!--
 
@@ -15,7 +14,7 @@
 
     function RowAdd()
     {
-      var Nm = Z('#Nm')[0].value,
+      var Nm = Z.DOM.Find('#Nm')[0].value,
           Bx = document.createElement('div');
 
       if (Nm.length === 0)
@@ -25,7 +24,7 @@
                      '<input type="text" name="' + Nm + '" id="' + Nm + '"/>' +
                      '<input type="button" value="Delete">';
 
-      Z('#PstDataBx')[0].Append(Bx);
+      Z.DOM.Find('#PstDataBx')[0].Append(Bx);
       Bx.LastChild().onclick = function (Evt) { console.log(Bx.Children()); Bx.Remove(); };
 
       var Txt = Bx.Children()[1];
@@ -43,8 +42,8 @@
 
     function PostData()
     {
-      var URL = Trim(Z('#URL')[0].value),
-          Frm = Z('#PstDataBx')[0];
+      var URL = Trim(Z.DOM.Find('#URL')[0].value),
+          Frm = Z.DOM.Find('#PstDataBx')[0];
 
       Frm.action = URL;
       Frm.submit();

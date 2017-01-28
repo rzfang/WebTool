@@ -107,22 +107,22 @@
           TZOH = Dt.getTimezoneOffset() / 60; // 'TZOH' = Time Zone Offset Hour.
 
       Scd = Scd.substr(0, Scd.length - 3) + '.' + Scd.substr(Scd.length - 3);
-      Z('#NowDateScd')[0].innerHTML = Scd;
+      Z.DOM.Find('#NowDateScd')[0].innerHTML = Scd;
 
       TZOH = (TZOH > 0 ? '-' : '+') + CharPad(Math.abs(TZOH), 2);
 
       var DtStr = '';
 
-      Z('#NowDate')[0].innerHTML = Scd2DtStr(Dt.getTime() / 1000, 1);
+      Z.DOM.Find('#NowDate')[0].innerHTML = Scd2DtStr(Dt.getTime() / 1000, 1);
 
       var DtStr = Dt.getUTCFullYear() + '-' + CharPad((Dt.getUTCMonth() + 1), 2) + '-' +
                   CharPad(Dt.getUTCDate(), 2) + ' ' + CharPad(Dt.getUTCHours(), 2) + ':' +
                   CharPad(Dt.getUTCMinutes(), 2) + ':' + CharPad(Dt.getUTCSeconds(), 2) + '.' +
                   CharPad(Dt.getUTCMilliseconds(), 3) + '--00 (' + Dt.getUTCDay() + ')';
 
-      Z('#UTCDate')[0].innerHTML = DtStr;
+      Z.DOM.Find('#UTCDate')[0].innerHTML = DtStr;
 
-      Z('#DftFmt')[0].innerHTML =
+      Z.DOM.Find('#DftFmt')[0].innerHTML =
         '<span class="Title1">toString</span>: ' + Dt.toString() + '<br/>' +
         '<span class="Title1">toDateString</span>: ' + Dt.toDateString() + '<br/>' +
         '<span class="Title1">toTimeString</span>: ' + Dt.toTimeString() + '<br/>' +
@@ -134,20 +134,20 @@
 
     function SecondToDateString(OS)
     {
-      var Dt = new Date(parseInt(Z(OS)[0].value, 10)), // 'Dt' = Date.
-          Fmt = parseInt(Z('#FmtBx')[0].value, 10);
+      var Dt = new Date(parseInt(Z.DOM.Find(OS)[0].value, 10)), // 'Dt' = Date.
+          Fmt = parseInt(Z.DOM.Find('#FmtBx')[0].value, 10);
 
-      Z('#DtStr0')[0].innerHTML = Scd2DtStr(Dt.getTime(), Fmt);
+      Z.DOM.Find('#DtStr0')[0].innerHTML = Scd2DtStr(Dt.getTime(), Fmt);
     }
 
     function DateToSecond(OS)
     {
-      var DtA = Z(OS)[0].Children();
+      var DtA = Z.DOM.Find(OS)[0].Children();
 
       var Dt = new Date(DtA[0].value, (DtA[1].value - 1), DtA[2].value, DtA[3].value, DtA[4].value, DtA[5].value,
                         DtA[6].value);
 
-      Z('#Scd1')[0].innerHTML = Dt.getTime() / 1000;
+      Z.DOM.Find('#Scd1')[0].innerHTML = Dt.getTime() / 1000;
     }
   -->
   </script>

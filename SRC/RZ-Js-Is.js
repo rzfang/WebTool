@@ -17,10 +17,15 @@
 
       return (/^[\w.]+@.{2,16}\.[0-9a-z]{2,3}$/).test(Str);
     },
-    jQuery: function (Obj) { return (typeof jQuery !== 'undefined' && Obj instanceof jQuery); }
+    jQuery: function (Obj) { return (typeof jQuery !== 'undefined' && Obj instanceof jQuery); },
+    URL: function (Obj) {
+      if (typeof Obj !== 'string') { return false; }
+
+      return (/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/).test(Obj);
+    } // from here : http://stackoverflow.com/questions/1701898/how-to-detect-whether-a-string-is-in-url-format-using-javascript
   };
 
-  if (typeof exports !== 'undefined') { exports = Is; }
+  if (typeof module !== 'undefined') { module.exports = Is; }
   else if (typeof window !== 'undefined') {
     if (!window.Z || typeof window.Z !== 'object') { window.Z = {Is: Is}; }
     else { window.Z.Is = Is; }

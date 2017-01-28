@@ -89,19 +89,19 @@
 
       if (Fmt === 1)
       {
-        var R = Z('#R')[0].value,
-            G = Z('#G')[0].value,
-            B = Z('#B')[0].value,
-            A = Z('#A')[0].value;
+        var R = Z.DOM.Find('#R')[0].value,
+            G = Z.DOM.Find('#G')[0].value,
+            B = Z.DOM.Find('#B')[0].value,
+            A = Z.DOM.Find('#A')[0].value;
 
         Clr = 'rgba(' + R + ', ' + G + ', ' + B + ', ' + A + ')';
         Clr16 = ColorRGBTo16(R, G, B);
       }
       else
       {
-        Clr16 = Z('#Clr')[0].value.toLowerCase();
+        Clr16 = Z.DOM.Find('#Clr')[0].value.toLowerCase();
         Clr = Color16ToRGBA(Clr16);
-        Z('#Clr')[0].Next().innerHTML = Clr;
+        Z.DOM.Find('#Clr')[0].Next().innerHTML = Clr;
         Clr16 = '#' + Clr16;
       }
 
@@ -114,12 +114,12 @@
                      '<span style="text-shadow: 3px 3px 2px ' + Clr + '; box-shadow: 3px 3px 4px ' + Clr + '; color: ' + Clr + '; background: #c0c0c0;">' + Clr16 + '</span>' +
                      '<span style="text-shadow: 3px 3px 2px ' + Clr + '; box-shadow: 3px 3px 4px ' + Clr + '; color: #ffffff; background: #c0c0c0;">' + Clr16 + '</span>' +
                      '<span style="text-shadow: 3px 3px 2px ' + Clr + '; box-shadow: 3px 3px 4px ' + Clr + '; color: #000000; background: #c0c0c0;">' + Clr16 + '</span>';
-      Z('#CmpBx')[0].Append(Bx);
+      Z.DOM.Find('#CmpBx')[0].Append(Bx);
     }
 
     function ColorTagsClear()
     {
-      Z('#CmpBx')[0].innerHTML = '';
+      Z.DOM.Find('#CmpBx')[0].innerHTML = '';
     }
 
     function KeyboardTrigger(Evt, Flg)
