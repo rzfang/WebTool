@@ -9,6 +9,7 @@
     Object: function (Obj) { return (typeof Obj === 'object'); },
     Undefined: function (Obj) { return (typeof Obj === 'undefined'); },
     Array: function (Obj) { return (Obj instanceof Array); },
+    Date: function (Obj) { return (Obj instanceof Date); },
     Promise: function (Obj) {
       return (typeof Obj !== 'object' || !Obj.hasOwnProperty('then') || !Obj.hasOwnProperty('catch'));
     },

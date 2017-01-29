@@ -1,11 +1,11 @@
 const async = require('async'),
-      fs = require('fs'),
       http = require('http'),
       riot = require('riot'),
-      url = require('url')
-      Is = require('../SRC/RZ-Js-Is');
-const Pgs = require('../SRC/pages'), // page info object.
-      Svcs = require('../SRC/services'); // service info object.
+      url = require('url'),
+      Is = require('../SRC/RZ-Js-Is'),
+      Cache = require('../SRC/cache');
+const Pgs = require('../SRC/pages'), // page infos object.
+      Svcs = require('../SRC/services'); // service infos object.
 const RtPth = __dirname + '/../'; // root path.
 
 function Log (Info, Lv = 2) {
@@ -36,37 +36,6 @@ function Log (Info, Lv = 2) {
   }
 }
 
-let Cache = {
-  Cchs: { Fls: {} }, // caches.
-  FileLoad: function (FlPth, Clbck) { // file path, callback (error code, result data).
-    const This = this;
-
-    if (this.Cchs.Fls[FlPth]) {
-      Clbck(1, this.Cchs.Fls[FlPth]);
-      Log(FlPth + '\nload file from the cache.');
-
-      return;
-    }
-
-    fs.readFile(
-      FlPth,
-      'utf8',
-      function (Err, FlStr) { // error, file string.
-        if (Err) {
-          Clbck(-1);
-          Log(FlPth + '\ncan not found the content.', 'warn');
-
-          return;
-        }
-
-        This.Cchs.Fls[FlPth] = FlStr;
-
-        Clbck(0, FlStr);
-        Log(FlPth + '\nload file and store into the cache.');
-      });
-  }
-};
-
 /*
   @ response object.
   @ file path.
@@ -78,6 +47,7 @@ function StaticFileResponse (Rspns, FlPth, MmTp) {
       if (Err < 0) {
         Rspns.writeHead(404, {'Content-Type': MmTp});
         Rspns.write('can not found the content.');
+        Log(`FileLoad(${Err}) - can not load file.`, 'error');
       }
       else {
         Rspns.writeHead(200, {'Content-Type': MmTp});
@@ -135,7 +105,7 @@ function Render (Rspns, PthNm) {
           function (Err, FlStr) { // error, file string.
             if (Err < 0) {
               Clbck('FileLoad', '<!-- can not load this module. -->');
-              Log(Bd + '\nload file failed.', 'error');
+              Log(`FileLoad(${Err}) - ${Bd} - load file failed.`, 'error');
 
               return;
             }

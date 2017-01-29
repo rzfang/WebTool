@@ -1,7 +1,8 @@
 let http = require('http'),
     request = require('../UTL/node_modules/request'),
     feedparser = require('../UTL/node_modules/feedparser'),
-    Is = require('./RZ-Js-Is');
+    Is = require('./RZ-Js-Is'),
+    Cache = require('../SRC/cache');
 
 /*
   @ request info object.
@@ -11,10 +12,15 @@ module.exports = function (RqstInfo, Clbck) {
     return Clbck(-1, null);
   }
 
+  let FdInfo = Cache.Get(RqstInfo.Bdy.URL); // feed info object.
+
+  if (FdInfo) { return Clbck(1, FdInfo); }
+
   let Rqst = request(encodeURI(RqstInfo.Bdy.URL)),
       FdPrsr = new feedparser(), // feed parser.
-      IsEnd = false, // is end flag.
-      FdInfo = { FdURL: RqstInfo.Bdy.URL, Itms: [] }; // feed info object, feed url, items.
+      IsEnd = false; // is end flag.
+
+  FdInfo = { FdURL: RqstInfo.Bdy.URL, Itms: [] }; // default, feed url, items.
 
   Rqst.on(
     'error',
@@ -73,6 +79,6 @@ module.exports = function (RqstInfo, Clbck) {
     FdInfo.Itms = FdInfo.Itms.slice(0, 5);
 
     Clbck(0, FdInfo);
+    Cache.Set(RqstInfo.Bdy.URL, FdInfo, 1800);
   });
 };
-
