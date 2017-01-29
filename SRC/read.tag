@@ -105,7 +105,7 @@
     :scope { display: block; margin: 10px 0; padding: 5px; border: 1px solid; border-radius: 3px; }
     :scope>div:first-child { position: relative; }
     :scope>div:first-child>div { font-size: 14px; color: #808080; }
-    :scope>div:first-child>button { position: absolute; right: 3px; top: 3px; }
+    :scope>div:first-child>button { position: absolute; right: 0px; top: 0px; }
     :last-child>a { display: block; }
   </style>
 

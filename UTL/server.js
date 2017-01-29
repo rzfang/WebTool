@@ -37,7 +37,7 @@ function Log (Info, Lv = 2) {
 }
 
 let Cache = {
-  Cchs: { Fls: {}, Mdls: {} }, // caches.
+  Cchs: { Fls: {} }, // caches.
   FileLoad: function (FlPth, Clbck) { // file path, callback (error code, result data).
     const This = this;
 
@@ -64,36 +64,6 @@ let Cache = {
         Clbck(0, FlStr);
         Log(FlPth + '\nload file and store into the cache.');
       });
-  },
-  ModuleRequire: function (FlPth, Clbck) {
-    const This = this;
-
-    if (this.Cchs.Mdls[FlPth]) {
-      Clbck(0, this.Cchs.Mdls[FlPth]);
-
-      return;
-    }
-
-    setTimeout(
-      function () {
-        let Mdl;
-
-        try {
-          Mdl = require(FlPth);
-        }
-        catch (Err) {
-          Clbck(-1, Err.message);
-          Log(Err.message, 'error');
-
-          return;
-        }
-
-        This.Cchs.Mdls[FlPth] = Mdl;
-
-        Clbck(0, Mdl);
-        Log(FlPth + '\nrequire module and store into the cache.');
-      },
-      0);
   }
 };
 
@@ -119,33 +89,22 @@ function StaticFileResponse (Rspns, FlPth, MmTp) {
 }
 
 /*
-  @ source file name,
+  @ module object,
   @ data for riot render.
   @ callback function. */
-function RiotRender (Src, Data, Clbck) {
-  Cache.ModuleRequire(
-    RtPth + 'SRC/' + Src + '.tag',
-    function (Err, Mdl) {
-      if (Err < 0) {
-        Clbck(-1, '<!-- can not load this module. -->');
-        Log(Src + '\ncan not load this module.', 'error');
+function RiotRender (Mdl, Data, Clbck) {
+  let MdlStr = riot.render(Mdl, Data || {});
 
-        return;
-      }
+  if (!MdlStr) {
+    Clbck(-1, '<!-- can not render this module. -->');
+    Log('can not render this module.', 'error');
 
-      let MdlStr = riot.render(Mdl, Data || {});
+    return;
+  }
 
-      if (!MdlStr) {
-        Clbck(-2, '<!-- can not render this module. -->');
-        Log('can not render this module.', 'error');
+  MdlStr = MdlStr.replace(/> ?</g, '>\n<');
 
-        return;
-      }
-
-      MdlStr = MdlStr.replace(/> ?</g, '>\n<');
-
-      Clbck(0, MdlStr);
-    });
+  Clbck(0, MdlStr);
 }
 
 /*
