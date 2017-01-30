@@ -28,7 +28,7 @@
 
     FmDt = new FormData(),
     XHR = new XMLHttpRequest();
-    Kys = Object.keys(Info.Data)
+    Kys = Object.keys(Info.Data);
 
     for (var i = 0; i < Kys.length; i++) { FmDt.append(Kys[i], Info.Data[Kys[i]]); }
 

@@ -82,7 +82,6 @@ function RiotRender (Mdl, Data, Clbck) {
   @ path name. */
 function Render (Rspns, PthNm) {
   let Pg = Object.assign({}, Pgs.default, Pgs[PthNm] || {}), // page info object.
-      BdyFlPths = [], // body file paths.
       MdlIntlStp = { LdScrpts: '', MntScrpts: '' };  // module initial step., load scripts, mount scripts.
 
   if (!Pg.body) {

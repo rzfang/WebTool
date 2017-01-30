@@ -1,3 +1,5 @@
+/*global jQuery */
+
 (function Z_Is_API () {
   var Is;
 

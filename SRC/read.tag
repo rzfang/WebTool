@@ -11,9 +11,7 @@
 
   <script>
     (() => {
-      if (typeof window !== 'undefined') {
-        this.mixin(Z.RM);
-      }
+      if (typeof window !== 'undefined') { this.mixin(Z.RM); }
 
       this.Fds = [];
     })();
@@ -21,9 +19,7 @@
     this.on(
       'mount',
       () => {
-        if (typeof window === 'undefined') {
-          return;
-        }
+        if (typeof window === 'undefined') { return; }
 
         if (!window.localStorage.FdURLs) {
           window.localStorage.FdURLs = '';
@@ -95,7 +91,7 @@
   <div>
     <a href='{Lnk}' target='_blank'>{Ttl}</a>
     <div>{Dscrptn}</div>
-    <button onClick={Delete}>Delete</button>
+    <button onClick={Delete}>X</button>
   </div>
   <div>
     <a each={Itms} href='{Lnk}' target='_blank'>{Ttl}</a>

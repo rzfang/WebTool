@@ -1,5 +1,4 @@
-let http = require('http'),
-    request = require('../UTL/node_modules/request'),
+let request = require('../UTL/node_modules/request'),
     feedparser = require('../UTL/node_modules/feedparser'),
     Is = require('./RZ-Js-Is'),
     Cache = require('../SRC/cache');

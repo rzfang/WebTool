@@ -17,6 +17,7 @@
   },
   "scripts": {
     "dev": "nodemon -d 3 -e js,scss,html,php,tag -w ../SRC/ -w server.js server.js",
+    "lint": "eslint server.js ../SRC/*.js",
     "test": "test"
   },
   "repository": {

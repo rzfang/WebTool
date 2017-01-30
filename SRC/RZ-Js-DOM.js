@@ -5,14 +5,7 @@
 
   /* Extend some function to any Element to simulate JQuery DOM Traveler. */
   function Initialize () {
-    //==== cross browser handle. ====
-
-    // handle console.log function of global object.
-    if (!console || typeof console !== 'object') { console = {'log': function (Msg) {}}; }
-    else if (!console.log || typeof console.log !== 'function') { console.log = function (Msg) {}; }
-
-    // handle indexOf function of array.
-    if (!Array.prototype.indexOf) {
+    if (!Array.prototype.indexOf) { // handle indexOf function of array.
       Array.prototype.indexOf = function (Data) {
         for (var i = 0; i < this.length; i++) {
           if (Data === this[i]) { return true; }
@@ -268,7 +261,7 @@
 
   function NewNode (TgNm) {
     return document.createElement(TgNm);
-  };
+  }
 
   DOM = {
     Find: Find,
