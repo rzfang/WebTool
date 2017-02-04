@@ -37,20 +37,41 @@ function Log (Info, Lv = 2) {
 }
 
 /*
+  @ request object.
   @ response object.
   @ file path.
   @ mine type. */
-function StaticFileResponse (Rspns, FlPth, MmTp) {
+function StaticFileResponse (Rqst, Rspns, FlPth, MmTp) {
+  if (Rqst.headers['if-modified-since']) {
+    let Dt = (new Date(Rqst.headers['if-modified-since'])).getTime(); // date number.
+
+    if (Cache.IsFileCached(FlPth, Dt)) {
+      Rspns.writeHead(
+        304,
+        { 'Content-Type': MmTp,
+          'Cache-Control': 'public, max-age=6000',
+          'Last-Modified': Rqst.headers['if-modified-since'] });
+      Rspns.write('\n');
+      Rspns.end();
+
+      return;
+    }
+  }
+
   Cache.FileLoad(
     FlPth,
     function (Err, Str) {
       if (Err < 0) {
-        Rspns.writeHead(404, {'Content-Type': MmTp});
+        Rspns.writeHead(404, { 'Content-Type': MmTp });
         Rspns.write('can not found the content.');
         Log(`FileLoad(${Err}) - can not load file.`, 'error');
       }
       else {
-        Rspns.writeHead(200, {'Content-Type': MmTp});
+        Rspns.writeHead(
+          200,
+          { 'Content-Type': MmTp,
+            'Cache-Control': 'public, max-age=6000',
+            'Last-Modified': (new Date()).toUTCString() });
         Rspns.write(Str);
       }
 
@@ -259,14 +280,14 @@ function Route (Rqst, Rspns) {
 
         // this is a special case for old PHP page.
         if (URLInfo.pathname.indexOf('payment.tag') > -1) {
-          return StaticFileResponse(Rspns, RtPth + 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+          return StaticFileResponse(Rqst, Rspns, RtPth + 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
         }
 
         if (SttcFlChk[1] === 'tag') {
-          return StaticFileResponse(Rspns, RtPth + 'SRC/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+          return StaticFileResponse(Rqst, Rspns, RtPth + 'SRC/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
         }
 
-        return StaticFileResponse(Rspns, RtPth + 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+        return StaticFileResponse(Rqst, Rspns, RtPth + 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
       }
 
       if (URLInfo.pathname.indexOf('/service/') === 0) {

@@ -8,26 +8,30 @@ module.exports = {
   FileLoad: function (FlPth, Clbck) {
     const This = this;
 
-    if (this.Cchs.Fls[FlPth]) {
-      Clbck(1, this.Cchs.Fls[FlPth]);
-
-      return;
-    }
+    if (this.Cchs.Fls[FlPth] && this.Cchs.Fls[FlPth]['Str']) { return Clbck(1, this.Cchs.Fls[FlPth]['Str']); }
 
     fs.readFile(
       FlPth,
       'utf8',
       function (Err, FlStr) { // error, file string.
-        if (Err) {
-          Clbck(-1);
+        if (Err) { return Clbck(-1); }
 
-          return;
-        }
-
-        This.Cchs.Fls[FlPth] = FlStr;
+        This.Cchs.Fls[FlPth] = { Dt: (new Date()).getTime(), Str: FlStr };
 
         Clbck(0, FlStr);
       });
+  },
+  /*
+    @ key name.
+    @ date number. */
+  IsFileCached: function (Ky, Dt) {
+    let FlInfo = this.Cchs.Fls && this.Cchs.Fls[Ky] || null;
+
+    if (!FlInfo || !FlInfo.Dt || !FlInfo.Str) { return false; }
+
+    if ((typeof Dt !== 'number') || (Dt < FlInfo.Dt)) { return false; }
+
+    return true;
   },
   /* get the value.
     @ key name.
