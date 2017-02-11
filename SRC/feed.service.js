@@ -1,7 +1,7 @@
-let request = require('../UTL/node_modules/request'),
-    feedparser = require('../UTL/node_modules/feedparser'),
+let request = require('request'),
+    feedparser = require('feedparser'),
     Is = require('./RZ-Js-Is'),
-    Cache = require('../SRC/cache');
+    Cache = require('./cache');
 
 /*
   @ request info object.

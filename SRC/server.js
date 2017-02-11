@@ -2,11 +2,10 @@ const async = require('async'),
       http = require('http'),
       riot = require('riot'),
       url = require('url'),
-      Is = require('../SRC/RZ-Js-Is'),
-      Cache = require('../SRC/cache');
-const Pgs = require('../SRC/pages'), // page infos object.
-      Svcs = require('../SRC/services'); // service infos object.
-const RtPth = __dirname + '/../'; // root path.
+      Is = require('./RZ-Js-Is'),
+      Cache = require('./cache');
+const Pgs = require('./pages'), // page infos object.
+      Svcs = require('./services'); // service infos object.
 
 function Log (Info, Lv = 2) {
   switch (Lv) {
@@ -24,7 +23,7 @@ function Log (Info, Lv = 2) {
 
     case 2:
     case 'log':
-      console.log('\n---- [LOG  ] ----');
+      console.log('\n---- [ LOG ] ----');
       console.log(Info);
       break;
 
@@ -121,7 +120,7 @@ function Render (Rspns, PthNm) {
 
       if (Tp === 'string') {
         Cache.FileLoad(
-          RtPth + 'SRC/' + Bd,
+          'SRC/' + Bd,
           function (Err, FlStr) { // error, file string.
             if (Err < 0) {
               Clbck('FileLoad', '<!-- can not load this module. -->');
@@ -231,7 +230,7 @@ function ServiceResponse (RqstInfo, Rspns) {
 
   if (!Svcs[MdlNm]) {
     Rspns.writeHead(404, {'Content-Type': 'application/json'});
-    Rspns.write('');
+    Rspns.write('can not found the content.');
     Rspns.end();
 
     return;
@@ -280,14 +279,14 @@ function Route (Rqst, Rspns) {
 
         // this is a special case for old PHP page.
         if (URLInfo.pathname.indexOf('payment.tag') > -1) {
-          return StaticFileResponse(Rqst, Rspns, RtPth + 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+          return StaticFileResponse(Rqst, Rspns, 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
         }
 
         if (SttcFlChk[1] === 'tag') {
-          return StaticFileResponse(Rqst, Rspns, RtPth + 'SRC/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+          return StaticFileResponse(Rqst, Rspns, 'SRC/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
         }
 
-        return StaticFileResponse(Rqst, Rspns, RtPth + 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+        return StaticFileResponse(Rqst, Rspns, 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
       }
 
       if (URLInfo.pathname.indexOf('/service/') === 0) {

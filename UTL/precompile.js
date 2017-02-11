@@ -4,8 +4,7 @@
 
 var fs = require('fs'),
     sass = require('node-sass'),
-    uglifyjs = require('uglify-js'),
-    RtPth = __dirname + '/../';
+    uglifyjs = require('uglify-js');
 
 function SCSS_CSS (FrmPth, ToPth) {
   var Src = fs.readFileSync(FrmPth, 'utf8'), // 'Src' = Source.
@@ -20,12 +19,12 @@ function JsCompress (FrmPthA, ToPth) {
   fs.writeFileSync(ToPth, Js);
 }
 
-SCSS_CSS(RtPth + 'SRC/css.scss', RtPth + 'WEB/www/resource/css.css');
-SCSS_CSS(RtPth + 'SRC/pay.scss', RtPth + 'WEB/www/resource/pay.css');
+SCSS_CSS('SRC/css.scss', 'WEB/www/resource/css.css');
+SCSS_CSS('SRC/pay.scss', 'WEB/www/resource/pay.css');
 JsCompress(
-  [ RtPth + 'SRC/RZ-Js-DOM.js',
-    RtPth + 'SRC/RZ-Js-Is.js',
-    RtPth + 'SRC/RZ-Js-Obj.js',
-    RtPth + 'SRC/RZ-Js-RiotMixin.js',
-    RtPth + 'SRC/RZ-Js.js' ],
-  RtPth + 'WEB/www/resource/include.js');
+  [ 'SRC/RZ-Js-DOM.js',
+    'SRC/RZ-Js-Is.js',
+    'SRC/RZ-Js-Obj.js',
+    'SRC/RZ-Js-RiotMixin.js',
+    'SRC/RZ-Js.js' ],
+  'WEB/www/resource/include.js');
