@@ -3,6 +3,7 @@ const async = require('async'),
       riot = require('riot'),
       url = require('url'),
       Is = require('./RZ-Js-Is'),
+      Mxn = require('./RZ-Js-RiotMixin'),
       Cache = require('./cache');
 const Pgs = require('./pages'), // page infos object.
       Svcs = require('./services'); // service infos object.
@@ -79,7 +80,7 @@ function StaticFileResponse (Rqst, Rspns, FlPth, MmTp) {
 }
 
 /*
-  @ module object,
+  @ module name string,
   @ data for riot render.
   @ callback function. */
 function RiotRender (Mdl, Data, Clbck) {
@@ -102,7 +103,7 @@ function RiotRender (Mdl, Data, Clbck) {
   @ path name. */
 function Render (Rspns, PthNm) {
   let Pg = Object.assign({}, Pgs.default, Pgs[PthNm] || {}), // page info object.
-      MdlIntlStp = { LdScrpts: '', MntScrpts: '' };  // module initial step., load scripts, mount scripts.
+      MdlIntlStp = { LdScrpts: '', MntScrpts: '' };  // module initial step, load scripts, mount scripts.
 
   if (!Pg.body) {
     Rspns.writeHead(404, {'Content-Type': 'text/html'});
@@ -212,10 +213,12 @@ function Render (Rspns, PthNm) {
       Rspns.writeHead(200, {'Content-Type': 'text/html'});
       Rspns.write(
         "<!DOCTYPE HTML>\n<html>\n<head>\n<meta http-equiv='content-type' content='text/html; charset=utf-8'/>\n" +
+        "<meta name='viewport' content='width=device-width, initial-scale=1.0'>\n" +
         HdStr +
         "</head>\n<body>\n<div id='Base'>\n" +
         BdStrs.join('\n') +
         '</div>\n' +
+        (!MdlIntlStp.MntScrpts ? '' : `<script>riot.mixin('Z.RM', Z.RM)</script>\n`) +
         MdlIntlStp.LdScrpts + MdlIntlStp.MntScrpts +
         '</div>\n</body>\n</html>\n');
       Rspns.end();
@@ -312,6 +315,7 @@ function Route (Rqst, Rspns) {
     });
 }
 
-http.createServer(Route).listen(9001, '127.0.0.1');
+riot.mixin('Z.RM', Mxn);
+http.createServer(Route).listen(9001, '192.168.1.96');
 
 Log('server has started.');

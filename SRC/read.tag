@@ -4,11 +4,9 @@
   <div>
     <feed each={Fds} delete={parent.OneFeedRemove}/>
   </div>
-
   <style>
     :scope { display: block; padding-top: 5px; }
   </style>
-
   <script>
     (() => {
       if (typeof window !== 'undefined') { this.mixin(Z.RM); }

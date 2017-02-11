@@ -93,7 +93,7 @@ module.exports = {
     favicon: '',
     css: [ '/resource/css.css' ],
     js: [
-      'https://cdn.jsdelivr.net/riot/3.0/riot+compiler.min.js',
+      'https://cdn.jsdelivr.net/riot/3.2/riot+compiler.min.js',
       '/resource/include.js' ],
     body: [
       { type: 'riot', source: header },

@@ -1,56 +1,81 @@
 <header>
-  <h2>Web Tool</h2>
-  <menu>
-    Tool :
-    <select ref='Menu' onchange='{ToolChange}'>
-      <option value='keycode'>keyCode Detect</option>
-      <option value='re'>Regular Expression Test</option>
-      <option value='datetime'>Datetime Transform</option>
-      <option value='convert'>Convert List</option>
-      <option value='colors'>Color Conside</option>
-      <option value='endecode'>String EnDecode</option>
-      <option value='post'>POST to a Page</option>
-      <option value='window'>Window Open Script</option>
-      <option value='ipv426'>IP v4 to v6 Convert</option>
-      <option value='datauri'>File to Data URI</option>
-      <option value='json'>JSON Editor</option>
-      <option disabled>-----------------------</option>
-      <option value='payment.php'>Payment</option>
-      <option value='read'>Read</option>
-    </select>
-  </menu>
+  <div>
+    <h2>Web Tool</h2>
+    <div>
+      <h3>{TgtItm.Ttl}</h3>
+      <button onclick={NavToggle}>Nav</button>
+    </div>
+  </div>
+  <nav if={IsNavOn}>
+    <ul>
+      <li each={Itms} if={!IsTgt} >
+        <a href={URL}>{Ttl}</a>
+      </li>
+    </ul>
+  </nav>
+  <style scoped>
+    :scope { position: relative; }
+    :scope>div { border-bottom-width: 1px; padding: 5px 0 0 5px; }
+    h2 { margin: 0; font-size: 32px; font-style: italic; }
+    h3 { flex: 1; margin: 0; font-weight: normal; }
+    :scope>div>div { display: flex; align-items: baseline; }
+    button { flex: 50px; max-width: 50px; }
+
+    @media screen and (min-width: 480px) {
+      :scope>div { display: flex; align-items: baseline; }
+      h2 { flex: initial; padding-right: 10px; }
+      :scope>div>div { flex: 1; }
+    }
+
+    nav { z-index: 10; position: absolute; right: 5px; border-width: 1px; padding: 5px; box-shadow: -1px 1px 3px; background-color: #ffffff; }
+    ul { margin: 0; padding: 0; }
+    li { list-style-type: none; }
+    a { display: block; }
+  </style>
   <script>
-    this.on(
-      'mount',
-      function () {
-        if (typeof window === 'undefined') {
-          return;
-        }
+    this.Itms = [
+        { Ttl: 'keyCode Detect',          URL: 'keycode' },
+        { Ttl: 'Regular Expression Test', URL: 're' },
+        { Ttl: 'Datetime Transform',      URL: 'datetime' },
+        { Ttl: 'Convert List',            URL: 'convert' },
+        { Ttl: 'Color Conside',           URL: 'colors' },
+        { Ttl: 'String EnDecode',         URL: 'endecode' },
+        { Ttl: 'POST to a Page',          URL: 'post' },
+        { Ttl: 'Window Open Script',      URL: 'window' },
+        { Ttl: 'IP v4 to v6 Convert',     URL: 'ipv426' },
+        { Ttl: 'File to Data URI',        URL: 'datauri' },
+        { Ttl: 'JSON Edit',               URL: 'json' },
+        { Ttl: 'Payment',                 URL: 'payment.php' },
+        { Ttl: 'Read',                    URL: 'read' }
+      ];
+    this.TgtItm = this.Itms[0];
+    this.IsNavOn = false;
 
-        let Pth = location.pathname.substr(1), // path name.
-            Idx = Z.DOM.Find('header select>option[value="' + Pth + '"]')[0].Index(); // index of the current option.
+    this.mixin('Z.RM');
 
-        Z.DOM.Find('header select')[0].selectedIndex = Idx;
-      });
+    // this.on(
+    //   'mount',
+    //   function () {
+        this.OnBrowser(() => {
+          for (let i = 0; i < this.Itms.length; i++) {
+            if (this.Itms[i].URL === location.pathname.substr(1)) {
+              this.Itms[i].IsTgt = true;
+              this.TgtItm = this.Itms[i];
 
-    ToolChange (Evt) {
-      let OptA = Evt.Element().Children();
+              break;
+            }
 
-      OptA.Each(function(Obj, Idx) {
-        if (!Obj.selected) {
-          return;
-        }
+            this.Itms[i].IsTgt = false;
+          }
 
-        if (Obj.value.indexOf('.html') > 0) {
-          window.location = '/#' + Obj.value.replace('.html', '');
+          // this.update();
+        });
+      // });
 
-          return false;
-        }
+    NavToggle () {
+      this.IsNavOn = !this.IsNavOn;
 
-        window.location = Obj.value;
-
-        return false;
-      });
+      this.update();
     }
   </script>
 </header>

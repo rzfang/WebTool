@@ -1,12 +1,18 @@
 /*==== Normal Element ================================================================================================*/
 
-body
-{
+body {
   margin: 0px;
   padding: 0px;
   font-size: 16px;
   font-family: monospace;
   color: #202020;
+}
+
+div, header, nav {
+  border-color: #808080;
+  border-radius: 3px;
+  border-style: solid;
+  border-width: 0;
 }
 
 a, input, option, button {
@@ -21,12 +27,8 @@ a {
   }
 }
 
-div, span {
-  border: 0px solid #202020;
-}
-
-ul, ol {
-  margin: 5px 0px 10px 0px;
+button {
+  padding: 0
 }
 
 /*==== Structure =====================================================================================================*/
@@ -34,32 +36,6 @@ ul, ol {
 #Base {
   max-width: 1000px;
   margin: 0 auto;
-}
-
-header {
-  position: relative;
-  border-bottom: 1px solid;
-
-  h2 {
-    display: inline-block;
-    margin: 0;
-    font-size: 48px;
-    font-style: italic;
-  }
-
-  > menu {
-    z-index: 1;
-    display: inline-block;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    margin: 0;
-    margin-bottom: -1px;
-    padding: 5px;
-    border: 1px solid;
-    border-right: 0px;
-    border-bottom-color: #ffffff;
-  }
 }
 
 #Main {
