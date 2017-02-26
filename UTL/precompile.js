@@ -19,12 +19,11 @@ function JsCompress (FrmPthA, ToPth) {
   fs.writeFileSync(ToPth, Js);
 }
 
-SCSS_CSS('SRC/css.scss', 'WEB/www/resource/css.css');
-SCSS_CSS('SRC/pay.scss', 'WEB/www/resource/pay.css');
+SCSS_CSS('SRC/css.scss', 'WEB/css.css');
 JsCompress(
   [ 'SRC/RZ-Js-DOM.js',
     'SRC/RZ-Js-Is.js',
     'SRC/RZ-Js-Obj.js',
     'SRC/RZ-Js-RiotMixin.js',
     'SRC/RZ-Js.js' ],
-  'WEB/www/resource/include.js');
+  'WEB/include.js');

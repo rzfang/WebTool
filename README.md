@@ -12,15 +12,10 @@ a website to provide many developing, daily tool.
 
 ## set up dev environment
 ```
-cd UTL; npm i; ./precompile.js; cd ..
+npm i; ./UTL/precompile.js;
 ```
 
 ## run dev server
-for PHP:
 ```
-./UTL/dev_run.sh
-```
-for node.js:
-```
-./UTL/dev_node_run.sh
+npm run dev;
 ```

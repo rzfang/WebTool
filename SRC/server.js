@@ -292,16 +292,11 @@ function Route (Rqst, Rspns) {
       if (SttcFlChk && SttcFlChk.length && SttcFlChk.length > 1) {
         const MmTp = { js: 'application/javascript', css: 'text/css', tag: 'text/plain' }; // mine type.
 
-        // this is a special case for old PHP page.
-        // if (URLInfo.pathname.indexOf('payment.tag') > -1) {
-        //   return StaticFileResponse(Rqst, Rspns, 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
-        // }
-
         if (SttcFlChk[1] === 'tag') {
           return StaticFileResponse(Rqst, Rspns, 'SRC/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
         }
 
-        return StaticFileResponse(Rqst, Rspns, 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+        return StaticFileResponse(Rqst, Rspns, 'WEB/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
       }
 
       if (URLInfo.pathname.indexOf('/service/') === 0) {
