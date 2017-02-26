@@ -9,7 +9,8 @@
   <nav if={IsNavOn}>
     <ul>
       <li each={Itms} if={!IsTgt} >
-        <a href={URL}>{Ttl}</a>
+        <a if={URL} href={URL}>{Ttl}</a>
+        <span if={!URL}>{Ttl}</span>
       </li>
     </ul>
   </nav>
@@ -45,7 +46,8 @@
         { Ttl: 'IP v4 to v6 Convert',     URL: 'ipv426' },
         { Ttl: 'File to Data URI',        URL: 'datauri' },
         { Ttl: 'JSON Edit',               URL: 'json' },
-        { Ttl: 'Payment',                 URL: 'payment.php' },
+        { Ttl: '----',                    URL: '' },
+        { Ttl: 'Payment',                 URL: 'payment' },
         { Ttl: 'Read',                    URL: 'read' }
       ];
     this.TgtItm = this.Itms[0];

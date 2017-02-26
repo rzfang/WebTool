@@ -8,7 +8,7 @@ body {
   color: #202020;
 }
 
-div, header, nav {
+div, header, nav, li, button, input[type=button] {
   border-color: #808080;
   border-radius: 3px;
   border-style: solid;
@@ -27,8 +27,11 @@ a {
   }
 }
 
-button {
-  padding: 0
+button, input[type=button] {
+  padding: 0;
+  border-width: 1px;
+  background-color: transparent;
+  cursor: pointer;
 }
 
 /*==== Structure =====================================================================================================*/

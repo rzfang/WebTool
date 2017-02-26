@@ -3,10 +3,12 @@ const async = require('async'),
       riot = require('riot'),
       url = require('url'),
       Is = require('./RZ-Js-Is'),
-      Mxn = require('./RZ-Js-RiotMixin'),
+      RtMxn = require('./RZ-Js-RiotMixin'), // riot mixin object.
       Cache = require('./cache');
 const Pgs = require('./pages'), // page infos object.
       Svcs = require('./services'); // service infos object.
+
+let RtMxnScrpts = RiotMixinSetup();
 
 function Log (Info, Lv = 2) {
   switch (Lv) {
@@ -34,6 +36,16 @@ function Log (Info, Lv = 2) {
       console.debug(Info);
       break;
   }
+}
+
+function RiotMixinSetup () {
+  let RtMxnScrpts = '';
+
+  riot.mixin('Z.RM', RtMxn);
+
+  RtMxnScrpts += "riot.mixin('Z.RM', Z.RM);\n";
+
+  return RtMxnScrpts = '<script>\n' + RtMxnScrpts + '</script>\n';
 }
 
 /*
@@ -218,7 +230,7 @@ function Render (Rspns, PthNm) {
         "</head>\n<body>\n<div id='Base'>\n" +
         BdStrs.join('\n') +
         '</div>\n' +
-        (!MdlIntlStp.MntScrpts ? '' : `<script>riot.mixin('Z.RM', Z.RM)</script>\n`) +
+        RtMxnScrpts +
         MdlIntlStp.LdScrpts + MdlIntlStp.MntScrpts +
         '</div>\n</body>\n</html>\n');
       Rspns.end();
@@ -281,9 +293,9 @@ function Route (Rqst, Rspns) {
         const MmTp = { js: 'application/javascript', css: 'text/css', tag: 'text/plain' }; // mine type.
 
         // this is a special case for old PHP page.
-        if (URLInfo.pathname.indexOf('payment.tag') > -1) {
-          return StaticFileResponse(Rqst, Rspns, 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
-        }
+        // if (URLInfo.pathname.indexOf('payment.tag') > -1) {
+        //   return StaticFileResponse(Rqst, Rspns, 'WEB/www/resource/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+        // }
 
         if (SttcFlChk[1] === 'tag') {
           return StaticFileResponse(Rqst, Rspns, 'SRC/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
@@ -315,7 +327,6 @@ function Route (Rqst, Rspns) {
     });
 }
 
-riot.mixin('Z.RM', Mxn);
-http.createServer(Route).listen(9001, '192.168.1.96');
+http.createServer(Route).listen(9001, '127.0.0.1');
 
 Log('server has started.');

@@ -1,4 +1,5 @@
-let header = require('./header.tag');
+let header = require('./header.tag'),
+    payment = require('./payment.tag');
 
 module.exports = {
   '/colors': {
@@ -57,6 +58,13 @@ module.exports = {
       { type: 'riot', source: header },
       'keycode.part.html',
       'footer.part.html' ]},
+  '/payment': {
+    title: 'Payment - Web Tool',
+    keywords: 'JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
+    body: [
+      { type: 'riot', source: header },
+      { type: 'riot', source: payment },
+      'footer.part.html' ]},
   '/post': {
     title: 'Form Post - Web Tool',
     keywords: '送出資料, form, post, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
@@ -93,7 +101,7 @@ module.exports = {
     favicon: '',
     css: [ '/resource/css.css' ],
     js: [
-      'https://cdn.jsdelivr.net/riot/3.2/riot+compiler.min.js',
+      'https://cdn.jsdelivr.net/riot/3.3/riot+compiler.min.js',
       '/resource/include.js' ],
     body: [
       { type: 'riot', source: header },
