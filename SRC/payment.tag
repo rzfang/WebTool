@@ -1,6 +1,6 @@
 <payment class='Pymnt'>
-  <button onclick={Save}>Save</button>
-  <tabbox dftidx={1} tbs={Tbs}>
+  <div if={IsSvdHnt}>Saved !</div>
+  <tab-box dftidx={1} tbs={Tbs}>
     <div if={Idx === 0} class='ByrLst'>
       <ul>
         <li each={parent.Byrs}>
@@ -9,20 +9,28 @@
       </ul>
       <button onclick={parent.BuyerAdd}>Add</button>
     </div>
-    <itemlist if={Idx === 1} itms={parent.Itms} add={parent.ItemAdd} edit={parent.ItemEdit}/>
-    <check if={Idx === 2} class='Chk' byrs={parent.Byrs} itms={parent.Itms}/>
-  </tabbox>
+    <item-list if={Idx === 1} itms={parent.Itms} add={parent.ItemAdd} edit={parent.ItemEdit}/>
+    <check-list if={Idx === 2} byrs={parent.Byrs} itms={parent.Itms}/>
+  </tab-box>
   <buyer-editor if={EdtByr} info={EdtByr} cancel={BuyerCancel} delete={BuyerDelete} done={BuyerDone}/>
   <item-editor if={EdtItm} info={EdtItm} byrs={Byrs} cancel={ItemCancel} delete={ItemDelete} done={ItemDone}/>
+  <style>
+    @keyframes Fd { /* fade */
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+  </style>
   <style scoped>
     :scope { display: block; position: relative; margin-top: 10px; }
-    :scope>button { position: absolute; right: 0; }
+    :scope>div { position: absolute; right: 0; animation-name: Fd; animation-duration: 3s; }
     .ByrLst>ul { margin: 10px 0; }
     .ByrLst>ul>li { margin: 3px 0; list-style: none; }
   </style>
   <script>
-    let LclStrgKy = 'PaymentData'; // localStorage key.
+    let LclStrgKy = 'PaymentData', // localStorage key.
+        AtSvClck = 0; // auto save clock.
 
+    this.IsSvdHnt = false; // is saved hint.
     this.EdtByr;
     this.Byrs = [];
     this.Itms = [];
@@ -78,13 +86,13 @@
 
     BuyerDelete (Evt) {
       this.Byrs.splice(this.Byrs.indexOf(this.EdtByr), 1);
-      this.update({ EdtByr: null });
+      this.AutoSave({ EdtByr: null });
     }
 
     BuyerDone (Evt, Nm) {
       this.EdtByr.Nm = Nm;
 
-      this.update({ EdtByr: null });
+      this.AutoSave({ EdtByr: null });
     }
 
     ItemEdit (Evt, Idx) {
@@ -104,25 +112,36 @@
 
     ItemDelete (Evt) {
       this.Itms.splice(this.Itms.indexOf(this.EdtItm), 1);
-      this.update({ EdtItm: null });
+      this.AutoSave({ EdtItm: null });
     }
 
     ItemDone (Evt, Info) {
       Object.assign(this.EdtItm, Info);
-
-      this.update({ EdtItm: null });
+      this.AutoSave({ EdtItm: null });
     }
 
-    Save () {
-      let Data = JSON.stringify({Byrs: this.Byrs, Itms: this.Itms});
+    /*
+      @ updated options object. */
+    AutoSave (UpdtOpts) {
+      UpdtOpts.IsSvdHnt = false;
 
-      window.localStorage.setItem(LclStrgKy, Data);
-      alert('Saved.');
+      clearTimeout(AtSvClck);
+      this.update(UpdtOpts);
+
+      AtSvClck = setTimeout(
+        () => {
+          let Data = JSON.stringify({Byrs: this.Byrs, Itms: this.Itms});
+
+          window.localStorage.setItem(LclStrgKy, Data);
+          this.update({ IsSvdHnt: true });
+          setTimeout(() => { this.update({ IsSvdHnt: false }); }, 3000);
+        },
+        1000);
     }
   </script>
 </payment>
 
-<tabbox>
+<tab-box>
   <ul>
     <li each={Tbs} class="Tb {Pckd ? 'Pckd' : ''}" onclick={Switch}>{Nm}</li>
   </ul>
@@ -153,13 +172,13 @@
       this.Tbs[this.Idx].Pckd = true;
     }
   </script>
-</tabbox>
+</tab-box>
 
-<itemlist>
+<item-list>
   <table>
     <thead>
       <tr>
-        <th>Datetime</th>
+        <th>Date</th>
         <th>Item</th>
         <th>Price</th>
         <th>Buyer</th>
@@ -180,6 +199,10 @@
     <button onclick={opts.add}>Add</button>
   </div>
   <style scoped>
+    @media screen and (max-width: 360px) {
+        th:first-child, td:first-child, th:last-child, td:last-child { display: none; }
+    }
+
     :scope>table { width: 100%; }
     td>button { width: 100%; }
   </style>
@@ -190,63 +213,12 @@
       this.opts.edit(Evt, Idx);
     }
   </script>
-</itemlist>
-
-<check>
-  <table>
-    <tbody>
-      <tr>
-        <th>Name</th>
-        <th>Amount</th>
-        <th>Balance</th>
-      </tr>
-      <tr each={Chk}>
-        <td>{Nm}</td>
-        <td>{Amnt}</td>
-        <td>{Avrg - Amnt}</td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr>
-        <td>Total</td>
-        <td>{Ttl}</td>
-        <td>{Avrg}</td>
-      </tr>
-    </tfoot>
-  </table>
-
-  <script>
-    this.Chk = []; // 'Chk' = Check.
-    this.Ttl = 0; // 'Ttl' = Total.
-    this.Avrg = 0; // 'Avrg' = Average.
-
-    this.on(
-      'update',
-      () => {
-        this.Chk = [];
-        this.Ttl = 0;
-
-        for (let i = 0; i < this.opts.byrs.length; i++) {
-          let Pymnt = {Nm: this.opts.byrs[i].Nm, Amnt: 0}; // 'Pymnt' = Payment. 'Nm' = Name, 'Amnt' = Amount.
-
-          for (let j = 0; j < this.opts.itms.length; j++) {
-            if (this.opts.itms[j].Byr.Nm === Pymnt.Nm) { Pymnt.Amnt += this.opts.itms[j].Prc; }
-          }
-
-          this.Chk.push(Pymnt);
-        }
-
-        for (let i = 0; i < this.opts.itms.length; i++) { this.Ttl += this.opts.itms[i].Prc; }
-
-        this.Avrg = this.Ttl / this.Chk.length;
-      });
-  </script>
-</check>
+</item-list>
 
 <buyer-editor>
   <div>
     <h3>Buyer Add/Edit</h3>
-    <input ref='Nm' type='text' value={opts.info.Nm}/>
+    <input ref='Nm' type='text' value={opts.info.Nm} onkeyup={Done}/>
     <div>
       <button onclick={opts.cancel}>Cancel</button>
       <button onclick={opts.delete}>Delete</button>
@@ -264,6 +236,8 @@
     this.on('mount', () => { this.refs.Nm.focus(); });
 
     Done (Evt) {
+      if (Evt.keyCode && Evt.keyCode !== 13) { return; }
+
       this.opts.done(Evt, this.refs.Nm.value);
     }
   </script>
@@ -276,15 +250,15 @@
       <tbody>
         <tr>
           <td>Datetime</td>
-          <td><input ref='Dt' type="date" placeholder="YYYY-MM-DD" value={opts.info.Dt}/></td>
+          <td><input ref='Dt' type="date" placeholder="YYYY-MM-DD" value={opts.info.Dt} onkeyup={Done}/></td>
         </tr>
         <tr>
           <td>Item</td>
-          <td><input ref='Itm' type="text" value={opts.info.Itm}/>
+          <td><input ref='Itm' type="text" value={opts.info.Itm} onkeyup={Done}/>
         </td>
         <tr>
           <td>Price</td>
-          <td><input ref='Prc' type="number" value={opts.info.Prc || 0}/>
+          <td><input ref='Prc' type="number" value={opts.info.Prc || 0} onkeyup={Done}/>
         </td>
         <tr>
           <td>Buyer</td>
@@ -295,7 +269,7 @@
           </td>
         <tr>
           <td>Comment</td>
-          <td><input ref='Cmt' type="text" value={opts.info.Cmt}/></td>
+          <td><input ref='Cmt' type="text" value={opts.info.Cmt} onkeyup={Done}/></td>
         </tr>
       </tbody>
     </table>
@@ -316,10 +290,12 @@
     this.on('mount', () => { this.refs.Itm.focus(); });
 
     Done (Evt) {
+      if (Evt.keyCode && Evt.keyCode !== 13) { return; }
+
       let NwInfo = {
             Dt: this.refs.Dt.value,
             Itm: this.refs.Itm.value,
-            Prc: this.refs.Prc.value,
+            Prc: parseInt(this.refs.Prc.value, 10),
             Byr: { Nm: '' },
             Cmt: this.refs.Cmt.value
           };
@@ -336,3 +312,61 @@
     }
   </script>
 </item-editor>
+
+<check-list>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Amount</th>
+        <th>Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr each={Chk}>
+        <td>{Nm}</td>
+        <td>{Amnt}</td>
+        <td>{Avrg - Amnt}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td>Total</td>
+        <td>{Ttl}</td>
+        <td>{Avrg}</td>
+      </tr>
+    </tfoot>
+  </table>
+  <style scoped>
+    table { width: 100%; margin: 5px 0; }
+    th, td { text-align: right; }
+    th:first-child, td:first-child { text-align: center; }
+    tfoot td { border-top-width: 1px; }
+  </style>
+  <script>
+    this.Chk = []; // 'Chk' = Check.
+    this.Ttl = 0; // 'Ttl' = Total.
+    this.Avrg = 0; // 'Avrg' = Average.
+
+    this.mixin('Z.RM');
+
+    this.OnBrowser(() => {
+      this.Chk = [];
+      this.Ttl = 0;
+
+      for (let i = 0; i < this.opts.byrs.length; i++) {
+        let Pymnt = {Nm: this.opts.byrs[i].Nm, Amnt: 0}; // 'Pymnt' = Payment. 'Nm' = Name, 'Amnt' = Amount.
+
+        for (let j = 0; j < this.opts.itms.length; j++) {
+          if (this.opts.itms[j].Byr.Nm === Pymnt.Nm) { Pymnt.Amnt += this.opts.itms[j].Prc; }
+        }
+
+        this.Chk.push(Pymnt);
+      }
+
+      for (let i = 0; i < this.opts.itms.length; i++) { this.Ttl += this.opts.itms[i].Prc; }
+
+      this.Avrg = this.Ttl / this.Chk.length;
+    });
+  </script>
+</check-list>

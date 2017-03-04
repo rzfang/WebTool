@@ -1,5 +1,6 @@
-let header = require('./header.tag'),
-    payment = require('./payment.tag');
+const header = require('./header.tag'),
+      payment = require('./payment.tag'),
+      read = require('./read.tag');
 
 module.exports = {
   '/colors': {
@@ -84,7 +85,7 @@ module.exports = {
     keywords: '閱讀器, RSS, Atom, 網頁, 工具, Web, Tool',
     body: [
       { type: 'riot', source: header },
-      { type: 'riot', source: require('./read.tag') },
+      { type: 'riot', source: read },
       'footer.part.html' ]},
   '/window': {
     title: 'Window Open Script - Web Tool',

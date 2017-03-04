@@ -8,9 +8,9 @@
   </div>
   <nav if={IsNavOn}>
     <ul>
-      <li each={Itms} if={!IsTgt} >
-        <a if={URL} href={URL}>{Ttl}</a>
-        <span if={!URL}>{Ttl}</span>
+      <li each={Itms}>
+        <a if={URL && !IsTgt} href={URL}>{Ttl}</a>
+        <span if={!URL || IsTgt}>{Ttl}</span>
       </li>
     </ul>
   </nav>
@@ -55,29 +55,21 @@
 
     this.mixin('Z.RM');
 
-    // this.on(
-    //   'mount',
-    //   function () {
-        this.OnBrowser(() => {
-          for (let i = 0; i < this.Itms.length; i++) {
-            if (this.Itms[i].URL === location.pathname.substr(1)) {
-              this.Itms[i].IsTgt = true;
-              this.TgtItm = this.Itms[i];
+    this.OnBrowser(() => {
+      for (let i = 0; i < this.Itms.length; i++) {
+        if (this.Itms[i].URL === location.pathname.substr(1)) {
+          this.Itms[i].IsTgt = true;
+          this.TgtItm = this.Itms[i];
 
-              break;
-            }
+          break;
+        }
 
-            this.Itms[i].IsTgt = false;
-          }
-
-          // this.update();
-        });
-      // });
+        this.Itms[i].IsTgt = false;
+      }
+    });
 
     NavToggle () {
-      this.IsNavOn = !this.IsNavOn;
-
-      this.update();
+      this.update({ IsNavOn: !this.IsNavOn });
     }
   </script>
 </header>
