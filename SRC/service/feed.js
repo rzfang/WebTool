@@ -1,7 +1,7 @@
-let request = require('request'),
-    feedparser = require('feedparser'),
-    Is = require('./RZ-Js-Is'),
-    Cache = require('./cache');
+const request = require('request'),
+      feedparser = require('feedparser'),
+      Is = require('../RZ-Js-Is'),
+      Cache = require('../cache');
 
 /*
   @ request info object.

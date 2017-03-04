@@ -297,7 +297,7 @@ function Route (Rqst, Rspns) {
         const MmTp = { js: 'application/javascript', css: 'text/css', tag: 'text/plain' }; // mine type.
 
         if (SttcFlChk[1] === 'tag') {
-          return StaticFileResponse(Rqst, Rspns, 'SRC/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+          return StaticFileResponse(Rqst, Rspns, 'SRC/component/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
         }
 
         return StaticFileResponse(Rqst, Rspns, 'WEB/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
