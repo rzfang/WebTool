@@ -12,8 +12,10 @@
     <item-list if={Idx === 1} itms={parent.Itms} add={parent.ItemAdd} edit={parent.ItemEdit}/>
     <check-list if={Idx === 2} byrs={parent.Byrs} itms={parent.Itms}/>
   </tab-box>
-  <buyer-editor if={EdtByr} info={EdtByr} cancel={BuyerCancel} delete={BuyerDelete} done={BuyerDone}/>
-  <item-editor if={EdtItm} info={EdtItm} byrs={Byrs} cancel={ItemCancel} delete={ItemDelete} done={ItemDone}/>
+  <cover-box if={EdtByr || EdtItm}>
+    <buyer-editor if={parent.EdtByr} info={parent.EdtByr} cancel={parent.BuyerCancel} delete={parent.BuyerDelete} done={parent.BuyerDone}/>
+    <item-editor if={parent.EdtItm} info={parent.EdtItm} edtclmn={parent.EdtItmClmn} byrs={parent.Byrs} cancel={parent.ItemCancel} delete={parent.ItemDelete} done={parent.ItemDone}/>
+  </cover-box>
   <style>
     @keyframes Fd { /* fade */
       from { opacity: 1; }
@@ -31,7 +33,9 @@
         AtSvClck = 0; // auto save clock.
 
     this.IsSvdHnt = false; // is saved hint.
-    this.EdtByr;
+    this.EdtByr = null; // editing buyer.
+    this.EdtItm = null; // editing item.
+    this.EdtItmClmn = 1, // editing item column.
     this.Byrs = [];
     this.Itms = [];
     this.Tbs = [
@@ -95,8 +99,8 @@
       this.AutoSave({ EdtByr: null });
     }
 
-    ItemEdit (Evt, Idx) {
-      this.update({ EdtItm: this.Itms[Idx] });
+    ItemEdit (Evt, RwIdx, ClmnIdx) {
+      this.update({ EdtItm: this.Itms[RwIdx], EdtItmClmn: ClmnIdx });
     }
 
     ItemAdd () {
@@ -208,110 +212,14 @@
   </style>
   <script>
     Edit (Evt) {
-      const Idx = Evt.Element().Above(2).Index('tr');
+      const Elmnt = Evt.Element(), // element.
+            RwIdx = Elmnt.Above(2).Index(), // row index.
+            ClmnIdx = Elmnt.Above(1).Index(); // column index.
 
-      this.opts.edit(Evt, Idx);
+      this.opts.edit(Evt, RwIdx, ClmnIdx);
     }
   </script>
 </item-list>
-
-<buyer-editor>
-  <div>
-    <h3>Buyer Add/Edit</h3>
-    <input ref='Nm' type='text' value={opts.info.Nm} onkeyup={Done}/>
-    <div>
-      <button onclick={opts.cancel}>Cancel</button>
-      <button onclick={opts.delete}>Delete</button>
-      <button onclick={Done}>Done</button>
-    </div>
-  </div>
-  <style scoped>
-    :scope { position: fixed; left: 0; top: 0; width: 100%; height: 100%; text-align: center; background-color: rgba(0, 0, 0, .5); }
-    :scope>div { display: inline-block; min-width: 300px; margin-top: 20px; padding: 5px; text-align: left; background-color: #ffffff; }
-    h3 { margin: 0; }
-    input { margin: 5px 0; }
-    div>div { text-align: right; }
-  </style>
-  <script>
-    this.on('mount', () => { this.refs.Nm.focus(); });
-
-    Done (Evt) {
-      if (Evt.keyCode && Evt.keyCode !== 13) { return; }
-
-      this.opts.done(Evt, this.refs.Nm.value);
-    }
-  </script>
-</buyer-editor>
-
-<item-editor>
-  <div>
-    <h3>Item Add/Edit</h3>
-    <table>
-      <tbody>
-        <tr>
-          <td>Datetime</td>
-          <td><input ref='Dt' type="date" placeholder="YYYY-MM-DD" value={opts.info.Dt} onkeyup={Done}/></td>
-        </tr>
-        <tr>
-          <td>Item</td>
-          <td><input ref='Itm' type="text" value={opts.info.Itm} onkeyup={Done}/>
-        </td>
-        <tr>
-          <td>Price</td>
-          <td><input ref='Prc' type="number" value={opts.info.Prc || 0} onkeyup={Done}/>
-        </td>
-        <tr>
-          <td>Buyer</td>
-          <td>
-            <select ref='Byr'>
-              <option each={opts.byrs} value={Nm} selected={Nm === parent.opts.info.Byr.Nm}>{Nm}</option>
-            </select>
-          </td>
-        <tr>
-          <td>Comment</td>
-          <td><input ref='Cmt' type="text" value={opts.info.Cmt} onkeyup={Done}/></td>
-        </tr>
-      </tbody>
-    </table>
-    <div>
-      <button onclick={opts.cancel}>Cancel</button>
-      <button onclick={opts.delete}>Delete</button>
-      <button onclick={Done}>Done</button>
-    </div>
-  </div>
-  <style scoped>
-    :scope { position: fixed; left: 0; top: 0; width: 100%; height: 100%; text-align: center; background-color: rgba(0, 0, 0, .5); }
-    :scope>div { display: inline-block; min-width: 300px; margin-top: 20px; padding: 5px; text-align: left; background-color: #ffffff; }
-    h3 { margin: 0; }
-    input { margin: 5px 0; }
-    div>div { text-align: right; }
-  </style>
-  <script>
-    this.on('mount', () => { this.refs.Itm.focus(); });
-
-    Done (Evt) {
-      if (Evt.keyCode && Evt.keyCode !== 13) { return; }
-
-      let NwInfo = {
-            Dt: this.refs.Dt.value,
-            Itm: this.refs.Itm.value,
-            Prc: parseInt(this.refs.Prc.value, 10),
-            Byr: { Nm: '' },
-            Cmt: this.refs.Cmt.value
-          };
-
-      for (let i = 0; i < this.opts.byrs.length; i++) {
-        if (this.opts.byrs[i].Nm === this.refs.Byr.value) {
-          NwInfo.Byr = this.opts.byrs[i];
-
-          break;
-        }
-      }
-
-      this.opts.done(Evt, NwInfo);
-    }
-  </script>
-</item-editor>
 
 <check-list>
   <table>
@@ -370,3 +278,143 @@
     });
   </script>
 </check-list>
+
+<cover-box>
+  <div>
+    <yield/>
+  </div>
+  <style scoped>
+    :scope { position: fixed; left: 0; top: 0; width: 100%; height: 100%; text-align: center; background-color: rgba(0, 0, 0, .5); }
+    :scope>div { display: inline-block; min-width: 300px; margin-top: 20px; padding: 5px; text-align: left; background-color: #ffffff; }
+  </style>
+</cover-box>
+
+<buyer-editor>
+  <h3>Buyer Add/Edit</h3>
+  <input ref='Nm' type='text' value={opts.info.Nm} onkeyup={KeyAction}/>
+  <div>
+    <button onclick={opts.cancel}>Cancel</button>
+    <button onclick={opts.delete}>Delete</button>
+    <button onclick={Done}>Done</button>
+  </div>
+  <style scoped>
+    h3 { margin: 0; }
+    input { margin: 5px 0; }
+    div>div { text-align: right; }
+  </style>
+  <script>
+    this.on('mount', () => { this.refs.Nm.focus(); });
+
+    KeyAction (Evt) {
+      if (Evt.keyCode === 27) { return this.opts.cancel(Evt); }
+
+      if (Evt.keyCode !== 13) { return; }
+
+      this.Done(Evt);
+    }
+
+    Done (Evt) {
+      this.opts.done(Evt, this.refs.Nm.value);
+    }
+  </script>
+</buyer-editor>
+
+<item-editor>
+  <h3>Item Add/Edit</h3>
+  <table>
+    <tbody>
+      <tr>
+        <td>Datetime</td>
+        <td><input ref='Dt' type="date" placeholder="YYYY-MM-DD" value={opts.info.Dt} onkeyup={KeyAction}/></td>
+      </tr>
+      <tr>
+        <td>Item</td>
+        <td><input ref='Itm' type="text" value={opts.info.Itm} onkeyup={KeyAction}/>
+      </td>
+      <tr>
+        <td>Price</td>
+        <td><input ref='Prc' type="number" value={opts.info.Prc || 0} onkeyup={KeyAction}/>
+      </td>
+      <tr>
+        <td>Buyer</td>
+        <td>
+          <select ref='Byr'>
+            <option each={opts.byrs} value={Nm} selected={Nm === parent.opts.info.Byr.Nm}>{Nm}</option>
+          </select>
+        </td>
+      <tr>
+        <td>Comment</td>
+        <td><input ref='Cmt' type="text" value={opts.info.Cmt} onkeyup={KeyAction}/></td>
+      </tr>
+    </tbody>
+  </table>
+  <div>
+    <button onclick={opts.cancel}>Cancel</button>
+    <button onclick={opts.delete}>Delete</button>
+    <button onclick={Done}>Done</button>
+  </div>
+  <style scoped>
+    h3 { margin: 0; }
+    input { margin: 5px 0; }
+    div>div { text-align: right; }
+  </style>
+  <script>
+    this.on(
+      'mount',
+      () => {
+        let Tgt; // target.
+
+        switch (this.opts.edtclmn) {
+          case '0':
+            Tgt = this.refs.Dt;
+            break;
+
+          case '2':
+            Tgt = this.refs.Prc;
+            break;
+
+          case '3':
+            Tgt = this.refs.Byr;
+            break;
+
+          case '4':
+            Tgt = this.refs.Cmt;
+            break;
+
+          case '1':
+          default:
+            Tgt = this.refs.Itm;
+        }
+
+        Tgt.focus();
+      });
+
+    KeyAction (Evt) {
+      if (Evt.keyCode === 27) { return this.opts.cancel(Evt); }
+
+      if (Evt.keyCode !== 13) { return; }
+
+      this.Done(Evt);
+    }
+
+    Done (Evt) {
+      let NwInfo = {
+            Dt: this.refs.Dt.value,
+            Itm: this.refs.Itm.value,
+            Prc: parseInt(this.refs.Prc.value, 10),
+            Byr: { Nm: '' },
+            Cmt: this.refs.Cmt.value
+          };
+
+      for (let i = 0; i < this.opts.byrs.length; i++) {
+        if (this.opts.byrs[i].Nm === this.refs.Byr.value) {
+          NwInfo.Byr = this.opts.byrs[i];
+
+          break;
+        }
+      }
+
+      this.opts.done(Evt, NwInfo);
+    }
+  </script>
+</item-editor>
