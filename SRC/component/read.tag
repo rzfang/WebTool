@@ -1,6 +1,7 @@
 <read>
   <input type='text' placeholder='enter the feed url.' ref='url'/>
-  <input type='button' value='add new feed' onclick={OneFeedAdd}/>
+  <button onclick={OneFeedAdd}>add a new feed</button>
+  <button onclick={Transfer}>Transfer</button>
   <div>
     <feed each={Fds} delete={parent.OneFeedRemove}/>
   </div>
@@ -8,30 +9,28 @@
     :scope { display: block; padding-top: 5px; }
   </style>
   <script>
-    (() => {
-      if (typeof window !== 'undefined') { this.mixin(Z.RM); }
+    this.Fds = []; // feeds.
 
-      this.Fds = [];
-    })();
+    this.mixin('Z.RM');
 
     this.on(
       'mount',
       () => {
-        if (typeof window === 'undefined') { return; }
+        this.OnBrowser(() => {
+          if (!window.localStorage.FdURLs) {
+            window.localStorage.FdURLs = '';
 
-        if (!window.localStorage.FdURLs) {
-          window.localStorage.FdURLs = '';
+            return;
+          }
 
-          return;
-        }
+          let FdURLs = window.localStorage.FdURLs.split('_|_');
 
-        let FdURLs = window.localStorage.FdURLs.split('_|_');
+          for (let i = 0; i < FdURLs.length; i++) {
+            if (!FdURLs[i]) { continue; }
 
-        for (let i = 0; i < FdURLs.length; i++) {
-          if (!FdURLs[i]) { continue; }
-
-          this.OneFeedLoad(FdURLs[i]);
-        }
+            this.OneFeedLoad(FdURLs[i]);
+          }
+        });
       });
 
     OneFeedLoad (URL, Err) {
@@ -94,7 +93,6 @@
   <div>
     <a each={Itms} href='{Lnk}' target='_blank'>{Ttl}</a>
   </div>
-
   <style>
     :scope { display: block; margin: 10px 0; padding: 5px; border: 1px solid; border-radius: 3px; }
     :scope>div:first-child { position: relative; }
@@ -102,7 +100,6 @@
     :scope>div:first-child>button { position: absolute; right: 0px; top: 0px; }
     :last-child>a { display: block; }
   </style>
-
   <script>
     Delete (Evt) {
       if (Z.Is.Function(this.opts.delete)) { this.opts.delete(this.FdURL); }

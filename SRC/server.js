@@ -1,14 +1,12 @@
 const async = require('async'),
       http = require('http'),
-      riot = require('riot'),
       url = require('url'),
       Is = require('./RZ-Js-Is'),
-      RtMxn = require('./RZ-Js-RiotMixin'), // riot mixin object.
-      Cache = require('./cache');
+      Cch = require('./cache');
 const Pgs = require('./pages'), // page infos object.
       Svcs = require('./services'); // service infos object.
-
-let RtMxnScrpts = RiotMixinSetup();
+const CmpntPth = './SRC/component/', // component path.
+      RsrcPth = './WEB/'; // resource path.
 
 function Log (Info, Lv = 2) {
   switch (Lv) {
@@ -42,16 +40,6 @@ function Log (Info, Lv = 2) {
   }
 }
 
-function RiotMixinSetup () {
-  let RtMxnScrpts = '';
-
-  riot.mixin('Z.RM', RtMxn);
-
-  RtMxnScrpts += "riot.mixin('Z.RM', Z.RM);\n";
-
-  return RtMxnScrpts = '<script>\n' + RtMxnScrpts + '</script>\n';
-}
-
 /*
   @ request object.
   @ response object.
@@ -61,7 +49,7 @@ function StaticFileResponse (Rqst, Rspns, FlPth, MmTp) {
   if (Rqst.headers['if-modified-since']) {
     let Dt = (new Date(Rqst.headers['if-modified-since'])).getTime(); // date number.
 
-    if (Cache.IsFileCached(FlPth, Dt)) {
+    if (Cch.IsFileCached(FlPth, Dt)) {
       Rspns.writeHead(
         304,
         { 'Content-Type': MmTp,
@@ -74,7 +62,7 @@ function StaticFileResponse (Rqst, Rspns, FlPth, MmTp) {
     }
   }
 
-  Cache.FileLoad(
+  Cch.FileLoad(
     FlPth,
     function (Err, Str) {
       if (Err < 0) {
@@ -96,30 +84,12 @@ function StaticFileResponse (Rqst, Rspns, FlPth, MmTp) {
 }
 
 /*
-  @ module name string,
-  @ data for riot render.
-  @ callback function. */
-function RiotRender (Mdl, Data, Clbck) {
-  let MdlStr = riot.render(Mdl, Data || {});
-
-  if (!MdlStr) {
-    Clbck(-1, '<!-- can not render this module. -->');
-    Log('can not render this module.', 'error');
-
-    return;
-  }
-
-  MdlStr = MdlStr.replace(/> ?</g, '>\n<');
-
-  Clbck(0, MdlStr);
-}
-
-/*
   @ response object.
   @ path name. */
 function Render (Rspns, PthNm) {
   let Pg = Object.assign({}, Pgs.default, Pgs[PthNm] || {}), // page info object.
-      MdlIntlStp = { LdScrpts: '', MntScrpts: '' };  // module initial step, load scripts, mount scripts.
+      LdScrpts = '', // loading scripts.
+      MntScrpts = '';  // mount scripts.
 
   if (!Pg.body) {
     Rspns.writeHead(404, {'Content-Type': 'text/html'});
@@ -136,51 +106,37 @@ function Render (Rspns, PthNm) {
       const Tp = typeof Bd;
 
       if (Tp === 'string') {
-        Cache.FileLoad(
-          'SRC/' + Bd,
-          function (Err, FlStr) { // error, file string.
-            if (Err < 0) {
-              Clbck('FileLoad', '<!-- can not load this module. -->');
-              Log(`FileLoad(${Err}) - ${Bd} - load file failed.`, 'error');
+        const Cmpnt = Bd.substr(0, Bd.lastIndexOf('.')), // component name.
+              Ext = Bd.substr(Bd.lastIndexOf('.') + 1); // extension name.
 
-              return;
-            }
+        if (Ext === 'html') {
+          Cch.FileLoad(
+            CmpntPth + Bd,
+            function (Err, FlStr) { // error, file string.
+              if (Err < 0) {
+                Clbck('FileLoad', '<!-- can not load this component. -->');
+                Log(`FileLoad(${Err}) - ${Bd} - load file failed.`, 'error');
 
-            Clbck(null, FlStr);
-          });
+                return;
+              }
 
-        return;
-      }
-      else if (Tp !== 'object' || !Bd.type || !Bd.source || typeof Bd.type !== 'string' || typeof Bd.source !== 'string') {
-        Clbck('bad format', '<!-- can not load this module. -->');
-        Log(JSON.stringify(Bd) + '\ncan not load this module.', 'error');
+              Clbck(null, FlStr);
+            });
 
-        return;
-      }
+          return;
+        }
 
-      if (Bd.type === 'riot') {
-        RiotRender(
-          Bd.source,
-          Bd.data || {},
-          function (Rst, MdlStr) {
-            if (Rst < 0) {
-              Clbck('RiotRender', Rst);
-              Log('can not do riot render.', 'error');
+        if (Ext === 'tag') {
+          LdScrpts += `<script type='riot/tag' src='/${Bd}'></script>\n`
+          MntScrpts += `riot.mount('${Cmpnt}');\n`;
+          Clbck(null, `<${Cmpnt}><!-- this waits for mountting. --></${Cmpnt}>`);
 
-              return;
-            }
-
-            MdlIntlStp.LdScrpts += `<script type='riot/tag' src='${Bd.source}.tag'></script>\n`;
-            MdlIntlStp.MntScrpts += `<script>riot.mount('${Bd.source}', '${Bd.source}');</script>\n`;
-
-            Clbck(null, MdlStr);
-          });
-
-        return;
+          return;
+        }
       }
 
-      Clbck('Render', '<!-- can not render this module. -->');
-      Log('do not know how to deal this module.', 'error');
+      Clbck('Render', '<!-- can not render this component. -->');
+      Log('do not know how to deal this component.', 'error');
     },
     function (Err, BdStrs) {
       let HdStr = ''; // head string.
@@ -222,7 +178,7 @@ function Render (Rspns, PthNm) {
 
       if (Pg.js && Pg.js.length) {
         for (let i = 0; i < Pg.js.length; i++) {
-          HdStr += "<script language='javascript' src='" + Pg.js[i] + "'></script>\n";
+          LdScrpts = `<script language='javascript' src='${Pg.js[i]}'></script>\n${LdScrpts}`;
         }
       }
 
@@ -234,8 +190,9 @@ function Render (Rspns, PthNm) {
         "</head>\n<body>\n<div id='Base'>\n" +
         BdStrs.join('\n') +
         '</div>\n' +
-        RtMxnScrpts +
-        MdlIntlStp.LdScrpts + MdlIntlStp.MntScrpts +
+        LdScrpts +
+        "<script>\nriot.mixin('Z.RM', Z.RM);\n</script>\n" +
+        `<script>\n${MntScrpts}</script>\n` +
         '</div>\n</body>\n</html>\n');
       Rspns.end();
     });
@@ -297,10 +254,10 @@ function Route (Rqst, Rspns) {
         const MmTp = { js: 'application/javascript', css: 'text/css', tag: 'text/plain' }; // mine type.
 
         if (SttcFlChk[1] === 'tag') {
-          return StaticFileResponse(Rqst, Rspns, 'SRC/component/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+          return StaticFileResponse(Rqst, Rspns, CmpntPth + SttcFlChk[0], MmTp[SttcFlChk[1]]);
         }
 
-        return StaticFileResponse(Rqst, Rspns, 'WEB/' + SttcFlChk[0], MmTp[SttcFlChk[1]]);
+        return StaticFileResponse(Rqst, Rspns, RsrcPth + SttcFlChk[0], MmTp[SttcFlChk[1]]);
       }
 
       if (URLInfo.pathname.indexOf('/service/') === 0) {

@@ -39,7 +39,7 @@
     this.Byrs = [];
     this.Itms = [];
     this.Tbs = [
-        { Nm: 'Buyer' },
+        { Nm: 'Buyers' },
         { Nm: 'Items' },
         { Nm: 'Check' }];
 
