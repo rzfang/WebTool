@@ -79,9 +79,13 @@ module.exports = {
   '/read': {
     title: 'Feed Read - Web Tool',
     keywords: '閱讀器, RSS, Atom, 網頁, 工具, Web, Tool',
+    js: [
+      'https://cdn.jsdelivr.net/riot/3.3/riot+compiler.min.js',
+      '/include.js',
+      '/coverbox.tag' ],
     body: [
       'header.tag',
-      'read.tag',
+      require('./component/read'),
       'footer.part.html' ]},
   '/window': {
     title: 'Window Open Script - Web Tool',
@@ -96,10 +100,10 @@ module.exports = {
     keywords: '網頁, 工具, Web, Tool',
     author: 'RZ Fang',
     favicon: '',
-    css: [ '/resource/css.css' ],
+    css: [ '/css.css' ],
     js: [
       'https://cdn.jsdelivr.net/riot/3.3/riot+compiler.min.js',
-      '/resource/include.js' ],
+      '/include.js' ],
     body: [
       'header.tag',
       'keycode.part.html',

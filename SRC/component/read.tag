@@ -5,11 +5,33 @@
   <div>
     <feed each={Fds} delete={parent.OneFeedRemove}/>
   </div>
-  <style>
+  <cover-box if={IsTrnsfrOt}>
+    <p>please finish the transfering in 10 minutes by visit followed link in your device which you want the data transfer to.</p>
+    <div>
+      {parent.TrnsfrLnk}<br/>
+      <button onclick={parent.TransferModeToggle}>OK</button>
+    </div>
+  </cover-box>
+  <cover-box if={HsTrnsfrCnfrm}>
+    <p>detected feed urls from remote transfering, what would you do ?</p>
+    <div>
+      <button onclick={parent.TransferIgnore}>Ignore</button>
+      <button onclick={parent.TransferMerge}>Merge</button>
+      <button onclick={parent.TransferReplace}>Replace</button>
+    </div>
+  </cover-box>
+  <style scoped>
     :scope { display: block; padding-top: 5px; }
+    cover-box>div { position: relative; }
+    cover-box p { max-width: 480px; }
+    cover-box>div>div { margin: 10px 0; text-align: center; }
+    cover-box button { margin-top: 10px; }
   </style>
   <script>
+    this.HsTrnsfrCnfrm = this.opts.FdURLs ? true : false; // has transfering confirmation.
+    this.IsTrnsfrOt = false; // is transfer out.
     this.Fds = []; // feeds.
+    this.TrnsfrLnk = ''; // transfer link.
 
     this.mixin('Z.RM');
 
@@ -23,17 +45,29 @@
             return;
           }
 
-          let FdURLs = window.localStorage.FdURLs.split('_|_');
+          if (this.HsTrnsfrCnfrm) { return; }
 
-          for (let i = 0; i < FdURLs.length; i++) {
-            if (!FdURLs[i]) { continue; }
+          let FdURLs = this.URLsFilter(window.localStorage.FdURLs.split('_|_'));
 
-            this.OneFeedLoad(FdURLs[i]);
-          }
+          this.AllFeedsLoad(FdURLs);
         });
       });
 
-    OneFeedLoad (URL, Err) {
+    URLsFilter (URLs) {
+      if (!Z.Is.Array(URLs)) { return []; }
+
+      return URLs.filter(function (URL) { return Z.Is.URL(URL); });
+    }
+
+    AllFeedsLoad (FdURLs) {
+      for (let i = 0; i < FdURLs.length; i++) {
+        if (!FdURLs[i]) { continue; }
+
+        this.OneFeedLoad(FdURLs[i]);
+      }
+    }
+
+    OneFeedLoad (URL) {
       this.AJAX({
         URL: '/service/feed',
         Mthd: 'POST',
@@ -52,7 +86,7 @@
         }});
     }
 
-    OneFeedAdd () {
+    OneFeedAdd (Evt) {
       let FdURLs = window.localStorage.FdURLs,
           URL = this.refs.url.value;
 
@@ -72,14 +106,68 @@
 
       for (let i = 0; i < this.Fds.length; i++) {
         if (this.Fds[i].FdURL === URL) {
-          window.localStorage.FdURLs = FdURLs.replace(URL, '').replace(/_\|__\|_/g, '_|_').replace(/^_\|_|_\|_$/g, '');
-
           this.Fds.splice(i, 1);
-          this.update();
 
           break;
         }
       }
+
+      window.localStorage.FdURLs = FdURLs.replace(URL, '').replace(/_\|__\|_/g, '_|_').replace(/^_\|_|_\|_$/g, '');
+      this.update();
+    }
+
+    Transfer (Evt) {
+      this.AJAX({
+        URL: '/service/feed/transfer',
+        Mthd: 'POST',
+        Data: { FdURLs: window.localStorage.FdURLs },
+        Err: (Sts) => { alert('can not transfer data.'); },
+        OK: (RspnsTxt, Sts) => {
+          if (!RspnsTxt) {
+            alert('can not transfer data.');
+
+            return;
+          }
+
+           this.update({ TrnsfrLnk: 'http://' + window.location.host + '/read?t=' + RspnsTxt });
+        }});
+
+      this.TransferModeToggle(Evt);
+    }
+
+    TransferModeToggle (Evt) {
+      this.update({ IsTrnsfrOt: !this.IsTrnsfrOt });
+    }
+
+    TransferIgnore (Evt) {
+      let FdURLs = this.URLsFilter(window.localStorage.FdURLs.split('_|_'));
+
+      this.update({ HsTrnsfrCnfrm: false });
+      this.AllFeedsLoad(FdURLs);
+    }
+
+    TransferMerge (Evt) {
+      let LclFdURLs = this.URLsFilter(window.localStorage.FdURLs.split('_|_')),
+          RmtFdURLs = this.URLsFilter(this.opts.FdURLs.split('_|_')),
+          FdURLs = LclFdURLs;
+
+      for (let i = 0; i < RmtFdURLs.length; i++) {
+        if (FdURLs.indexOf(RmtFdURLs[i]) > -1 || !Z.Is.URL(RmtFdURLs[i])) { continue; }
+
+        FdURLs.push(RmtFdURLs[i]);
+      }
+
+      window.localStorage.FdURLs = FdURLs.join('_|_');
+      this.update({ HsTrnsfrCnfrm: false });
+      this.AllFeedsLoad(FdURLs);
+    }
+
+    TransferReplace (Evt) {
+      let FdURLs = this.URLsFilter(this.opts.FdURLs.split('_|_'));
+
+      window.localStorage.FdURLs = FdURLs.join('_|_');
+      this.update({ HsTrnsfrCnfrm: false });
+      this.AllFeedsLoad(FdURLs);
     }
   </script>
 </read>

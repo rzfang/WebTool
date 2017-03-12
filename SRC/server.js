@@ -86,8 +86,9 @@ function StaticFileResponse (Rqst, Rspns, FlPth, MmTp) {
 /*
   @ response object.
   @ path name. */
-function Render (Rspns, PthNm) {
-  let Pg = Object.assign({}, Pgs.default, Pgs[PthNm] || {}), // page info object.
+function Render (Rspns, URLInfo) {
+  let PthNm = URLInfo.pathname,
+      Pg = Object.assign({}, Pgs.default, Pgs[PthNm] || {}), // page info object.
       LdScrpts = '', // loading scripts.
       MntScrpts = '';  // mount scripts.
 
@@ -127,12 +128,39 @@ function Render (Rspns, PthNm) {
         }
 
         if (Ext === 'tag') {
-          LdScrpts += `<script type='riot/tag' src='/${Bd}'></script>\n`
+          LdScrpts += `<script type='riot/tag' src='/${Bd}'></script>\n`;
           MntScrpts += `riot.mount('${Cmpnt}');\n`;
-          Clbck(null, `<${Cmpnt}><!-- this waits for mountting. --></${Cmpnt}>`);
+
+          Clbck(null, `<${Cmpnt}><!-- this will be replaced by riot.mount. --></${Cmpnt}>`);
 
           return;
         }
+      }
+
+      if (Tp === 'function') {
+        Bd(
+          URLInfo,
+          function (Cd, Rst) {
+            if (Cd < 0) {
+              Clbck('Render', '<!-- can not render for this task. -->');
+              Log('task run failed.');
+
+              return;
+            }
+
+            if (!Rst.LdJs || !Rst.Js || !Rst.HTML ||
+                !Is.String(Rst.LdJs) || !Is.String(Rst.Js) || !Is.String(Rst.HTML)) {
+              Clbck('Render', '<!-- can not render for this task. -->');
+              Log('task give wrong format result.', 'warn');
+            }
+
+            LdScrpts += Rst.LdJs;
+            MntScrpts += Rst.Js;
+
+            Clbck(null, Rst.HTML);
+          });
+
+        return;
       }
 
       Clbck('Render', '<!-- can not render this component. -->');
@@ -141,7 +169,7 @@ function Render (Rspns, PthNm) {
     function (Err, BdStrs) {
       let HdStr = ''; // head string.
 
-      if (Err < 0) {
+      if (Err) {
         Rspns.writeHead(404, {'Content-Type': 'text/html'});
         Rspns.write('can not found the content.');
         Rspns.end();
@@ -177,9 +205,17 @@ function Render (Rspns, PthNm) {
       }
 
       if (Pg.js && Pg.js.length) {
+        let Scrpts = '';
+
         for (let i = 0; i < Pg.js.length; i++) {
-          LdScrpts = `<script language='javascript' src='${Pg.js[i]}'></script>\n${LdScrpts}`;
+          const Ext = Pg.js[i].substr(Pg.js[i].lastIndexOf('.') + 1); // extension name.
+
+          Scrpts += (Ext === 'tag') ?
+            `<script type='riot/tag' src='${Pg.js[i]}'></script>\n` :
+            `<script language='javascript' src='${Pg.js[i]}'></script>\n`;
         }
+
+        LdScrpts = Scrpts + LdScrpts;
       }
 
       Rspns.writeHead(200, {'Content-Type': 'text/html'});
@@ -191,9 +227,8 @@ function Render (Rspns, PthNm) {
         BdStrs.join('\n') +
         '</div>\n' +
         LdScrpts +
-        "<script>\nriot.mixin('Z.RM', Z.RM);\n</script>\n" +
-        `<script>\n${MntScrpts}</script>\n` +
-        '</div>\n</body>\n</html>\n');
+        `<script>\nriot.mixin('Z.RM', Z.RM);\n${MntScrpts}</script>\n` +
+        '</body>\n</html>\n');
       Rspns.end();
     });
 }
@@ -216,17 +251,21 @@ function ServiceResponse (RqstInfo, Rspns) {
     RqstInfo,
     function (Cd, RstObj) { // code, result object.
       if (Cd < 0) {
-        Rspns.writeHead(404, {'Content-Type': 'application/json'});
-        Rspns.write('');
-        Rspns.end();
-
-        return;
+        Rspns.writeHead(400, {'Content-Type': 'text/html'});
+        Rspns.write('error');
       }
-
-      Rspns.writeHead(200, {'Content-Type': 'application/json'});
-
-      if (!RstObj || !Is.Object(RstObj)) { Rspns.write(''); }
-      else { Rspns.write(JSON.stringify(RstObj)); }
+      else if (!RstObj) {
+        Rspns.writeHead(200, {'Content-Type': 'text/html'});
+        Rspns.write('');
+      }
+      else if (!Is.Object(RstObj)) {
+        Rspns.writeHead(200, {'Content-Type': 'text/html'});
+        Rspns.write(RstObj);
+      }
+      else {
+        Rspns.writeHead(200, {'Content-Type': 'application/json'});
+        Rspns.write(JSON.stringify(RstObj));
+      }
 
       Rspns.end();
     });
@@ -279,10 +318,10 @@ function Route (Rqst, Rspns) {
         return ServiceResponse(RqstInfo, Rspns);
       }
 
-      Render(Rspns, URLInfo.pathname);
+      Render(Rspns, URLInfo);
     });
 }
 
 http.createServer(Route).listen(9001, '127.0.0.1');
-
 Log('server has started.');
+Cch.RecycleRoll(10);

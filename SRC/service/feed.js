@@ -1,7 +1,7 @@
 const request = require('request'),
       feedparser = require('feedparser'),
       Is = require('../RZ-Js-Is'),
-      Cache = require('../cache');
+      Cch = require('../cache');
 
 /*
   @ request info object.
@@ -11,7 +11,7 @@ module.exports = function (RqstInfo, Clbck) {
     return Clbck(-1, null);
   }
 
-  let FdInfo = Cache.Get(RqstInfo.Bdy.URL); // feed info object.
+  let FdInfo = Cch.Get(RqstInfo.Bdy.URL); // feed info object.
 
   if (FdInfo) { return Clbck(1, FdInfo); }
 
@@ -78,6 +78,6 @@ module.exports = function (RqstInfo, Clbck) {
     FdInfo.Itms = FdInfo.Itms.slice(0, 5);
 
     Clbck(0, FdInfo);
-    Cache.Set(RqstInfo.Bdy.URL, FdInfo, 1800);
+    Cch.Set(RqstInfo.Bdy.URL, FdInfo, 1800);
   });
 };
