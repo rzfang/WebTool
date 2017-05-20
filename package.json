@@ -6,13 +6,13 @@
   "dependencies": {
     "async": "^2.1.4",
     "feedparser": "^2.1.0",
-    "node-sass": "^3.4.2",
-    "request": "^2.79.0",
-    "uglify-js": "^2.6.2"
+    "request": "^2.79.0"
   },
   "devDependencies": {
     "eslint": "^3.13.1",
-    "nodemon": "^1.11.0"
+    "node-sass": "^4.0.0",
+    "nodemon": "^1.11.0",
+    "uglify-js": "^3.0.0"
   },
   "scripts": {
     "dev": "nodemon -d 3 -e js,scss,html,php,tag -w SRC/ SRC/server.js",

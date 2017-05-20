@@ -1,0 +1,108 @@
+<div id="Main">
+  <style>
+    #Main>div { text-align: center; }
+  </style>
+  <script>
+    var CnNtf = false, // can notify.
+        Btns, // button elements.
+        Inpts, // input elements.
+        Cntdn, // countdown, setTimeout Id.
+        Clck, // clock, requestAnimateionFrame Id.
+        Dt; // date object.
+
+    window.onload = function () {
+      Btns = Z.DOM.Find('#FctnBx>button');
+      Inpts = Z.DOM.Find('#FctnBx>input');
+    }
+
+    function Start () {
+      var Hr = parseInt(Inpts[0].value, 10), // hour.
+          Mnt = parseInt(Inpts[1].value, 10), // minute.
+          Scnd = parseInt(Inpts[2].value, 10), // second.
+          Mlscnd; // millisecond.
+
+      if (window.Notification) {
+        if (Notification.permission !== "granted") {
+          Notification.requestPermission(function (Pmsn) { CnNtf = (Pmsn === 'granted'); });
+        }
+        else { CnNtf = true; }
+      }
+
+      if (Scnd > 59) {
+        Mnt += Math.floor(Scnd / 60);
+        Scnd %= 60;
+      }
+
+      if (Mnt > 59) {
+        Hr += Math.floor(Mnt / 60);
+        Mnt %= 60;
+      }
+
+      if (Cntdn) { clearTimeout(Cntdn); }
+
+      if (Clck) { cancelAnimationFrame(Clck); }
+
+      Mlscnd = ((Hr * 60 + Mnt) * 60 + Scnd) * 1000;
+      Cntdn = setTimeout(TimesUp, Mlscnd);
+      Clck = setInterval(function () { requestAnimationFrame(Countdown); }, 100);
+      Dt = new Date();
+      Btns[0].disabled = true;
+
+      Dt.setTime(Dt.getTime() + Mlscnd);
+    }
+
+    function Cancel () {
+      if (Cntdn) { clearTimeout(Cntdn); }
+
+      if (Clck) { clearInterval(Clck); }
+
+      Cntdn = 0;
+      Btns[0].disabled = false;
+    }
+
+    function TimesUp () {
+      if (CnNtf) { new Notification('Countdown Notify - WebTool'); }
+
+      if (Cntdn) { clearTimeout(Cntdn); }
+
+      if (Clck) { clearInterval(Clck); }
+
+      Btns[0].disabled = false;
+    }
+
+    /*
+      DOMHghRsTmStmp = DOMHighResTimeStamp. */
+    function Countdown (DOMHghRsTmStmp) {
+      var Now = Math.floor((Dt - (new Date())) / 1000),
+          Hr = parseInt(Math.floor(Now / 3600), 10).toString(),
+          Mnt,
+          Scnd;
+
+      Now %= 3600;
+      Mnt = parseInt(Math.floor(Now / 60), 10).toString();
+      Scnd = (Now % 60).toString();
+
+      if (Hr.length < 2) { Hr = '0' + Hr; }
+
+      if (Mnt.length < 2) { Mnt = '0' + Mnt; }
+
+      if (Scnd.length < 2) { Scnd = '0' + Scnd; }
+
+      Z.DOM.Find('div>h1')[0].innerHTML = Hr + ':' + Mnt + ':' + Scnd;
+    }
+  </script>
+  <div>
+    <h1>00:00:00</h1>
+  </div>
+  <div id='FctnBx'>
+    Countdown in
+    <input type="number" value='0'/>
+    :
+    <input type="number" value='0'/>
+    :
+    <input type="number" value='0'/>
+    <br/><br/>
+    <button onclick='Start();'>Start</button>
+    <button onclick='Cancel();'>Cancel</button>
+  </div>
+</div>

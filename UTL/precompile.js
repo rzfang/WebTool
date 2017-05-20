@@ -14,9 +14,18 @@ function SCSS_CSS (FrmPth, ToPth) {
 }
 
 function JsCompress (FrmPthA, ToPth) {
-  var Js = uglifyjs.minify(FrmPthA, {  }).code;
+  var Srcs = [], // sources.
+      Rst;
 
-  fs.writeFileSync(ToPth, Js);
+  for (var i = 0; i < FrmPthA.length; i++) {
+    Srcs.push(fs.readFileSync(FrmPthA[i], 'utf8'));
+  }
+
+  Rst = uglifyjs.minify(Srcs, {});
+
+  if (Rst.error) { return console.log(Rst.error); }
+
+  fs.writeFileSync(ToPth, Rst.code);
 }
 
 SCSS_CSS('SRC/css.scss', 'WEB/css.css');

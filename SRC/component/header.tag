@@ -48,7 +48,8 @@
         { Ttl: 'JSON Edit',               URL: 'json' },
         { Ttl: '----',                    URL: '' },
         { Ttl: 'Payment',                 URL: 'payment' },
-        { Ttl: 'Read',                    URL: 'read' }
+        { Ttl: 'Read',                    URL: 'read' },
+        { Ttl: 'Countdown Notify',        URL: 'countdown' }
       ];
     this.TgtItm = this.Itms[0];
     this.IsNavOn = false;

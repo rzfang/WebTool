@@ -13,6 +13,13 @@ module.exports = {
       'header.tag',
       'convert.part.html',
       'footer.part.html' ]},
+  '/countdown': {
+    title: 'Countdown - Web Tool',
+    keywords: '倒數計時, 計時, countdown, 網頁, 工具, Tool',
+    body: [
+      'header.tag',
+      'countdown.part.html',
+      'footer.part.html' ]},
   '/datauri': {
     title: 'File to Data URI - Web Tool',
     keywords: '資料, 轉換, datauri, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
