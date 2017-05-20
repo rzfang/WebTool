@@ -16,9 +16,9 @@
     }
 
     function Start () {
-      var Hr = parseInt(Inpts[0].value, 10), // hour.
-          Mnt = parseInt(Inpts[1].value, 10), // minute.
-          Scnd = parseInt(Inpts[2].value, 10), // second.
+      var Hr = parseInt(Inpts[0].value || 0, 10) || 0, // hour.
+          Mnt = parseInt(Inpts[1].value || 0, 10) || 0, // minute.
+          Scnd = parseInt(Inpts[2].value || 0, 10) || 0, // second.
           Mlscnd; // millisecond.
 
       if (window.Notification) {
@@ -61,7 +61,11 @@
     }
 
     function TimesUp () {
-      if (CnNtf) { new Notification('Countdown Notify - WebTool'); }
+      if (CnNtf) {
+        var Wrds = Z.DOM.Find('#FctnBx>input[type=text]')[0].value || 'Countdown Notify';
+
+        new Notification(Wrds + '\n - WebTool');
+      }
 
       if (Cntdn) { clearTimeout(Cntdn); }
 
@@ -101,6 +105,8 @@
     <input type="number" value='0'/>
     :
     <input type="number" value='0'/>
+    <br/><br/>
+    <input type="text" placeholder="the words to notify." />
     <br/><br/>
     <button onclick='Start();'>Start</button>
     <button onclick='Cancel();'>Cancel</button>

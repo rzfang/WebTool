@@ -47,8 +47,8 @@
         { Ttl: 'File to Data URI',        URL: 'datauri' },
         { Ttl: 'JSON Edit',               URL: 'json' },
         { Ttl: '----',                    URL: '' },
-        { Ttl: 'Payment',                 URL: 'payment' },
-        { Ttl: 'Read',                    URL: 'read' },
+        { Ttl: 'Payment Note',            URL: 'payment' },
+        { Ttl: 'Feed Read',               URL: 'read' },
         { Ttl: 'Countdown Notify',        URL: 'countdown' }
       ];
     this.TgtItm = this.Itms[0];
