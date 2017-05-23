@@ -273,7 +273,7 @@ function ServiceResponse (RqstInfo, Rspns) {
 
 function Route (Rqst, Rspns) {
   let URLInfo = url.parse(Rqst.url),
-      SttcFlChk = /[^\/]+\.(js|css|tag|html)$/.exec(URLInfo.pathname), // static file check.
+      SttcFlChk = /[^\/]+\.(js|css|tag|html|txt)$/.exec(URLInfo.pathname), // static file check.
       PstBdy = ''; // post body.
 
   Rqst.on(
@@ -290,7 +290,12 @@ function Route (Rqst, Rspns) {
     'end',
     function () {
       if (SttcFlChk && SttcFlChk.length && SttcFlChk.length > 1) {
-        const MmTp = { js: 'application/javascript', css: 'text/css', tag: 'text/plain', html: 'text/html' }; // mine type.
+        const MmTp = {
+                js: 'application/javascript',
+                css: 'text/css',
+                tag: 'text/plain',
+                html: 'text/html',
+                txt: 'text/plain' }; // mine type.
 
         if (SttcFlChk[1] === 'tag') {
           return StaticFileResponse(Rqst, Rspns, CmpntPth + SttcFlChk[0], MmTp[SttcFlChk[1]]);
