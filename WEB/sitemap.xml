@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+<url>
+  <loc>http://webtool.zii.tw/</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/colors</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/convert</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/countdown</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/datauri</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/datetime</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/endecode</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/ipv426</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/json</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/keycode</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/payment</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/post</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/re</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/read</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>http://webtool.zii.tw/window</loc>
+  <changefreq>weekly</changefreq>
+</url>
+</urlset>

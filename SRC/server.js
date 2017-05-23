@@ -273,7 +273,7 @@ function ServiceResponse (RqstInfo, Rspns) {
 
 function Route (Rqst, Rspns) {
   let URLInfo = url.parse(Rqst.url),
-      SttcFlChk = /[^\/]+\.(js|css|tag|html|txt)$/.exec(URLInfo.pathname), // static file check.
+      SttcFlChk = /[^\/]+\.(js|css|tag|html|txt|xml)$/.exec(URLInfo.pathname), // static file check.
       PstBdy = ''; // post body.
 
   Rqst.on(
@@ -295,7 +295,8 @@ function Route (Rqst, Rspns) {
                 css: 'text/css',
                 tag: 'text/plain',
                 html: 'text/html',
-                txt: 'text/plain' }; // mine type.
+                txt: 'text/plain',
+                xml: 'text/xml' }; // mine type.
 
         if (SttcFlChk[1] === 'tag') {
           return StaticFileResponse(Rqst, Rspns, CmpntPth + SttcFlChk[0], MmTp[SttcFlChk[1]]);
