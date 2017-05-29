@@ -8,11 +8,14 @@ body {
   color: #202020;
 }
 
-div, header, footer, nav, li, td, button, input[type=button] {
+div, header, #footer, nav, li, td, button, input[type=button] {
   border-color: #808080;
-  border-radius: 3px;
   border-style: solid;
   border-width: 0;
+}
+
+div, nav, li, td, button, input[type=button] {
+  border-radius: 3px;
 }
 
 a, input, option, button {
@@ -47,9 +50,27 @@ button, input[type=button] {
   padding: 5px;
 }
 
-footer {
+#footer {
+  position: relative;
   border-top-width: 1px;
   text-align: center;
+
+  >div {
+    position: absolute;
+    right: 45px;
+    bottom: 0;
+    width: 100px;
+    height: 100px;
+    text-align: right;
+  }
+
+  button {
+    display: none;
+    position: fixed;
+    bottom: 25px;
+    padding: 0 3px;
+    background-color: #ffffff;
+  }
 }
 
 /*==== Class =========================================================================================================*/

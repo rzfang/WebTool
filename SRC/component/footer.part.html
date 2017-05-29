@@ -1,4 +1,37 @@
-<footer>
+<footer id='footer'>
+  <script type='text/javascript'>
+    var Btn;
+
+    Z.DOM.EventListen(
+      window,
+      'onload',
+      function (Evt) {
+        Btn = Z.DOM.Find('#footer button')[0];
+
+        Z.DOM.EventListen(window, 'onscroll', ScrollingButtonToggle);
+      });
+
+    function ScrollingButtonToggle (Evt) {
+      if (!Evt.pageY || Evt.pageY < 40) {
+        if (Btn.style.display === 'none') { return; }
+
+        Btn.style.display = 'none';
+
+        return;
+      }
+
+      if (Btn.style.display !== 'none') { return; }
+
+      Btn.style.display = 'inline-block';
+    }
+
+    function ScrollToTop (Evt) {
+      window.scrollTo(0, 0);
+    }
+  </script>
   <a href='/'> Web Tool - ZII</a>
   <span>©2011-2016 RZ Fang</span>
+  <div>
+    <button onclick="ScrollToTop();">^Top</button>
+  </div>
 </footer>

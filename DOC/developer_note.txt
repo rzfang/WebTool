@@ -1,5 +1,8 @@
 ==== To Do =============================================================================================================
 
+* 20170522
+  sitemap.xml can provide by server.js itself, by passing the page.json.
+
 * 20160102
   pm2 log rotation.
   ssh with pubkey.

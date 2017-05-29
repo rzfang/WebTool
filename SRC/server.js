@@ -223,10 +223,10 @@ function Render (Rspns, URLInfo) {
         "<!DOCTYPE HTML>\n<html>\n<head>\n<meta http-equiv='content-type' content='text/html; charset=utf-8'/>\n" +
         "<meta name='viewport' content='width=device-width, initial-scale=1.0'>\n" +
         HdStr +
+        LdScrpts +
         "</head>\n<body>\n<div id='Base'>\n" +
         BdStrs.join('\n') +
         '</div>\n' +
-        LdScrpts +
         `<script>\nriot.mixin('Z.RM', Z.RM);\n${MntScrpts}</script>\n` +
         '</body>\n</html>\n');
       Rspns.end();

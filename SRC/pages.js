@@ -14,7 +14,7 @@ module.exports = {
       'convert.part.html',
       'footer.part.html' ]},
   '/countdown': {
-    title: 'Countdown - Web Tool',
+    title: 'Countdown Notify - Web Tool',
     keywords: '倒數計時, 計時, countdown, 網頁, 工具, Tool',
     body: [
       'header.tag',
@@ -109,7 +109,7 @@ module.exports = {
     favicon: '',
     css: [ '/css.css' ],
     js: [
-      'https://cdn.jsdelivr.net/riot/3.3/riot+compiler.min.js',
+      'https://cdn.jsdelivr.net/npm/riot@3.5/riot+compiler.min.js',
       '/include.js' ],
     body: [
       'header.tag',

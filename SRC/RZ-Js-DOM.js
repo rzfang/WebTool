@@ -233,7 +233,6 @@
       return this;
     };
 
-
     /* Not Yet. */
     Element.prototype.Attr = function (Attr, Val) {
     };
@@ -263,14 +262,37 @@
     return document.createElement(TgNm);
   }
 
+  /*
+    'Tgt' = target, the DOM object, can also be window object.
+    'EvtNm' = event name, an existed event name string.
+    'NewFctn' = new function which will be add into the event. */
+  function EventListen (Tgt, EvtNm, NewFctn) {
+    if (!Tgt || !EvtNm || typeof Tgt !== 'object' || typeof EvtNm !== 'string' || typeof NewFctn !== 'function')
+    { return; }
+
+    if (typeof Tgt[EvtNm] !== 'function') {
+      Tgt[EvtNm] = NewFctn;
+
+      return;
+    }
+
+    var OldFctn = Tgt[EvtNm];
+
+    Tgt[EvtNm] = function (Evt) {
+      OldFctn(Evt);
+      NewFctn(Evt);
+    }
+  }
+
   DOM = {
     Find: Find,
     NewNode: NewNode,
+    EventListen: EventListen,
     Initialize: Initialize
   };
 
   if (typeof window !== 'undefined') {
-    if (!window.Z || typeof window.Z !== 'object') { window.Z = {DOM: DOM}; }
+    if (!window.Z || typeof window.Z !== 'object') { window.Z = { DOM: DOM }; }
     else { window.Z.DOM = DOM; }
 
     DOM.Initialize();
