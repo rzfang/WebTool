@@ -7,9 +7,6 @@
   pm2 log rotation.
   ssh with pubkey.
 
-* 20141026
-  需要 Icon。
-
 * 20140605
   JSON Editor 功能未完善。
 
