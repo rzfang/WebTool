@@ -186,7 +186,7 @@
     :scope>div:first-child { position: relative; }
     :scope>div:first-child>div { font-size: 14px; color: #808080; }
     :scope>div:first-child>button { position: absolute; right: 0px; top: 0px; }
-    :last-child>a { display: block; }
+    :last-child>a { display: block; margin: 10px 0; }
   </style>
   <script>
     Delete (Evt) {
