@@ -1,5 +1,3 @@
 User-agent: *
-Disallow: /*.css$
-Disallow: /*.js$
-Disallow: /*.tag$
 Disallow: /service/
+
