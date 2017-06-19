@@ -324,6 +324,14 @@ function Route (Rqst, Rspns) {
         return ServiceResponse(RqstInfo, Rspns);
       }
 
+      if (URLInfo.pathname.indexOf('/.well-known/acme-challenge/') > -1) { // for SSL cert.
+        return StaticFileResponse(
+          Rqst,
+          Rspns,
+          'WEB/' + URLInfo.pathname.substr(URLInfo.pathname.lastIndexOf('/') + 1),
+          'text/plain');
+      }
+
       Render(Rspns, URLInfo);
     });
 }
