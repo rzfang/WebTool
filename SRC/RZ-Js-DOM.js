@@ -281,7 +281,7 @@
     Tgt[EvtNm] = function (Evt) {
       OldFctn(Evt);
       NewFctn(Evt);
-    }
+    };
   }
 
   DOM = {

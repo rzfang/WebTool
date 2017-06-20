@@ -12,6 +12,7 @@
     "eslint": "^3.13.1",
     "node-sass": "^4.0.0",
     "nodemon": "^1.11.0",
+    "pre-commit": "^1.2.2",
     "uglify-js": "^3.0.0"
   },
   "scripts": {
@@ -32,5 +33,19 @@
   "bugs": {
     "url": "https://github.com/rzfang/WebTool/issues"
   },
-  "homepage": "https://github.com/rzfang/WebTool#readme"
+  "homepage": "https://github.com/rzfang/WebTool#readme",
+  "pre-commit": [ "lint" ],
+  "eslintConfig": {
+    "env": { "browser": true, "es6": true, "node": true },
+    "extends": "eslint:recommended",
+    "parserOptions": { "sourceType": "module" },
+    "rules": {
+      "linebreak-style": [ "error", "unix" ],
+      "no-cond-assign": "off",
+      "no-console": [ "warn", { "allow": [ "warn", "error" ]}],
+      "no-redeclare": [ "warn", { "builtinGlobals": true }],
+      "no-unused-vars": [ "warn", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
+      "semi": [ "error", "always" ]
+    }
+  }
 }
