@@ -12,7 +12,9 @@
       });
 
     function ScrollingButtonToggle (Evt) {
-      if (!Evt.pageY || Evt.pageY < 40) {
+      var Y = window.scrollY || Evt.pageY || null;
+
+      if (!Y || Y < 40) {
         if (Btn.style.display === 'none') { return; }
 
         Btn.style.display = 'none';
