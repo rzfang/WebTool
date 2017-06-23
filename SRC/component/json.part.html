@@ -23,44 +23,38 @@
   <script type='text/javascript' src='resource/json5.js'></script>
   <script type='text/javascript'>
   <!--
-    window.onload = function (Evt)
-      {
-        var FctnBx = Z.DOM.Find('#FctnBx')[0],
-            IptBtns = Z.DOM.Find('#IptBx > div > input[type=button]'),
-            RtNd = Z.DOM.Find('#Rt')[0];
+    window.onload = function (Evt) {
+      var FctnBx = Z.DOM.Find('#FctnBx')[0],
+          IptBtns = Z.DOM.Find('#IptBx > div > input[type=button]'),
+          RtNd = Z.DOM.Find('#Rt')[0];
 
-        FctnBx.Find('input[type=file]')[0].onchange = JSONLoad;
-        FctnBx.Find('input[type=button]')[0].onclick = JSONRead;
-        FctnBx.Find('input[type=button]')[1].onclick = JSONToString;
-        RtNd.AddEvent('click', DataEdit)
-            .AddEvent('click', TreeToggle);
-        IptBtns[0].onclick = DataReplace;
-        IptBtns[1].onclick = function (Evt) { this.Above(2).style.display = 'none'; };
+      FctnBx.Find('input[type=file]')[0].onchange = JSONLoad;
+      FctnBx.Find('input[type=button]')[0].onclick = JSONRead;
+      FctnBx.Find('input[type=button]')[1].onclick = JSONToString;
+      RtNd.AddEvent('click', DataEdit)
+          .AddEvent('click', TreeToggle);
+      IptBtns[0].onclick = DataReplace;
+      IptBtns[1].onclick = function (Evt) { this.Above(2).style.display = 'none'; };
 
-        Z.DOM.Find('#IptBx > textarea')[0].onkeyup = function (Evt)
-          {
-            switch (Evt.keyCode)
-            {
-              case 27:
-                this.Above().style.display = 'none';
-                break;
-            }
-          };
+      Z.DOM.Find('#IptBx > textarea')[0].onkeyup = function (Evt) {
+        switch (Evt.keyCode) {
+          case 27:
+            this.Above().style.display = 'none';
+            break;
+        }
       };
+    };
 
-    function JSONLoad (Evt)
-    {
+    function JSONLoad (Evt) {
       var Fl = Evt.Element().files[0];
 
-      if (!Fl)
-      {
+      if (!Fl) {
         alert('please select a JSON file.');
 
         return -1;
       }
 
-      if (Fl.size > 1048576)
-      {
+      if (Fl.size > 1048576) {
         alert('the file size is more than 1mb.');
 
         return -2;
@@ -68,27 +62,24 @@
 
       var FR = new FileReader();
 
-      FR.onloadend = function(Evt){ JSONRender(this.result); };
+      FR.onloadend = function (Evt) { JSONRender(this.result); };
+
       FR.readAsText(Fl);
     }
 
-    function JSONRead (Evt)
-    {
-      var Txt = Evt.Element().Prev().value;
+    function JSONRead (Evt) {
+      var Txt = Evt.Element().Prev().value.replace(/\n/g, '');
 
       JSONRender(Txt);
     }
 
-    function JSONRender (string)
-    {
+    function JSONRender (string) {
       var JO = null,
           Rt = Z.DOM.Find('#Rt')[0],
           Is5 = Z.DOM.Find('#FctnBx input[type=checkbox]')[0].checked; // 'Is5' = Is using JSON5.
 
-      try
-      { JO = Is5 ? JSON5.parse(string) : JSON.parse(string); }
-      catch (Ecpt)
-      {
+      try { JO = Is5 ? JSON5.parse(string) : JSON.parse(string); }
+      catch (Ecpt) {
         alert('the stream is not JSON.');
 
         return -1;
@@ -103,22 +94,18 @@
       Rt.innerHTML = '';
       Rt.className = '';
 
-      if (typeof JO === 'number')
-      {
+      if (typeof JO === 'number') {
         Rt.className = 'EdtNd number';
 
         Rt.appendChild(document.createTextNode(JO.toString()));
       }
-      else if (typeof JO === 'string')
-      {
+      else if (typeof JO === 'string') {
         Rt.className = 'EdtNd string';
 
         Rt.appendChild(document.createTextNode('"' + JO + '"'));
       }
-      else if (typeof JO.length === 'number')
-      { QuoteMarkRender(Rt, JO, 'array'); }
-      else
-      { QuoteMarkRender(Rt, JO, 'object'); }
+      else if (typeof JO.length === 'number') { QuoteMarkRender(Rt, JO, 'array'); }
+      else { QuoteMarkRender(Rt, JO, 'object'); }
 
       return 0;
 
@@ -126,25 +113,21 @@
         'Rt' = DOM Root node object.
         'Obj' = Object to render.
         'Tp' = Type of object. optional, 'object'|'array', default 'object'. */
-      function QuoteMarkRender(Rt, Obj, Tp)
-      {
+      function QuoteMarkRender (Rt, Obj, Tp) {
         var FstNd = document.createElement('span'),
             LstNd = document.createElement('span');
 
         FstNd.className = 'TglNd';
         FstNd.dataset.suffix = '-';
 
-        if (typeof Rt !== 'object' || typeof Obj !== 'object')
-        { return -1; }
+        if (typeof Rt !== 'object' || typeof Obj !== 'object') { return -1; }
 
-        if (Tp === 'array')
-        {
+        if (Tp === 'array') {
           FstNd.textContent = '[';
           LstNd.textContent = ']';
           Rt.className = 'array';
         }
-        else
-        {
+        else {
           FstNd.textContent = '{';
           LstNd.textContent = '}';
           Rt.className = 'object';
@@ -157,24 +140,19 @@
         return 0;
       }
 
-      function ObjectRender (Obj)
-      {
+      function ObjectRender (Obj) {
         var Rt = document.createElement('ul'),
             IsA = false;
 
-        if (typeof Obj !== 'object' || Obj === null)
-        { return Nd; }
+        if (typeof Obj !== 'object' || Obj === null) { return Nd; }
 
-        if (typeof Obj.length === 'number')
-        { IsA = true; }
+        if (typeof Obj.length === 'number') { IsA = true; }
 
-        for (var i in Obj)
-        {
+        for (var i in Obj) {
           var NdStt = IsA ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : '),
               Nd;
 
-          switch (typeof Obj[i])
-          {
+          switch (typeof Obj[i]) {
             case 'string':
               Nd = document.createElement('li');
               Nd.className = 'string';
@@ -196,14 +174,12 @@
             case 'object':
               Nd = document.createElement('li');
 
-              if (typeof Obj[i].length === 'number')
-              {
+              if (typeof Obj[i].length === 'number') {
                 Nd.innerHTML = NdStt;
 
                 QuoteMarkRender(Nd, Obj[i], 'array');
               }
-              else
-              {
+              else {
                 Nd.innerHTML = NdStt;
 
                 QuoteMarkRender(Nd, Obj[i], 'object');
@@ -221,14 +197,12 @@
       }
     }
 
-    function DataEdit (Evt)
-    {
+    function DataEdit (Evt) {
       var Nd = Evt.Element(),
           IptBx = Z.DOM.Find('#IptBx')[0],
           IptNd = IptBx.Children('textarea')[0];
 
-      if (Nd.className.indexOf('EdtNd') < 0)
-      { return -1; }
+      if (Nd.className.indexOf('EdtNd') < 0) { return -1; }
 
       IptNd.style.width = (Nd.offsetWidth * 1.3) + 'px';
       IptNd.style.height = Nd.offsetHeight + 'px';
@@ -243,23 +217,19 @@
       return 0;
     }
 
-    function TreeToggle (Evt)
-    {
+    function TreeToggle (Evt) {
       var Nd = Evt.Element(),
           TrNd;
 
-      if (Nd.className.indexOf('TglNd') < 0)
-      { return -1; }
+      if (Nd.className.indexOf('TglNd') < 0) { return -1; }
 
       TrNd = Nd.Above().Children('ul')[0];
 
-      if (TrNd.style.display === 'none')
-      {
+      if (TrNd.style.display === 'none') {
         Nd.dataset.suffix = '-';
         TrNd.style.display = '';
       }
-      else
-      {
+      else {
         Nd.dataset.suffix = '+';
         TrNd.style.display = 'none';
       }
@@ -267,22 +237,19 @@
       return 0;
     }
 
-    function DataReplace (Evt)
-    {
+    function DataReplace (Evt) {
       var IptStr = '',
           TgtNd = null,
           IptBx = this.Above().Process(function (Self) { IptStr = Self.Prev().value; })
                               .Above().Process(function (Self) { TgtNd = Self.target; });
 
-      if (!TgtNd)
-      {
+      if (!TgtNd) {
         alert('there\'s no target you point.');
 
         return -1;
       }
 
-      if (IptStr.length === 0)
-      {
+      if (IptStr.length === 0) {
         alert('you should never give a empty string.')
 
         return -2;
@@ -294,8 +261,7 @@
       return 0;
     }
 
-    function JSONToString (Evt)
-    {
+    function JSONToString (Evt) {
       var RtNd = Z.DOM.Find('#Rt')[0],
           Obj = RtNd.className === 'array' ? [] : {},
           Nds = RtNd.Children('ul')[0].Children();
@@ -309,15 +275,11 @@
       /*
         'Nds' = Nodes array.
         'Obj' = Object to collect JSON data. */
-      function NodesLoop (Nds, Obj)
-      {
-        if (typeof Nds !== 'object' || typeof Nds.length !== 'number')
-        { return -1; }
+      function NodesLoop (Nds, Obj) {
+        if (typeof Nds !== 'object' || typeof Nds.length !== 'number') { return -1; }
 
-        for (var i = 0; i < Nds.length; i++)
-        {
-          if (Nds[i].nodeType !== 1 || Nds[i].nodeName !== 'LI')
-          { return -2; }
+        for (var i = 0; i < Nds.length; i++) {
+          if (Nds[i].nodeType !== 1 || Nds[i].nodeName !== 'LI') { return -2; }
 
           DataFetch(Nds[i], Obj);
         }
@@ -328,20 +290,15 @@
       /*
         'RtNd' = Root Node.
         'Obj' = Object to collect JSON data. */
-      function DataFetch(RtNd, Obj)
-      {
-        if (typeof RtNd !== 'object' || typeof RtNd.nodeName !== 'string' || typeof Obj !== 'object')
-        { return -1; }
+      function DataFetch(RtNd, Obj) {
+        if (typeof RtNd !== 'object' || typeof RtNd.nodeName !== 'string' || typeof Obj !== 'object') { return -1; }
 
         var Nds = RtNd.Children();
 
-        if (Nds.length === 0)
-        { return -2; }
+        if (Nds.length === 0) { return -2; }
 
-        if (Nds[0].textContent.length === 0) // is array.
-        {
-          switch (RtNd.className)
-          {
+        if (Nds[0].textContent.length === 0) { // is array.
+          switch (RtNd.className) {
             case 'string':
               Obj.push(Nds[1].textContent.replace(/^"(.?)"$/, "\$1"));
               break;
@@ -363,10 +320,8 @@
             default:
           }
         }
-        else
-        {
-          switch (RtNd.className)
-          {
+        else {
+          switch (RtNd.className) {
             case 'string':
               Obj[Nds[0].textContent] = Nds[1].textContent.replace(/^"|"$/g, '');
               break;
