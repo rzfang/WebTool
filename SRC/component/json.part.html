@@ -94,17 +94,17 @@
       Rt.innerHTML = '';
       Rt.className = '';
 
-      if (typeof JO === 'number') {
+      if (Z.Is.Number(JO)) {
         Rt.className = 'EdtNd number';
 
         Rt.appendChild(document.createTextNode(JO.toString()));
       }
-      else if (typeof JO === 'string') {
+      else if (Z.Is.String(JO)) {
         Rt.className = 'EdtNd string';
 
         Rt.appendChild(document.createTextNode('"' + JO + '"'));
       }
-      else if (typeof JO.length === 'number') { QuoteMarkRender(Rt, JO, 'array'); }
+      else if (Z.Is.Number(JO.length)) { QuoteMarkRender(Rt, JO, 'array'); }
       else { QuoteMarkRender(Rt, JO, 'object'); }
 
       return 0;
@@ -120,7 +120,7 @@
         FstNd.className = 'TglNd';
         FstNd.dataset.suffix = '-';
 
-        if (typeof Rt !== 'object' || typeof Obj !== 'object') { return -1; }
+        if (!Z.Is.Object(Rt) || !Z.Is.Object(Obj)) { return -1; }
 
         if (Tp === 'array') {
           FstNd.textContent = '[';
@@ -144,9 +144,9 @@
         var Rt = document.createElement('ul'),
             IsA = false;
 
-        if (typeof Obj !== 'object' || Obj === null) { return Nd; }
+        if (!Z.Is.Object(Obj) || Obj === null) { return Nd; }
 
-        if (typeof Obj.length === 'number') { IsA = true; }
+        if (Z.Is.Number(Obj.length)) { IsA = true; }
 
         for (var i in Obj) {
           var NdStt = IsA ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : '),
@@ -174,7 +174,7 @@
             case 'object':
               Nd = document.createElement('li');
 
-              if (typeof Obj[i].length === 'number') {
+              if (Z.Is.Number(Obj[i].length)) {
                 Nd.innerHTML = NdStt;
 
                 QuoteMarkRender(Nd, Obj[i], 'array');
@@ -276,7 +276,7 @@
         'Nds' = Nodes array.
         'Obj' = Object to collect JSON data. */
       function NodesLoop (Nds, Obj) {
-        if (typeof Nds !== 'object' || typeof Nds.length !== 'number') { return -1; }
+        if (!Z.Is.Object(Nds) || !Z.Is.Number(Nds.length)) { return -1; }
 
         for (var i = 0; i < Nds.length; i++) {
           if (Nds[i].nodeType !== 1 || Nds[i].nodeName !== 'LI') { return -2; }
@@ -291,7 +291,7 @@
         'RtNd' = Root Node.
         'Obj' = Object to collect JSON data. */
       function DataFetch(RtNd, Obj) {
-        if (typeof RtNd !== 'object' || typeof RtNd.nodeName !== 'string' || typeof Obj !== 'object') { return -1; }
+        if (!Z.Is.Object(RtNd) || !Z.Is.String(RtNd.nodeName) || !Z.Is.Object(Obj)) { return -1; }
 
         var Nds = RtNd.Children();
 
