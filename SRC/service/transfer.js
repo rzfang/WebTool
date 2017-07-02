@@ -21,21 +21,21 @@ function KeyGenerate (Sd) {
 }
 
 /*
-  @ request info object.
+  @ request info object. format as { Bdy: { Ctn: '...' }}.
   @ callback function. */
 module.exports = function (RqstInfo, Clbck) {
-  if (!RqstInfo.Bdy || !RqstInfo.Bdy.FdURLs || !Is.String(RqstInfo.Bdy.FdURLs)) {
+  if (!RqstInfo.Bdy || !RqstInfo.Bdy.Ctn || !Is.String(RqstInfo.Bdy.Ctn)) {
     return Clbck(-1, null);
   }
 
   let Dt = new Date(),
-      Ky = KeyGenerate(RqstInfo.Bdy.FdURLs + Dt.getTime().toString());
+      Ky = KeyGenerate(RqstInfo.Bdy.Ctn + Dt.getTime().toString());
 
   while(Cch.Has(Ky)) {
     Ky = NextKeyGet(Ky);
   }
 
-  Cch.Set(Ky, RqstInfo.Bdy.FdURLs, 600);
+  Cch.Set(Ky, RqstInfo.Bdy.Ctn, 600);
 
   return Clbck(0, Ky);
 };

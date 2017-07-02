@@ -2,7 +2,6 @@ const Cch = require('../cache');
 
 module.exports = function (URLInfo, Clbck) {
   let Rst = { // result.
-        LdJs: "<script type='riot/tag' src='/read.tag'></script>\n", // loading javascript tag.
         HTML: '<read><!-- this will be replaced by riot.mount. --></read>',
         Js: "riot.mount('read');\n" };
 

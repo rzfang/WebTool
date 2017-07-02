@@ -1,5 +1,9 @@
 (function Z_RiotMixin_API () {
-  var RM; // 'RM' = RiotMixin.
+  var Srvc = { // service.
+        Rprt: {}, // report.
+        Sto: {} // data store.
+      },
+      RM; // 'RM' = RiotMixin.
 
   /* make a AJAX request.
     @ AJAX Info object, key-value pairs.
@@ -30,7 +34,18 @@
     XHR = new XMLHttpRequest();
     Kys = Object.keys(Info.Data);
 
-    for (var i = 0; i < Kys.length; i++) { FmDt.append(Kys[i], Info.Data[Kys[i]]); }
+    for (var i = 0; i < Kys.length; i++) {
+      var Tp = typeof Info.Data[Kys[i]];
+
+      if (Array.isArray(Info.Data[Kys[i]])) {
+        var Ky = Kys[i] + '[]',
+            Vl = Info.Data[Kys[i]],
+            Lth = Vl.length;
+
+        for (var j = 0; j < Lth; j++) { FmDt.append(Ky, Vl[j]); }
+      }
+      else if (Tp === 'string' || Tp === 'number') { FmDt.append(Kys[i], Info.Data[Kys[i]]); }
+    }
 
     if (typeof Info.File === 'object' && Info.File !== null) {
       Kys = Object.keys(Info.File);
@@ -38,6 +53,7 @@
       for (var i = 0; i < Kys.length; i++) { FmDt.append(Kys[i], Info.File[Kys[i]]); }
     }
 
+    XHR.timeout = 5000;
     XHR.onreadystatechange = StateChange;
     XHR.upload.onprogress =  function (Evt) { Info.Pgs(Evt.loaded, Evt.total, Evt); };
 
@@ -68,7 +84,7 @@
           break;
 
         case 4:
-          if (this.status === 200) { Info.OK(this.responseText, this.status); }
+          if (this.status === 200) { Info.OK(this.responseText, this.status, this); }
           else { Info.Err(this.status); }
 
           Info.End();
@@ -100,14 +116,91 @@
     return true;
   }
 
+  function Trim (Str) {
+    if (typeof Str !== 'string') { return ''; }
+
+    return Str.replace(/^\s+|\s+$/g, '');
+  }
+
+  /*
+    Tsk = task, a string of task name.
+    Thn(Sto, Rst) = then, a function when the task done. */
+  function ServiceListen (Tsk, Thn) {
+    var Clbcks = Srvc.Rprt[Tsk] || null;
+
+    if (!Clbcks || !Array.isArray(Clbcks)) {
+      Srvc.Rprt[Tsk] = [];
+      Clbcks = Srvc.Rprt[Tsk];
+    }
+
+    Srvc.Rprt[Tsk].push(Thn);
+
+    if (Srvc.Sto[Tsk]) { Thn(Srvc.Sto[Tsk], null); } // if the task store is ready, call once first.
+  }
+
+  /*
+    URL = URL string, the service entry point.
+    Prms = params object to call service.
+    StoNm = name to locate the store.
+    NewStoreGet (Sto, Rst) = the function to get new store, this must return something to replace original store.
+      Sto = original store data.
+      Rst = result from API.
+    PrmsToTsk = params object passing to each task. */
+  function ServiceCall (URL, Prms, StoNm, NewStoreGet, PrmsToTsk) {
+    if (!URL || typeof URL !== 'string' ||
+        !StoNm || typeof StoNm !== 'string' ||
+        !NewStoreGet || typeof NewStoreGet !== 'function')
+    { return -1; }
+
+    AJAX({
+      URL: URL,
+      Mthd: 'POST',
+      Data: Prms,
+      Err: function (Sts) {
+        console.log('---- AJAX query fail ----\nURL: ' + URL + '\nparams:');
+        console.log(Prms);
+        console.log('----\n');
+
+        Srvc.Sto[StoNm] = NewStoreGet(Srvc.Sto[StoNm], '');
+      },
+      OK: function (RspnsTxt, Sts, XHR) {
+        var CntTp = XHR.getResponseHeader('content-type'),
+            Rst = RspnsTxt,
+            Tsks = Srvc.Rprt[StoNm] || [],
+            Lnth = Tsks && Array.isArray(Tsks) && Tsks.length || 0;
+
+        if (Rst && (CntTp === 'application/json' || CntTp === 'text/json')) { Rst = JSON.parse(Rst); }
+
+        Srvc.Sto[StoNm] = NewStoreGet(Srvc.Sto[StoNm], Rst);
+
+        for (var i = 0; i < Lnth; i++) { Tsks[i](Srvc.Sto[StoNm], PrmsToTsk); }
+      }
+    });
+
+    return 0;
+  }
+
+  /* get a store.
+    Ky = a string of store key.
+    return: store object, or null. */
+  function StoreGet(Ky) {
+    if (!Ky || typeof Ky !== 'string') { return null; }
+
+    return Srvc.Sto[Ky] || null;
+  }
+
   RM = {
     OnBrowser: OnBrowser,
-    OnNode: OnNode
+    OnNode: OnNode,
+    Trim: Trim
   };
 
   if (typeof module !== 'undefined') { module.exports = RM; }
   else if (typeof window !== 'undefined') {
     RM.AJAX = AJAX;
+    RM.ServiceListen = ServiceListen;
+    RM.ServiceCall = ServiceCall;
+    RM.StoreGet = StoreGet;
 
     if (!window.Z || typeof window.Z !== 'object') { window.Z = {RM: RM}; }
     else { window.Z.RM = RM; }

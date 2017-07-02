@@ -53,6 +53,16 @@
         });
       });
 
+    this.ServiceListen('FEEDS', (Sto, TskPrms) => { this.update({ Fds: Sto }); });
+
+    this.ServiceListen(
+      'TRANSFER',
+      (Sto, TskPrms) => {
+        this.update({
+          TrnsfrLnk: Sto ? ('http://' + window.location.host + '/read?t=' + Sto) : 'can not transer data.'
+        });
+      });
+
     URLsFilter (URLs) {
       if (!Z.Is.Array(URLs)) { return []; }
 
@@ -68,22 +78,18 @@
     }
 
     OneFeedLoad (URL) {
-      this.AJAX({
-        URL: '/service/feed',
-        Mthd: 'POST',
-        Data: { URL: URL },
-        Err: (Sts) => {
-          this.Fds.push({ Lnk: URL, Ttl: 'Load Failed', Dscrptn: `can not load this feed.`, FdURL: URL, Itms: null });
-        },
-        OK: (RspnsTxt, Sts) => {
-          let FdInfo = RspnsTxt && JSON.parse(RspnsTxt) || null;
+      this.ServiceCall(
+        '/service/feed',
+        { URL: URL },
+        'FEEDS',
+        (Sto, Rst) => {
+          if (!Sto) { Sto = []; }
 
-          if (FdInfo) { this.Fds.push(FdInfo); }
+          if (!Rst) { console.log('can get feed result for ' +  URL); }
+          else { Sto.push(Rst); }
 
-          this.update();
-
-          this.refs.url.value = '';
-        }});
+          return Sto;
+        });
     }
 
     OneFeedAdd (Evt) {
@@ -117,20 +123,11 @@
     }
 
     Transfer (Evt) {
-      this.AJAX({
-        URL: '/service/feed/transfer',
-        Mthd: 'POST',
-        Data: { FdURLs: window.localStorage.FdURLs },
-        Err: (Sts) => { alert('can not transfer data.'); },
-        OK: (RspnsTxt, Sts) => {
-          if (!RspnsTxt) {
-            alert('can not transfer data.');
-
-            return;
-          }
-
-           this.update({ TrnsfrLnk: 'http://' + window.location.host + '/read?t=' + RspnsTxt });
-        }});
+      this.ServiceCall(
+        '/service/transfer',
+        { Ctn: window.localStorage.FdURLs },
+        'TRANSFER',
+        (Sto, Rst) => { return Rst; });
 
       this.TransferModeToggle(Evt);
     }

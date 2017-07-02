@@ -148,13 +148,11 @@ function Render (Rspns, URLInfo) {
               return;
             }
 
-            if (!Rst.LdJs || !Rst.Js || !Rst.HTML ||
-                !Is.String(Rst.LdJs) || !Is.String(Rst.Js) || !Is.String(Rst.HTML)) {
+            if (!Rst.Js || !Rst.HTML || !Is.String(Rst.Js) || !Is.String(Rst.HTML)) {
               Clbck('Render', '<!-- can not render for this task. -->');
               Log('task give wrong format result.', 'warn');
             }
 
-            LdScrpts += Rst.LdJs;
             MntScrpts += Rst.Js;
 
             Clbck(null, Rst.HTML);

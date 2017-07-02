@@ -65,6 +65,10 @@ module.exports = {
   '/payment': {
     title: 'Payment - Web Tool',
     keywords: 'JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
+    Js: [
+      'https://cdn.jsdelivr.net/npm/riot@3.5/riot+compiler.min.js',
+      '/include.js',
+      '/coverbox.tag' ],
     body: [
       'header.tag',
       'payment.tag',
@@ -89,6 +93,7 @@ module.exports = {
     js: [
       'https://cdn.jsdelivr.net/riot/3.3/riot+compiler.min.js',
       '/include.js',
+      '/read.tag',
       '/coverbox.tag' ],
     body: [
       'header.tag',

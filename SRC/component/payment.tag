@@ -12,9 +12,17 @@
     <item-list if={Idx === 1} itms={parent.Itms} add={parent.ItemAdd} edit={parent.ItemEdit}/>
     <check-list if={Idx === 2} byrs={parent.Byrs} itms={parent.Itms}/>
   </tab-box>
+  <button onclick={Transfer}>Transfer</button>
   <cover-box if={EdtByr || EdtItm}>
     <buyer-editor if={parent.EdtByr} info={parent.EdtByr} cancel={parent.BuyerCancel} delete={parent.BuyerDelete} done={parent.BuyerDone}/>
     <item-editor if={parent.EdtItm} info={parent.EdtItm} edtclmn={parent.EdtItmClmn} byrs={parent.Byrs} cancel={parent.ItemCancel} delete={parent.ItemDelete} done={parent.ItemDone}/>
+  </cover-box>
+  <cover-box if={IsTrnsfrOt}>
+    <p>please finish the transfering in 10 minutes by visit followed link in your device which you want the data transfer to.</p>
+    <div>
+      {parent.TrnsfrLnk}<br/>
+      <button onclick={parent.TransferModeToggle}>OK</button>
+    </div>
   </cover-box>
   <style>
     @keyframes Fd { /* fade */
@@ -25,8 +33,13 @@
   <style scoped>
     :scope { display: block; position: relative; margin-top: 10px; }
     :scope>div { position: absolute; right: 0; animation-name: Fd; animation-duration: 3s; }
+    :scope>button { position: absolute; left: 220px; top: 0; }
     .ByrLst>ul { margin: 10px 0; }
     .ByrLst>ul>li { margin: 3px 0; list-style: none; }
+    cover-box>div { position: relative; }
+    cover-box p { max-width: 480px; }
+    cover-box>div>div { margin: 10px 0; text-align: center; }
+    cover-box button { margin-top: 10px; }
   </style>
   <script>
     let LclStrgKy = 'PaymentData', // localStorage key.
@@ -36,6 +49,8 @@
     this.EdtByr = null; // editing buyer.
     this.EdtItm = null; // editing item.
     this.EdtItmClmn = 1, // editing item column.
+    this.IsTrnsfrOt = false; // is transfer out.
+    this.TrnsfrLnk = ''; // transfer link.
     this.Byrs = [];
     this.Itms = [];
     this.Tbs = [
@@ -44,6 +59,14 @@
         { Nm: 'Check' }];
 
     this.mixin('Z.RM');
+
+    this.ServiceListen(
+      'TRANSFER',
+      (Sto, TskPrms) => {
+        this.update({
+          TrnsfrLnk: Sto ? ('http://' + window.location.host + '/payment?t=' + Sto) : 'can not transer data.'
+        });
+      });
 
     this.OnBrowser(() => {
       let Data = window.localStorage.getItem(LclStrgKy);
@@ -141,6 +164,20 @@
           setTimeout(() => { this.update({ IsSvdHnt: false }); }, 3000);
         },
         1000);
+    }
+
+    Transfer (Evt) {
+      this.ServiceCall(
+        '/service/transfer',
+        { Ctn: window.localStorage.PaymentData },
+        'TRANSFER',
+        (Sto, Rst) => { return Rst; });
+
+      this.TransferModeToggle(Evt);
+    }
+
+    TransferModeToggle (Evt) {
+      this.update({ IsTrnsfrOt: !this.IsTrnsfrOt });
     }
   </script>
 </payment>
@@ -278,17 +315,6 @@
     });
   </script>
 </check-list>
-
-<cover-box>
-  <div>
-    <yield/>
-  </div>
-  <style scoped>
-    :scope { z-index: 10; }
-    :scope { position: fixed; left: 0; top: 0; width: 100%; height: 100%; text-align: center; background-color: rgba(0, 0, 0, .5); }
-    :scope>div { display: inline-block; min-width: 300px; margin-top: 20px; padding: 5px; text-align: left; background-color: #ffffff; }
-  </style>
-</cover-box>
 
 <buyer-editor>
   <h3>Buyer Add/Edit</h3>

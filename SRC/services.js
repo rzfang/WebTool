@@ -1,5 +1,8 @@
+let transfer = require('./service/transfer');
+
 module.exports = {
   'feed': require('./service/feed'),
-  'feed/transfer': require('./service/transfer'),
+  'feed/transfer': transfer,
+  'transfer': transfer,
   default: function () { return {}; }
 };
