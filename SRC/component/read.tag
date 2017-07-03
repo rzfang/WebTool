@@ -58,7 +58,7 @@
     this.ServiceListen(
       'TRANSFER',
       (Sto, TskPrms) => {
-        this.update({ TrnsfrLnk: (window.location.origin + '/read?t=' + Sto) : 'can not transer data.' });
+        this.update({ TrnsfrLnk: Sto ? (window.location.origin + '/read?t=' + Sto) : 'can not transer data.' });
       });
 
     URLsFilter (URLs) {
