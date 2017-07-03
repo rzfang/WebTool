@@ -24,6 +24,13 @@
       <button onclick={parent.TransferModeToggle}>OK</button>
     </div>
   </cover-box>
+  <cover-box if={HsTrnsfrCnfrm}>
+    <p>detected feed urls from remote transfering, what would you do ?</p>
+    <div>
+      <button onclick={parent.TransferIgnore}>Ignore</button>
+      <button onclick={parent.TransferReplace}>Replace</button>
+    </div>
+  </cover-box>
   <style>
     @keyframes Fd { /* fade */
       from { opacity: 1; }
@@ -49,6 +56,7 @@
     this.EdtByr = null; // editing buyer.
     this.EdtItm = null; // editing item.
     this.EdtItmClmn = 1, // editing item column.
+    this.HsTrnsfrCnfrm = this.opts.TrnsfrData ? true : false; // has transfering confirmation.
     this.IsTrnsfrOt = false; // is transfer out.
     this.TrnsfrLnk = ''; // transfer link.
     this.Byrs = [];
@@ -63,36 +71,46 @@
     this.ServiceListen(
       'TRANSFER',
       (Sto, TskPrms) => {
-        this.update({
-          TrnsfrLnk: Sto ? ('http://' + window.location.host + '/payment?t=' + Sto) : 'can not transer data.'
+        this.update({ TrnsfrLnk: Sto ? (window.location.origin + '/payment?t=' + Sto) : 'can not transer data.' });
+      });
+
+    this.on(
+      'mount',
+      () => {
+        this.OnBrowser(() => {
+          this.DataFromJSON(window.localStorage.getItem(LclStrgKy));
+          this.update();
         });
       });
 
-    this.OnBrowser(() => {
-      let Data = window.localStorage.getItem(LclStrgKy);
+    /* set up data from JSON string.
+      Str = JSON string.
+      Return: result code number. */
+    DataFromJSON (Str) {
+      let Data = { Itms: [], Byrs: [] };
 
-      if (Data) { Data = JSON.parse(Data); }
+      if (!Str) { return -1; }
 
-      if (!Data || typeof Data !== 'object') {
-        this.Byrs = [];
-        this.Itms = [];
+      Data = JSON.parse(Str);
 
-        return;
-      }
+      if (!Data || !Z.Is.Object(Data)) { return Data; }
 
-      this.Byrs = Z.Is.Array(Data.Byrs) ? Data.Byrs : [],
-      this.Itms = Z.Is.Array(Data.Itms) ? Data.Itms : [];
+      if (Z.Is.Array(Data.Itms)) { this.Itms = Data.Itms; }
 
       for (let i = 0; i < this.Itms.length; i++) {
+        let ByrLgd = false; // buyer has been logged.
+
         for (let j = 0; j < this.Byrs.length; j++) {
           if (this.Itms[i].Byr.Nm === this.Byrs[j].Nm) {
-            this.Itms[i].Byr = this.Byrs[j];
+            ByrLgd = true;
 
             break;
           }
         }
+
+        if (!ByrLgd) { this.Byrs.push(this.Itms[i].Byr); }
       }
-    });
+    }
 
     BuyerEdit (Evt) {
       const Idx = Evt.Element().Above().Index('li');
@@ -157,7 +175,7 @@
 
       AtSvClck = setTimeout(
         () => {
-          let Data = JSON.stringify({Byrs: this.Byrs, Itms: this.Itms});
+          let Data = JSON.stringify({ Itms: this.Itms });
 
           window.localStorage.setItem(LclStrgKy, Data);
           this.update({ IsSvdHnt: true });
@@ -178,6 +196,15 @@
 
     TransferModeToggle (Evt) {
       this.update({ IsTrnsfrOt: !this.IsTrnsfrOt });
+    }
+
+    TransferIgnore (Evt) {
+      this.update({ HsTrnsfrCnfrm: false });
+    }
+
+    TransferReplace (Evt) {
+      this.DataFromJSON(this.opts.TrnsfrData);
+      this.AutoSave({ HsTrnsfrCnfrm: false });
     }
   </script>
 </payment>
