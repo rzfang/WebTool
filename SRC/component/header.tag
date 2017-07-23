@@ -49,7 +49,8 @@
         { Ttl: '----',                    URL: '' },
         { Ttl: 'Payment Note',            URL: 'payment' },
         { Ttl: 'Feed Read',               URL: 'read' },
-        { Ttl: 'Countdown Notify',        URL: 'countdown' }
+        { Ttl: 'Countdown Notify',        URL: 'countdown' },
+        { Ttl: 'Moment Chat',             URL: 'chat' }
       ];
     this.TgtItm = this.Itms[0];
     this.IsNavOn = false;

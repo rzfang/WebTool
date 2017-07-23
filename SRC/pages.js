@@ -1,4 +1,11 @@
 module.exports = {
+  '/chat': {
+    title: 'Moment Chat - Web Tool',
+    keywords: '聊天, chat, websocket, Web, Tool, Program, Develop',
+    body: [
+      'header.tag',
+      'chat.tag',
+      'footer.part.html' ]},
   '/colors': {
     title: 'Color Conside - Web Tool',
     keywords: '顏色, 色票, 樣式, color, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',

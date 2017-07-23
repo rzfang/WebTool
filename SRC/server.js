@@ -2,43 +2,12 @@ const async = require('async'),
       http = require('http'),
       url = require('url'),
       Is = require('./RZ-Js-Is'),
-      Cch = require('./cache');
+      Cch = require('./cache'),
+      Log = require('./log');
 const Pgs = require('./pages'), // page infos object.
       Svcs = require('./services'); // service infos object.
 const CmpntPth = './SRC/component/', // component path.
       RsrcPth = './WEB/'; // resource path.
-
-function Log (Info, Lv = 2) {
-  switch (Lv) {
-    case 0:
-    case 'error':
-      console.error('\n---- [ERROR] ----');
-      console.error(Info);
-
-      break;
-
-    case 1:
-    case 'warn':
-      console.warn('\n---- [WARN ] ----');
-      console.warn(Info);
-
-      break;
-
-    case 2:
-    case 'log':
-      console.log('\n---- [ LOG ] ----');
-      console.log(Info);
-
-      break;
-
-    case 3:
-    case 'debug':
-      console.debug('\n---- [DEBUG] ----');
-      console.debug(Info);
-
-      break;
-  }
-}
 
 /*
   @ request object.

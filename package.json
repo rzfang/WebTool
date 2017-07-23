@@ -16,7 +16,8 @@
     "uglify-js": "^3.0.0"
   },
   "scripts": {
-    "dev": "nodemon -d 3 -e js,scss,html,php,tag -w SRC/ SRC/server.js",
+    "dev": "nodemon -d 3 -e js,scss,html,php,tag -w SRC/ SRC/server.js;",
+    "ws": "nodemon -d 3 -e js -w SRC/websocket.js SRC/websocket.js",
     "lint": "eslint UTL/server.js SRC/*.js",
     "test": "test"
   },
