@@ -39,13 +39,11 @@
       });
 
     Start () {
-      let Hst = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ?
-            (location.hostname + ':9002') : (location.hostname + ':9003');
-      WbSck = new WebSocket('ws://' + location.hostname + ':9002', 'chat');
+      let Href = (location.protocol === 'https:' ? 'wss://' : 'ws://')  + location.hostname + ':9003';
 
-      WbSck.onopen = (Evt) => {
-        this.MessageAdd({ Msg: 'welcome, guest.', Clr: '#808080' });
-      };
+      WbSck = new WebSocket(Href, 'chat');
+      WbSck.onopen = (Evt) => { this.MessageAdd({ Msg: 'welcome, guest.', Clr: '#808080' }); };
+      WbSck.onclose = (Evt) => { this.MessageAdd({ Msg: 'connection has closed.', Clr: '#808080' }); };
 
       WbSck.onmessage = (Evt) => {
         let WbSckDt;
@@ -61,10 +59,6 @@
         if (WbSckDt && WbSckDt.Cmd) { return; }
 
         this.MessageAdd(WbSckDt);
-      };
-
-      WbSck.onclose = (Evt) => {
-        this.MessageAdd({ Msg: 'connection has closed.', Clr: '#808080' });
       };
     }
 
