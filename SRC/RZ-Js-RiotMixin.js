@@ -123,19 +123,20 @@
   }
 
   /*
-    Tsk = task, a string of task name.
-    Thn(Sto, Rst) = then, a function when the task done. */
-  function ServiceListen (Tsk, Thn) {
-    var Clbcks = Srvc.Rprt[Tsk] || null;
+    StoNm = name to locate the store.
+    Thn(Sto, Rst) = then, a function when the task done.
+      Sto = the store object. */
+  function StoreListen (StoNm, Thn) {
+    var Clbcks = Srvc.Rprt[StoNm] || null;
 
     if (!Clbcks || !Array.isArray(Clbcks)) {
-      Srvc.Rprt[Tsk] = [];
-      Clbcks = Srvc.Rprt[Tsk];
+      Srvc.Rprt[StoNm] = [];
+      Clbcks = Srvc.Rprt[StoNm];
     }
 
-    Srvc.Rprt[Tsk].push(Thn);
+    Srvc.Rprt[StoNm].push(Thn);
 
-    if (Srvc.Sto[Tsk]) { Thn(Srvc.Sto[Tsk], null); } // if the task store is ready, call once first.
+    if (Srvc.Sto[StoNm]) { Thn(Srvc.Sto[StoNm], null); } // if the task store is ready, call once first.
   }
 
   /*
@@ -166,16 +167,34 @@
       OK: function (RspnsTxt, Sts, XHR) {
         var CntTp = XHR.getResponseHeader('content-type'),
             Rst = RspnsTxt,
-            Tsks = Srvc.Rprt[StoNm] || [],
-            Lnth = Tsks && Array.isArray(Tsks) && Tsks.length || 0;
+            Rprt = Srvc.Rprt[StoNm] || [],
+            Lnth = Rprt && Array.isArray(Rprt) && Rprt.length || 0;
 
         if (Rst && (CntTp === 'application/json' || CntTp === 'text/json')) { Rst = JSON.parse(Rst); }
 
         Srvc.Sto[StoNm] = NewStoreGet(Srvc.Sto[StoNm], Rst);
 
-        for (var i = 0; i < Lnth; i++) { Tsks[i](Srvc.Sto[StoNm], PrmsToTsk); }
+        for (var i = 0; i < Lnth; i++) { Rprt[i](Srvc.Sto[StoNm], PrmsToTsk); }
       }
     });
+
+    return 0;
+  }
+
+  /*
+    StoNm = name to locate the store.
+    NewStoreGet (Sto, Rst) = the function to get new store, this must return something to replace original store.
+      Sto = original store data.
+    PrmsToTsk = params object passing to each task. */
+  function StoreSet (StoNm, NewStoreGet, PrmsToTsk) {
+    if (!StoNm || typeof StoNm !== 'string' || !NewStoreGet || typeof NewStoreGet !== 'function') { return -1; }
+
+    var Rprt = Srvc.Rprt[StoNm] || [],
+        Lnth = Rprt && Array.isArray(Rprt) && Rprt.length || 0;
+
+    Srvc.Sto[StoNm] = NewStoreGet(Srvc.Sto[StoNm]);
+
+    for (var i = 0; i < Lnth; i++) { Rprt[i](Srvc.Sto[StoNm], PrmsToTsk); }
 
     return 0;
   }
@@ -183,7 +202,7 @@
   /* get a store.
     Ky = a string of store key.
     return: store object, or null. */
-  function StoreGet(Ky) {
+  function StoreGet (Ky) {
     if (!Ky || typeof Ky !== 'string') { return null; }
 
     return Srvc.Sto[Ky] || null;
@@ -198,8 +217,9 @@
   if (typeof module !== 'undefined') { module.exports = RM; }
   else if (typeof window !== 'undefined') {
     RM.AJAX = AJAX;
-    RM.ServiceListen = ServiceListen;
+    RM.StoreListen = StoreListen;
     RM.ServiceCall = ServiceCall;
+    RM.StoreSet = StoreSet;
     RM.StoreGet = StoreGet;
 
     if (!window.Z || typeof window.Z !== 'object') { window.Z = {RM: RM}; }

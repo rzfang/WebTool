@@ -72,10 +72,15 @@
     return BsObj;
   }
 
+  function Clone (Obj) {
+    return Merge(null, Obj);
+  }
+
   Obj = {
     Combine: Combine,
     Dig: Dig,
-    Merge: Merge
+    Merge: Merge,
+    Clone: Clone
   };
 
   if (typeof module !== 'undefined') { module.exports = Obj; }

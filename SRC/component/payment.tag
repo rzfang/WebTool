@@ -1,21 +1,14 @@
 <payment class='Pymnt'>
   <div if={IsSvdHnt}>Saved !</div>
   <tab-box dftidx={1} tbs={Tbs}>
-    <div if={Idx === 0} class='ByrLst'>
-      <ul>
-        <li each={parent.Byrs}>
-          <button onclick={parent.parent.BuyerEdit}>{Nm}</button>
-        </li>
-      </ul>
-      <button onclick={parent.BuyerAdd}>Add</button>
-    </div>
+    <buyer-list if={Idx === 0} nms={parent.ByrNms} add={parent.BuyerAdd} edit={parent.BuyerEdit}/>
     <item-list if={Idx === 1} itms={parent.Itms} add={parent.ItemAdd} edit={parent.ItemEdit}/>
-    <check-list if={Idx === 2} byrs={parent.Byrs} itms={parent.Itms}/>
+    <check-list if={Idx === 2} byrnms={parent.ByrNms} itms={parent.Itms}/>
   </tab-box>
   <button onclick={Transfer}>Transfer</button>
-  <cover-box if={EdtByr || EdtItm}>
-    <buyer-editor if={parent.EdtByr} info={parent.EdtByr} cancel={parent.BuyerCancel} delete={parent.BuyerDelete} done={parent.BuyerDone}/>
-    <item-editor if={parent.EdtItm} info={parent.EdtItm} edtclmn={parent.EdtItmClmn} byrs={parent.Byrs} cancel={parent.ItemCancel} delete={parent.ItemDelete} done={parent.ItemDone}/>
+  <cover-box if={EdtMd}>
+    <buyer-editor if={parent.EdtMd === 'BUYER'} edtnm={parent.EdtByr} cancel={parent.EditorCancel} done={parent.EditorDone}/>
+    <item-editor if={parent.EdtMd === 'ITEM'} info={parent.EdtItm} edtclmn={parent.EdtItmClmn} byrnms={parent.ByrNms} cancel={parent.EditorCancel} done={parent.EditorDone}/>
   </cover-box>
   <cover-box if={IsTrnsfrOt}>
     <p>please finish the transfering in 10 minutes by visit followed link in your device which you want the data transfer to.</p>
@@ -41,8 +34,6 @@
     :scope { display: block; position: relative; margin-top: 10px; }
     :scope>div { position: absolute; right: 0; animation-name: Fd; animation-duration: 3s; }
     :scope>button { position: absolute; left: 220px; top: 0; }
-    .ByrLst>ul { margin: 10px 0; }
-    .ByrLst>ul>li { margin: 3px 0; list-style: none; }
     cover-box>div { position: relative; }
     cover-box p { max-width: 480px; }
     cover-box>div>div { margin: 10px 0; text-align: center; }
@@ -56,10 +47,11 @@
     this.EdtByr = null; // editing buyer.
     this.EdtItm = null; // editing item.
     this.EdtItmClmn = 1, // editing item column.
+    this.EdtMd = ''; // editing mode, 'BUYER' | 'ITEM';
     this.HsTrnsfrCnfrm = this.opts.TrnsfrData ? true : false; // has transfering confirmation.
     this.IsTrnsfrOt = false; // is transfer out.
     this.TrnsfrLnk = ''; // transfer link.
-    this.Byrs = [];
+    this.ByrNms = [];
     this.Itms = [];
     this.Tbs = [
         { Nm: 'Buyers' },
@@ -68,20 +60,23 @@
 
     this.mixin('Z.RM');
 
-    this.ServiceListen(
+    this.StoreListen(
       'TRANSFER',
       (Sto, TskPrms) => {
         this.update({ TrnsfrLnk: Sto ? (window.location.origin + '/payment?t=' + Sto) : 'can not transer data.' });
       });
 
-    this.on(
-      'mount',
-      () => {
-        this.OnBrowser(() => {
-          this.DataFromJSON(window.localStorage.getItem(LclStrgKy));
-          this.update();
-        });
+    this.StoreListen(
+      'PAYMENTS',
+      (Pymnts) => {
+        if (Z.Is.Array(Pymnts)) { this.AutoSave({ EdtMd: '', Itms: Pymnts }); }
       });
+
+    this.StoreListen(
+      'BUYER_NAMES',
+      (ByrNms) => { this.update({ ByrNms }); });
+
+    this.on('mount', () => { this.DataFromJSON(window.localStorage.getItem(LclStrgKy)); });
 
     /* set up data from JSON string.
       Str = JSON string.
@@ -93,76 +88,59 @@
 
       Data = JSON.parse(Str);
 
-      if (!Data || !Z.Is.Object(Data)) { return Data; }
+      if (!Data || !Z.Is.Object(Data)) { return -1; }
 
-      if (Z.Is.Array(Data.Itms)) { this.Itms = Data.Itms; }
+      let Pymnts = Data,
+          ByrNms = []; // buyer names.
 
-      for (let i = 0; i < this.Itms.length; i++) {
-        let ByrLgd = false; // buyer has been logged.
+      //==== transfer the old version format data to be new one. ====
 
-        for (let j = 0; j < this.Byrs.length; j++) {
-          if (this.Itms[i].Byr.Nm === this.Byrs[j].Nm) {
-            ByrLgd = true;
+      if (!Z.Is.Array(Pymnts) && Pymnts.Itms && Z.Is.Array(Pymnts.Itms)) { Pymnts = Pymnts.Itms; }
 
-            break;
-          }
+      for (let i = 0; i < Pymnts.length; i++) {
+        let Byr = Pymnts[i].Byr || {},
+            Prc = Pymnts[i].Prc || 0;
+
+        if (!Pymnts[i].Byrs || !Z.Is.Array(Pymnts[i].Byrs)) { Pymnts[i].Byrs = []; }
+
+        if (Byr && Byr.Nm && Z.Is.String(Byr.Nm)) { Pymnts[i].Byrs.push({ Nm: Byr.Nm, Prc }); }
+
+        for (let j = 0; j < Pymnts[i].Byrs.length; j++) {
+          if (ByrNms.indexOf(Pymnts[i].Byrs[j].Nm) < 0) { ByrNms.push(Pymnts[i].Byrs[j].Nm); }
         }
 
-        if (!ByrLgd) { this.Byrs.push(this.Itms[i].Byr); }
+        delete Pymnts[i].Byr;
+        delete Pymnts[i].Prc;
       }
+
+      //====
+
+      this.StoreSet('PAYMENTS', () => { return Pymnts; });
+      this.StoreSet('BUYER_NAMES', () => { return ByrNms; });
+    }
+
+    EditorCancel (Evt) {
+      this.update({ EdtMd: '' });
+    }
+
+    EditorDone (Evt) {
+      this.update({ EdtMd: '' });
     }
 
     BuyerEdit (Evt) {
-      const Idx = Evt.Element().Above().Index('li');
-
-      this.update({ EdtByr: this.Byrs[Idx] });
+      this.update({ EdtMd: 'BUYER', EdtByr: Evt.Element().innerText });
     }
 
     BuyerAdd () {
-      const EdtByr = { Nm: '' };
-
-      this.Byrs.push(EdtByr);
-      this.update({ EdtByr: EdtByr });
-    }
-
-    BuyerCancel (Evt) {
-      this.update({ EdtByr: null });
-    }
-
-    BuyerDelete (Evt) {
-      this.Byrs.splice(this.Byrs.indexOf(this.EdtByr), 1);
-      this.AutoSave({ EdtByr: null });
-    }
-
-    BuyerDone (Evt, Nm) {
-      this.EdtByr.Nm = Nm;
-
-      this.AutoSave({ EdtByr: null });
+      this.update({ EdtMd: 'BUYER', EdtByr: '' });
     }
 
     ItemEdit (Evt, RwIdx, ClmnIdx) {
-      this.update({ EdtItm: this.Itms[RwIdx], EdtItmClmn: ClmnIdx });
+      this.update({ EdtMd: 'ITEM', EdtItm: this.Itms[RwIdx], EdtItmClmn: ClmnIdx });
     }
 
-    ItemAdd () {
-      const EdtItm = { Byr: { Nm: '' }};
-
-      this.Itms.push(EdtItm);
-      this.update({ EdtItm: EdtItm });
-    }
-
-    ItemCancel (Evt) {
-      this.update({ EdtItm: null });
-    }
-
-    ItemDelete (Evt) {
-      this.Itms.splice(this.Itms.indexOf(this.EdtItm), 1);
-      this.AutoSave({ EdtItm: null });
-    }
-
-    ItemDone (Evt, Info) {
-      Object.assign(this.EdtItm, Info);
-      this.AutoSave({ EdtItm: null });
+    ItemAdd (Evt) {
+      this.update({ EdtMd: 'ITEM', EdtItm: null, EdtItmClmn: -1 });
     }
 
     /*
@@ -242,6 +220,19 @@
   </script>
 </tab-box>
 
+<buyer-list>
+  <ul>
+    <li each={Nm, i in opts.nms}>
+      <button onclick={parent.opts.edit}>{Nm}</button>
+    </li>
+  </ul>
+  <button onclick={opts.add}>Add</button>
+  <style scoped>
+    :scope>ul { margin: 10px 0; }
+    :scope>ul>li { margin: 3px 0; list-style: none; }
+  </style>
+</buyer-list>
+
 <item-list>
   <table>
     <thead>
@@ -257,9 +248,9 @@
       <tr each={opts.itms}>
         <td><button onclick={Edit}>{Dt}</button></td>
         <td><button onclick={Edit}>{Itm}</button></td>
-        <td><button onclick={Edit}>{Prc}</button></td>
-        <td><button onclick={Edit}>{Byr.Nm}</button></td>
-        <td><button onclick={Edit}>{Cmt}</button></td>
+        <td><button onclick={Edit}>{PricePrint(Byrs)}</button></td>
+        <td><button onclick={Edit}>{BuyersPrint(Byrs)}</button></td>
+        <td><button onclick={Edit}>{Cmt || '-'}</button></td>
       </tr>
     </tbody>
   </table>
@@ -282,6 +273,32 @@
 
       this.opts.edit(Evt, RwIdx, ClmnIdx);
     }
+
+    /*
+      Byrs = buyers arary. */
+    PricePrint (Byrs) {
+      if (!Z.Is.Array(Byrs)) { return 0; }
+
+      let Prc = 0; // price.
+
+      for (let i = 0; i < Byrs.length; i++) {
+        if (Byrs[i].Prc && Z.Is.Number(Byrs[i].Prc)) { Prc += Byrs[i].Prc; }
+      }
+
+      return Prc;
+    }
+
+    /*
+      Byrs = buyers arary. */
+    BuyersPrint (Byrs) {
+      if (!Z.Is.Array(Byrs) || Byrs.length < 1 || !Z.Is.String(Byrs[0].Nm)) { return '-'; }
+
+      let Nms = Byrs[0].Nm; // names.
+
+      if (Byrs.length > 1) { Nms += ' (' + (Byrs.length).toString() + ')'; }
+
+      return Nms;
+    }
   </script>
 </item-list>
 
@@ -291,21 +308,24 @@
       <tr>
         <th>Name</th>
         <th>Amount</th>
+        <th>Has Paid</th>
         <th>Balance</th>
       </tr>
     </thead>
     <tbody>
-      <tr each={Chk}>
+      <tr each={Chks}>
         <td>{Nm}</td>
         <td>{Amnt}</td>
-        <td>{Avrg - Amnt}</td>
+        <td>{Pd}</td>
+        <td>{Blnc}</td>
       </tr>
     </tbody>
     <tfoot>
       <tr>
         <td>Total</td>
         <td>{Ttl}</td>
-        <td>{Avrg}</td>
+        <td></td>
+        <td></td>
       </tr>
     </tfoot>
   </table>
@@ -316,39 +336,58 @@
     tfoot td { border-top-width: 1px; }
   </style>
   <script>
-    this.Chk = []; // 'Chk' = Check.
-    this.Ttl = 0; // 'Ttl' = Total.
-    this.Avrg = 0; // 'Avrg' = Average.
+    this.Chks = []; // checking list.
+    this.Ttl = 0; // total.
 
     this.mixin('Z.RM');
 
-    this.OnBrowser(() => {
-      this.Chk = [];
-      this.Ttl = 0;
-
-      for (let i = 0; i < this.opts.byrs.length; i++) {
-        let Pymnt = {Nm: this.opts.byrs[i].Nm, Amnt: 0}; // 'Pymnt' = Payment. 'Nm' = Name, 'Amnt' = Amount.
-
-        for (let j = 0; j < this.opts.itms.length; j++) {
-          if (this.opts.itms[j].Byr.Nm === Pymnt.Nm) { Pymnt.Amnt += this.opts.itms[j].Prc; }
+    this.on(
+      'before-mount',
+      () => {
+        // fill checking list.
+        for (let i = 0; i < this.opts.byrnms.length; i++) {
+          this.Chks.push({ Nm: this.opts.byrnms[i], Amnt: 0, Pd: 0, Blnc: 0 });
         }
 
-        this.Chk.push(Pymnt);
-      }
+        for (let i = 0; i < this.opts.itms.length; i++) {
+          let Itm = this.opts.itms[i],
+              Amnt = 0,
+              Avrg;
 
-      for (let i = 0; i < this.opts.itms.length; i++) { this.Ttl += this.opts.itms[i].Prc; }
+          //==== calculate one item. ====
 
-      this.Avrg = this.Ttl / this.Chk.length;
-    });
+          for (let j = 0; j < Itm.Byrs.length; j++) { Amnt += Itm.Byrs[j].Prc; }
+
+          this.Ttl += Amnt;
+          Avrg = parseFloat((Amnt / Itm.Byrs.length).toFixed(2));
+
+          //====
+
+          for (let j = 0; j < Itm.Byrs.length; j++) {
+            let Byr = Itm.Byrs[j];
+
+            for (let k = 0; k < this.Chks.length; k++) {
+              let Chk = this.Chks[k];
+
+              if (Byr.Nm === Chk.Nm) {
+                Chk.Pd += Byr.Prc;
+                Chk.Amnt = parseFloat((Chk.Amnt + Avrg).toFixed(2));
+                Chk.Blnc = parseFloat((Chk.Pd - Chk.Amnt).toFixed(2));
+              }
+            }
+          }
+        }
+
+        console.log(this.Chks);
+      });
   </script>
 </check-list>
 
 <buyer-editor>
   <h3>Buyer Add/Edit</h3>
-  <input ref='Nm' type='text' value={opts.info.Nm} onkeyup={KeyAction}/>
+  <input ref='Nm' type='text' value={opts.edtnm} onkeyup={KeyAction}/>
   <div>
     <button onclick={opts.cancel}>Cancel</button>
-    <button onclick={opts.delete}>Delete</button>
     <button onclick={Done}>Done</button>
   </div>
   <style scoped>
@@ -357,6 +396,8 @@
     div>div { text-align: right; }
   </style>
   <script>
+    this.mixin('Z.RM');
+
     this.on('mount', () => { this.refs.Nm.focus(); });
 
     KeyAction (Evt) {
@@ -368,7 +409,37 @@
     }
 
     Done (Evt) {
-      this.opts.done(Evt, this.refs.Nm.value);
+      let NwNm = this.Trim(this.refs.Nm.value), // new name.
+          ByrNms, // buyer names.
+          Idx; // index.
+
+      if (!NwNm) { return alert('empty name ?'); }
+
+      ByrNms = this.StoreGet('BUYER_NAMES');
+      Idx = ByrNms.indexOf(NwNm);
+
+      if (Idx > -1) { return alert('the name has been existed.'); }
+
+      if (!this.opts.edtnm) { ByrNms.push(NwNm); } // add.
+      else { // edit.
+        Idx = ByrNms.indexOf(this.opts.edtnm);
+        ByrNms[Idx] = NwNm;
+
+        this.StoreSet(
+          'PAYMENTS',
+          (Pymnts) => {
+            for (let i = 0; i < Pymnts.length; i++) {
+              for (let j = 0; j < Pymnts[i].Byrs.length; j++) {
+                if (Pymnts[i].Byrs[j].Nm === this.opts.edtnm) { Pymnts[i].Byrs[j].Nm = NwNm; }
+              }
+            }
+
+            return Pymnts;
+          });
+      }
+
+      this.StoreSet('BUYER_NAMES', () => { return ByrNms; });
+      this.opts.done(Evt);
     }
   </script>
 </buyer-editor>
@@ -379,40 +450,50 @@
     <tbody>
       <tr>
         <td>Datetime</td>
-        <td><input ref='Dt' type="date" placeholder="YYYY-MM-DD" value={opts.info.Dt} onkeyup={KeyAction}/></td>
+        <td><input ref='Dt' type="date" placeholder="YYYY-MM-DD" value={EdtItm.Dt} onkeyup={KeyAction}/></td>
       </tr>
       <tr>
         <td>Item</td>
-        <td><input ref='Itm' type="text" value={opts.info.Itm} onkeyup={KeyAction}/>
-      </td>
+        <td><input ref='Itm' type="text" value={EdtItm.Itm} onkeyup={KeyAction}/></td>
+      </tr>
       <tr>
-        <td>Price</td>
-        <td><input ref='Prc' type="number" value={opts.info.Prc || 0} onkeyup={KeyAction}/>
-      </td>
-      <tr>
-        <td>Buyer</td>
+        <td>Buyer &amp;<br/>Price</td>
         <td>
-          <select ref='Byr'>
-            <option each={opts.byrs} value={Nm} selected={Nm === parent.opts.info.Byr.Nm}>{Nm}</option>
-          </select>
+          <ul ref='Byrs'>
+            <li each={EdtItm.Byrs}>
+              <select>
+                <option each={ByrNm, i in parent.opts.byrnms} value={ByrNm} selected={ByrNm === Nm}>{ByrNm}</option>
+              </select>
+              <input type='number' min='0' value={Prc}/>
+              <button onclick={BuyerDelete}>X</button>
+            </li>
+            <li><button onclick={BuyerAdd}>+</button></li>
+          </ul>
         </td>
+      </tr>
       <tr>
         <td>Comment</td>
-        <td><input ref='Cmt' type="text" value={opts.info.Cmt} onkeyup={KeyAction}/></td>
+        <td><input ref='Cmt' type="text" value={EdtItm.Cmt} onkeyup={KeyAction}/></td>
       </tr>
     </tbody>
   </table>
   <div>
     <button onclick={opts.cancel}>Cancel</button>
-    <button onclick={opts.delete}>Delete</button>
+    <button if={opts.info} onclick={Delete}>Delete</button>
     <button onclick={Done}>Done</button>
   </div>
   <style scoped>
-    h3 { margin: 0; }
+    :scope>h3 { margin: 0; }
     input { margin: 5px 0; }
-    div>div { text-align: right; }
+    :scope ul { padding: 0; list-style: none; }
+    :scope ul>li>input { margin: 2px 0; max-width: 80px; }
+    :scope ul>li>button { margin-top: 0; min-width: 20px; }
   </style>
   <script>
+    this.EdtItm = this.opts.info ? Z.Obj.Clone(this.opts.info) : { Dt: '', Itm: '', Byrs: [], Cmt: '' };
+
+    this.mixin('Z.RM');
+
     this.on(
       'mount',
       () => {
@@ -424,11 +505,11 @@
             break;
 
           case '2':
-            Tgt = this.refs.Prc;
+            Tgt = this.refs.Byrs.Find('input[type=number]')[0];
             break;
 
           case '3':
-            Tgt = this.refs.Byr;
+            Tgt = this.refs.Byrs.Find('select')[0];
             break;
 
           case '4':
@@ -443,6 +524,23 @@
         Tgt.focus();
       });
 
+    BuyerAdd (Evt) {
+      let EdtItm = this.EdtItm;
+
+      EdtItm.Byrs.push({ Nm: '', Prc: 0});
+
+      this.update({ EdtItm });
+    }
+
+    BuyerDelete (Evt) {
+      let EdtItm = this.EdtItm,
+          Idx = Evt.Element().Above().Index();
+
+      EdtItm.Byrs.splice(Idx, 1);
+
+      this.update({ EdtItm });
+    }
+
     KeyAction (Evt) {
       if (Evt.keyCode === 27) { return this.opts.cancel(Evt); }
 
@@ -451,24 +549,54 @@
       this.Done(Evt);
     }
 
+    Delete (Evt) {
+      this.StoreSet(
+        'PAYMENTS',
+        (Pymnts) => {
+          let Idx = Pymnts.indexOf(this.opts.info);
+
+          Pymnts.splice(Idx, 1);
+
+          return Pymnts;
+        });
+
+      this.opts.done(Evt);
+    }
+
     Done (Evt) {
       let NwInfo = {
             Dt: this.refs.Dt.value,
             Itm: this.refs.Itm.value,
-            Prc: parseInt(this.refs.Prc.value, 10),
-            Byr: { Nm: '' },
+            Byrs: [],
             Cmt: this.refs.Cmt.value
-          };
+          }, // new info.
+          ByrNds = this.refs.Byrs.Find('select,input[type=number]'), // buyer nodes.
+          Hnt = '';
 
-      for (let i = 0; i < this.opts.byrs.length; i++) {
-        if (this.opts.byrs[i].Nm === this.refs.Byr.value) {
-          NwInfo.Byr = this.opts.byrs[i];
-
-          break;
-        }
+      for (let i = 0; i < ByrNds.length; i += 2) {
+        NwInfo.Byrs.push({ Nm: ByrNds[i].value, Prc: parseInt(ByrNds[i + 1].value, 10) });
       }
 
-      this.opts.done(Evt, NwInfo);
+      if (!NwInfo.Dt) { Hnt += 'no date.\n'; }
+
+      if (!NwInfo.Itm) { Hnt += 'no item name.\n'; }
+
+      if (NwInfo.Byrs.length === 0) { Hnt += 'no buyers.\n'; }
+
+      if (Hnt) { return alert('please notice:\n' + Hnt); }
+
+      this.StoreSet(
+        'PAYMENTS',
+        (Pymnts) => {
+          let Idx = Pymnts.indexOf(this.opts.info);
+
+          if (Idx < 0) { Pymnts.push(NwInfo); } // add.
+          else { Pymnts.splice(Idx, 1, NwInfo); } // edit / replace.
+
+          return Pymnts;
+        });
+
+      this.opts.done(Evt);
     }
   </script>
 </item-editor>

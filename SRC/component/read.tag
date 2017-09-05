@@ -53,9 +53,9 @@
         });
       });
 
-    this.ServiceListen('FEEDS', (Sto, TskPrms) => { this.update({ Fds: Sto }); });
+    this.StoreListen('FEEDS', (Sto, TskPrms) => { this.update({ Fds: Sto }); });
 
-    this.ServiceListen(
+    this.StoreListen(
       'TRANSFER',
       (Sto, TskPrms) => {
         this.update({ TrnsfrLnk: Sto ? (window.location.origin + '/read?t=' + Sto) : 'can not transer data.' });
