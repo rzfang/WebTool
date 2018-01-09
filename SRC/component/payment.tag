@@ -2,7 +2,7 @@
   <div if={IsSvdHnt}>Saved !</div>
   <tab-box dftidx={1} tbs={Tbs}>
     <buyer-list if={Idx === 0} nms={parent.ByrNms} add={parent.BuyerAdd} edit={parent.BuyerEdit}/>
-    <item-list if={Idx === 1} itms={parent.Itms} add={parent.ItemAdd} edit={parent.ItemEdit}/>
+    <item-list if={Idx === 1} itms={parent.Itms} add={parent.ItemAdd} edit={parent.ItemEdit} sort={parent.ItemSort}/>
     <check-list if={Idx === 2} byrnms={parent.ByrNms} itms={parent.Itms}/>
   </tab-box>
   <button onclick={Transfer}>Transfer</button>
@@ -143,6 +143,22 @@
       this.update({ EdtMd: 'ITEM', EdtItm: null, EdtItmClmn: -1 });
     }
 
+    ItemSort (Evt) {
+      let Itms = Array.from(this.Itms);
+
+      Itms.sort((A, B) => {
+        if (!A.Dt || !B.Dt) { return 0; }
+
+        if (A.Dt > B.Dt) { return 1; }
+        else if (A.Dt < B.Dt) { return -1; }
+
+        return 0;
+      });
+
+      this.StoreSet('PAYMENTS', () => { return Itms; });
+      this.update({ Itms });
+    }
+
     /*
       @ updated options object. */
     AutoSave (UpdtOpts) {
@@ -256,6 +272,7 @@
   </table>
   <div>
     <button onclick={opts.add}>Add</button>
+    <button onclick={opts.sort}>Sort By Date</button>
   </div>
   <style scoped>
     @media screen and (max-width: 360px) {
