@@ -32,7 +32,7 @@ module.exports = function (RqstInfo, Clbck) {
       Ky = KeyGenerate(RqstInfo.Bdy.Ctn + Dt.getTime().toString());
 
   while(Cch.Has(Ky)) {
-    Ky = NextKeyGet(Ky);
+    Ky = KeyGenerate(Ky);
   }
 
   Cch.Set(Ky, RqstInfo.Bdy.Ctn, 600);

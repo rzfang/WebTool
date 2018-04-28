@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "eslint": "^3.13.1",
+    "eslint-plugin-json": "^1.2.0",
     "node-sass": "^4.0.0",
     "nodemon": "^1.11.0",
     "pre-commit": "^1.2.2",
@@ -18,7 +19,7 @@
   "scripts": {
     "dev": "nodemon -d 3 -e js,scss,html,php,tag -w SRC/ SRC/server.js;",
     "ws": "nodemon -d 3 -e js -w SRC/websocket.js SRC/websocket.js",
-    "lint": "eslint UTL/server.js SRC/*.js",
+    "lint": "eslint --ext .js,.json UTL/ SRC/",
     "test": "test"
   },
   "repository": {
@@ -35,18 +36,55 @@
     "url": "https://github.com/rzfang/WebTool/issues"
   },
   "homepage": "https://github.com/rzfang/WebTool#readme",
-  "pre-commit": [ "lint" ],
+  "pre-commit": [
+    "lint"
+  ],
   "eslintConfig": {
-    "env": { "browser": true, "es6": true, "node": true },
+    "env": {
+      "browser": true,
+      "es6": true,
+      "node": true
+    },
     "extends": "eslint:recommended",
-    "parserOptions": { "sourceType": "module" },
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "plugins": [
+      "json"
+    ],
     "rules": {
-      "linebreak-style": [ "error", "unix" ],
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
       "no-cond-assign": "off",
-      "no-console": [ "warn", { "allow": [ "warn", "error" ]}],
-      "no-redeclare": [ "warn", { "builtinGlobals": true }],
-      "no-unused-vars": [ "warn", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
-      "semi": [ "error", "always" ]
+      "no-console": [
+        "warn",
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "no-redeclare": [
+        "warn",
+        {
+          "builtinGlobals": true
+        }
+      ],
+      "no-unused-vars": [
+        "warn",
+        {
+          "vars": "all",
+          "args": "after-used",
+          "ignoreRestSiblings": false
+        }
+      ],
+      "semi": [
+        "error",
+        "always"
+      ]
     }
   }
 }
