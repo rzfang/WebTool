@@ -3,7 +3,7 @@
     <h2>Web Tool</h2>
     <div>
       <h3>{TgtItm.Ttl}</h3>
-      <button onclick={NavToggle}>Nav</button>
+      <button onclick={NavToggle}>Menu</button>
     </div>
   </div>
   <nav if={IsNavOn}>
@@ -15,7 +15,7 @@
     </ul>
   </nav>
   <style scoped>
-    :scope { position: relative; }
+    :scope { position: sticky; top: 0; z-index: 1; background-color: rgba(255,255,255,.9); }
     :scope>div { border-bottom-width: 1px; padding: 5px 0 0 5px; }
     h2 { margin: 0; font-size: 32px; font-style: italic; }
     h3 { flex: 1; margin: 0; font-weight: normal; }
@@ -71,7 +71,7 @@
     });
 
     NavToggle () {
-      this.update({ IsNavOn: !this.IsNavOn });
+      this.IsNavOn = !this.IsNavOn;
     }
   </script>
 </header>
