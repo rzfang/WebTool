@@ -117,6 +117,7 @@
       }
 
       window.localStorage.FdURLs = FdURLs.replace(URL, '').replace(/_\|__\|_/g, '_|_').replace(/^_\|_|_\|_$/g, '');
+
       this.update();
     }
 
@@ -131,13 +132,14 @@
     }
 
     TransferModeToggle (Evt) {
-      this.update({ IsTrnsfrOt: !this.IsTrnsfrOt });
+        this.IsTrnsfrOt = !this.IsTrnsfrOt;
     }
 
     TransferIgnore (Evt) {
       let FdURLs = this.URLsFilter(window.localStorage.FdURLs.split('_|_'));
 
-      this.update({ HsTrnsfrCnfrm: false });
+      this.HsTrnsfrCnfrm = false;
+
       this.AllFeedsLoad(FdURLs);
     }
 
@@ -153,7 +155,8 @@
       }
 
       window.localStorage.FdURLs = FdURLs.join('_|_');
-      this.update({ HsTrnsfrCnfrm: false });
+      this.HsTrnsfrCnfrm = false;
+
       this.AllFeedsLoad(FdURLs);
     }
 
@@ -161,7 +164,8 @@
       let FdURLs = this.URLsFilter(this.opts.FdURLs.split('_|_'));
 
       window.localStorage.FdURLs = FdURLs.join('_|_');
-      this.update({ HsTrnsfrCnfrm: false });
+      this.HsTrnsfrCnfrm = false;
+
       this.AllFeedsLoad(FdURLs);
     }
   </script>

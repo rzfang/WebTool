@@ -7,8 +7,8 @@
   </tab-box>
   <button onclick={Transfer}>Transfer</button>
   <cover-box if={EdtMd}>
-    <buyer-editor if={parent.EdtMd === 'BUYER'} edtnm={parent.EdtByr} cancel={parent.EditorCancel} done={parent.EditorDone}/>
-    <item-editor if={parent.EdtMd === 'ITEM'} info={parent.EdtItm} edtclmn={parent.EdtItmClmn} byrnms={parent.ByrNms} cancel={parent.EditorCancel} done={parent.EditorDone}/>
+    <buyer-editor if={parent.EdtMd === 'BUYER'} edtnm={parent.EdtByr} cancel={parent.EditorDoneOrCancel} done={parent.EditorDoneOrCancel}/>
+    <item-editor if={parent.EdtMd === 'ITEM'} info={parent.EdtItm} edtclmn={parent.EdtItmClmn} byrnms={parent.ByrNms} cancel={parent.EditorDoneOrCancel} done={parent.EditorDoneOrCancel}/>
   </cover-box>
   <cover-box if={IsTrnsfrOt}>
     <p>please finish the transfering in 10 minutes by visit followed link in your device which you want the data transfer to.</p>
@@ -119,11 +119,7 @@
       this.StoreSet('BUYER_NAMES', () => { return ByrNms; });
     }
 
-    EditorCancel (Evt) {
-      this.update({ EdtMd: '' });
-    }
-
-    EditorDone (Evt) {
+    EditorDoneOrCancel (Evt) {
       this.update({ EdtMd: '' });
     }
 
@@ -189,11 +185,11 @@
     }
 
     TransferModeToggle (Evt) {
-      this.update({ IsTrnsfrOt: !this.IsTrnsfrOt });
+      this.IsTrnsfrOt = !this.IsTrnsfrOt;
     }
 
     TransferIgnore (Evt) {
-      this.update({ HsTrnsfrCnfrm: false });
+      this.HsTrnsfrCnfrm = false;
     }
 
     TransferReplace (Evt) {
