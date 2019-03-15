@@ -178,14 +178,16 @@
     <button onClick={Delete}>X</button>
   </div>
   <div>
-    <a each={Itms} href='{Lnk}' target='_blank'>{Ttl}</a>
+    <div each={Itms}>
+      <a href='{Lnk}' target='_blank'>{Ttl}</a>
+    </div>
   </div>
   <style>
     :scope { display: block; margin: 10px 0; padding: 5px; border: 1px solid; border-radius: 3px; }
     :scope>div:first-child { position: relative; }
     :scope>div:first-child>div { font-size: 14px; color: #808080; }
     :scope>div:first-child>button { position: absolute; right: 0px; top: 0px; }
-    :last-child>a { display: block; margin: 10px 0; }
+    :last-child>div { margin: 10px 0; }
   </style>
   <script>
     Delete (Evt) {
