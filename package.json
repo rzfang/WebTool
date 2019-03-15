@@ -14,7 +14,7 @@
     "node-sass": "^4.11.0",
     "nodemon": "^1.18.10",
     "pre-commit": "^1.2.2",
-    "uglify-js": "^3.4.9"
+    "uglify-js": "^3.4.10"
   },
   "scripts": {
     "dev": "nodemon -d 3 -e js,scss,html,php,tag -w SRC/ SRC/server.js;",
