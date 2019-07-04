@@ -240,7 +240,7 @@ function ServiceResponse (RqstInfo, Rspns) {
 
 function Route (Rqst, Rspns) {
   let URLInfo = url.parse(Rqst.url),
-      SttcFlChk = /[^\/]+\.(js|css|tag|html|txt|xml)$/.exec(URLInfo.pathname), // static file check.
+      SttcFlChk = /[^/]+\.(js|css|tag|html|txt|xml)$/.exec(URLInfo.pathname), // static file check.
       PstBdy = ''; // post body.
 
   Rqst.on(
