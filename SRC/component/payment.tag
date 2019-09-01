@@ -467,7 +467,14 @@
       </tr>
       <tr>
         <td>Item</td>
-        <td><input ref='Itm' type="text" value={EdtItm.Itm} onkeyup={KeyAction}/></td>
+        <td>
+          <input ref='Itm' type="text" value={EdtItm.Itm} oninput={ItemSuggest}/>
+          <ul if={Sgstns.length}>
+            <li each={Nm, i in Sgstns}>
+              <button onclick={SuggestionPick}>{Nm}</button>
+            </li>
+          </ul>
+        </td>
       </tr>
       <tr>
         <td>Buyer &amp;<br/>Price</td>
@@ -498,12 +505,17 @@
   <style scoped>
     :scope>h3 { margin: 0; }
     input { margin: 5px 0; }
-    :scope ul { padding: 0; list-style: none; }
-    :scope ul>li>input { margin: 2px 0; max-width: 80px; }
-    :scope ul>li>button { margin-top: 0; min-width: 20px; }
+    :scope tr:nth-child(2) ul { position: absolute; list-style: none; margin: 0; border-width: 1px; padding: 5px; background-color: #ffffff; }
+    :scope tr:nth-child(2) ul>li { margin-top: 5px; }
+    :scope tr:nth-child(2) ul>li:first-child { margin-top: 0; }
+    :scope tr:nth-child(2) ul>li>button { margin-top: 0; min-width: 80px; }
+    :scope tr:nth-child(3) ul { padding: 0; list-style: none; }
+    :scope tr:nth-child(3) ul>li>input { margin: 2px 0; max-width: 80px; }
+    :scope tr:nth-child(3) ul>li>button { margin-top: 0; min-width: 20px; }
   </style>
   <script>
     this.EdtItm = this.opts.info ? Z.Obj.Clone(this.opts.info) : { Dt: '', Itm: '', Byrs: [], Cmt: '' };
+    this.Sgstns = [];
 
     this.mixin('Z.RM');
 
@@ -560,6 +572,30 @@
       if (Evt.keyCode !== 13) { return; }
 
       this.Done(Evt);
+    }
+
+    ItemSuggest (Evt) {
+      if (Evt.target.value.trim().length === 0) {
+        this.Sgstns = [];
+
+        return;
+      }
+
+      const Pymnts = this.StoreGet('PAYMENTS');
+      let Sgstns = []; // suggestions.
+
+      for (let i = 0; i < Pymnts.length; i++) {
+        if (Pymnts[i].Itm.indexOf(Evt.target.value) > -1) { Sgstns.push(Pymnts[i].Itm); }
+      }
+
+      console.log(Sgstns);
+
+      this.Sgstns = Sgstns;
+    }
+
+    SuggestionPick (Evt) {
+      this.refs.Itm.value = Evt.target.innerText;
+      this.Sgstns = [];
     }
 
     Delete (Evt) {

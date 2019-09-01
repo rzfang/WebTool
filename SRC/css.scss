@@ -8,13 +8,13 @@ body {
   color: #202020;
 }
 
-div, header, #footer, nav, li, td, button, input[type=button] {
+div, header, #footer, nav, ul, li, td, button, input[type=button] {
   border-color: #808080;
   border-style: solid;
   border-width: 0;
 }
 
-div, nav, li, td, button, input[type=button] {
+div, nav, ul, li, td, button, input[type=button] {
   border-radius: 3px;
 }
 
