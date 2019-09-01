@@ -468,7 +468,7 @@
       <tr>
         <td>Item</td>
         <td>
-          <input ref='Itm' type="text" value={EdtItm.Itm} oninput={ItemSuggest}/>
+          <input ref='Itm' type="text" value={EdtItm.Itm} oninput={ItemSuggest} onblur={SuggestionHide}/>
           <ul if={Sgstns.length}>
             <li each={Nm, i in Sgstns}>
               <button onclick={SuggestionPick}>{Nm}</button>
@@ -585,12 +585,22 @@
       let Sgstns = []; // suggestions.
 
       for (let i = 0; i < Pymnts.length; i++) {
-        if (Pymnts[i].Itm.indexOf(Evt.target.value) > -1) { Sgstns.push(Pymnts[i].Itm); }
+        const Pymnt = Pymnts[i].Itm;
+
+        if (Pymnt.indexOf(Evt.target.value) < 0 || Sgstns.indexOf(Pymnt) > -1) { continue; }
+
+        Sgstns.push(Pymnt);
       }
 
-      console.log(Sgstns);
-
       this.Sgstns = Sgstns;
+    }
+
+    SuggestionHide (Evt) {
+      setTimeout(() => {
+        this.Sgstns = [];
+        this.update();
+      },
+      100); // slow down 'onblur' event so that 'SuggestionPick' can do first.
     }
 
     SuggestionPick (Evt) {
