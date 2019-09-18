@@ -73,7 +73,7 @@ module.exports = {
     title: 'Payment - Web Tool',
     keywords: 'JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
     js: [
-      'https://cdn.jsdelivr.net/npm/riot@3.8/riot+compiler.min.js',
+      'https://cdn.jsdelivr.net/npm/riot@3.13/riot+compiler.min.js',
       '/include.js',
       '/payment.tag',
       '/coverbox.tag' ],
@@ -99,7 +99,7 @@ module.exports = {
     title: 'Feed Read - Web Tool',
     keywords: '閱讀器, RSS, Atom, 網頁, 工具, Web, Tool',
     js: [
-      'https://cdn.jsdelivr.net/npm/riot@3.8/riot+compiler.min.js',
+      'https://cdn.jsdelivr.net/npm/riot@3.13/riot+compiler.min.js',
       '/include.js',
       '/read.tag',
       '/coverbox.tag' ],
@@ -122,7 +122,7 @@ module.exports = {
     favicon: '',
     css: [ '/css.css' ],
     js: [
-      'https://cdn.jsdelivr.net/npm/riot@3.8/riot+compiler.min.js',
+      'https://cdn.jsdelivr.net/npm/riot@3.13/riot+compiler.min.js',
       '/include.js' ],
     body: [
       'header.tag',

@@ -47,13 +47,16 @@
 
           if (this.HsTrnsfrCnfrm) { return; }
 
-          let FdURLs = this.URLsFilter(window.localStorage.FdURLs.split('_|_'));
+          const Fds = this.URLsFilter(window.localStorage.FdURLs.split('_|_'))
+                          .map(Url => { return { FdURL: Url, HsBnLdd: false }; }); // feed url, has been loaded
 
-          this.AllFeedsLoad(FdURLs);
+          this.StoreSet('FEEDS', Sto => Fds);
         });
       });
 
-    this.StoreListen('FEEDS', (Sto, TskPrms) => { this.update({ Fds: Sto }); });
+    this.StoreListen('FEEDS', (Sto, TskPrms) => {
+      this.update({ Fds: Sto });
+    });
 
     this.StoreListen(
       'TRANSFER',
@@ -65,29 +68,6 @@
       if (!Z.Is.Array(URLs)) { return []; }
 
       return URLs.filter(function (URL) { return Z.Is.URL(URL); });
-    }
-
-    AllFeedsLoad (FdURLs) {
-      for (let i = 0; i < FdURLs.length; i++) {
-        if (!FdURLs[i]) { continue; }
-
-        this.OneFeedLoad(FdURLs[i]);
-      }
-    }
-
-    OneFeedLoad (URL) {
-      this.ServiceCall(
-        '/service/feed',
-        { URL: URL },
-        'FEEDS',
-        (Sto, Rst) => {
-          if (!Sto) { Sto = []; }
-
-          if (!Rst) { console.log('can get feed result for ' +  URL); }
-          else { Sto.push(Rst); }
-
-          return Sto;
-        });
     }
 
     OneFeedAdd (Evt) {
@@ -173,6 +153,7 @@
 
 <feed>
   <div>
+    <a if={!Ttl} href={FdURL}>{FdURL}</a>
     <a href='{Lnk}' target='_blank'>{Ttl}</a>
     <div>{Dscrptn}</div>
     <button onClick={Delete}>X</button>
@@ -190,6 +171,43 @@
     :last-child>div { margin: 10px 0; }
   </style>
   <script>
+    this.mixin('Z.RM');
+
+    this.on('mount', () => {
+      if (!this.HsBnLdd) { this.Load(this.FdURL); }
+    });
+
+    function TargetFeedIndexGet (Fds, Url) {
+      return Fds.findIndex(Fd => Fd.FdURL === Url);
+    }
+
+    Load (URL) {
+      this.ServiceCall(
+        '/service/feed',
+        { URL: URL },
+        'FEEDS',
+        (Sto, Rst) => {
+          if (!Sto) { Sto = []; }
+
+          if (!Rst) {
+            console.log('can not get feed result for ' +  URL);
+
+            Rst = { HsBnLdd: true };
+          }
+          else { Rst.HsBnLdd = true; }
+
+          const Idx = TargetFeedIndexGet(Sto, URL), // target store feed index.
+                Lth = Sto.length;
+
+          Rst.FdURL = URL;
+
+          if (Lth === 0 || Idx < 0) { Sto.push(Rst); }
+          else { Sto[Idx] = Rst; }
+
+          return Sto;
+        });
+    }
+
     Delete (Evt) {
       if (Z.Is.Function(this.opts.delete)) { this.opts.delete(this.FdURL); }
     }
