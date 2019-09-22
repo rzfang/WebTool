@@ -156,7 +156,8 @@
     <a if={!Ttl} href={FdURL}>{FdURL}</a>
     <a href='{Lnk}' target='_blank'>{Ttl}</a>
     <div>{Dscrptn}</div>
-    <button onClick={Delete}>X</button>
+    <button class='BtnDel' onClick={Delete}>X</button>
+    <button if={!Ttl} class='BtnLd' onClick={Load}>Reload</button>
   </div>
   <div>
     <div each={Itms}>
@@ -167,39 +168,40 @@
     :scope { display: block; margin: 10px 0; padding: 5px; border: 1px solid; border-radius: 3px; }
     :scope>div:first-child { position: relative; }
     :scope>div:first-child>div { font-size: 14px; color: #808080; }
-    :scope>div:first-child>button { position: absolute; right: 0px; top: 0px; }
+    :scope>div:first-child>button.BtnDel { position: absolute; right: 0px; top: 0px; }
+    :scope>div:first-child>button.BtnLd { position: absolute; right: 20px; top: 0px; }
     :last-child>div { margin: 10px 0; }
   </style>
   <script>
     this.mixin('Z.RM');
 
     this.on('mount', () => {
-      if (!this.HsBnLdd) { this.Load(this.FdURL); }
+      if (!this.HsBnLdd) { this.Load(null); }
     });
 
     function TargetFeedIndexGet (Fds, Url) {
       return Fds.findIndex(Fd => Fd.FdURL === Url);
     }
 
-    Load (URL) {
+    Load (Evt) {
       this.ServiceCall(
         '/service/feed',
-        { URL: URL },
+        { URL: this.FdURL },
         'FEEDS',
         (Sto, Rst) => {
           if (!Sto) { Sto = []; }
 
           if (!Rst) {
-            console.log('can not get feed result for ' +  URL);
+            console.log('can not get feed result for ' +  this.FdURL);
 
             Rst = { HsBnLdd: true };
           }
           else { Rst.HsBnLdd = true; }
 
-          const Idx = TargetFeedIndexGet(Sto, URL), // target store feed index.
+          const Idx = TargetFeedIndexGet(Sto, this.FdURL), // target store feed index.
                 Lth = Sto.length;
 
-          Rst.FdURL = URL;
+          Rst.FdURL = this.FdURL;
 
           if (Lth === 0 || Idx < 0) { Sto.push(Rst); }
           else { Sto[Idx] = Rst; }
