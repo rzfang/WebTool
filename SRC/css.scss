@@ -55,18 +55,10 @@ button, input[type=button] {
   border-top-width: 1px;
   text-align: center;
 
-  >div {
-    position: absolute;
-    right: 45px;
-    bottom: 0;
-    width: 100px;
-    height: 100px;
-    text-align: right;
-  }
-
-  button {
+  >button {
     display: none;
     position: fixed;
+    right: 15px;
     bottom: 25px;
     padding: 0 3px;
     background-color: #ffffff;

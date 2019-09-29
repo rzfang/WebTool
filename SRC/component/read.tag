@@ -169,7 +169,7 @@
     :scope>div:first-child { position: relative; }
     :scope>div:first-child>div { font-size: 14px; color: #808080; }
     :scope>div:first-child>button.BtnDel { position: absolute; right: 0px; top: 0px; }
-    :scope>div:first-child>button.BtnLd { position: absolute; right: 20px; top: 0px; }
+    :scope>div:first-child>button.BtnLd { position: absolute; right: 20px; top: 0px; background-color: #ffffff; }
     :last-child>div { margin: 10px 0; }
   </style>
   <script>
