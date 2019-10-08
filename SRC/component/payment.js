@@ -1,9 +1,7 @@
-const Cch = require('../cache');
+const Cch = require('../RZ-Nd-Cache');
 
-module.exports = function (URLInfo, Clbck) {
-  let Rst = { // result.
-        HTML: '<payment><!-- this will be replaced by riot.mount. --></payment>',
-        Js: "riot.mount('payment');\n" };
+module.exports = function (Rqst, URLInfo, Clbck) {
+  let Rst = { TrnsfrData: '' };
 
   if (!URLInfo || !URLInfo.query || URLInfo.query.indexOf('t=') < 0) {
     return Clbck(1, Rst);
@@ -21,7 +19,7 @@ module.exports = function (URLInfo, Clbck) {
     return Clbck(3, Rst);
   }
 
-  Rst.Js = "riot.mount('payment', { TrnsfrData: '" + Cch.Get(TrnsfrKy) + "' });";
+  Rst.TrnsfrData = Cch.Get(TrnsfrKy);
 
   Clbck(0, Rst);
 };

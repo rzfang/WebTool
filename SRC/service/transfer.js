@@ -1,6 +1,6 @@
 const crypto = require('crypto'),
       Is = require('../RZ-Js-Is'),
-      Cch = require('../cache'),
+      Cch = require('../RZ-Nd-Cache'),
       CdMp = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQq0Rr1Ss2Tt3Uu4Vv5Ww6Xx7Yy8Zz9'; // code map string.
 
 /*
@@ -21,21 +21,21 @@ function KeyGenerate (Sd) {
 }
 
 /*
-  @ request info object. format as { Bdy: { Ctn: '...' }}.
+  @ request info object. format as { Bd: { Ctn: '...' }}.
   @ callback function. */
-module.exports = function (RqstInfo, Clbck) {
-  if (!RqstInfo.Bdy || !RqstInfo.Bdy.Ctn || !Is.String(RqstInfo.Bdy.Ctn)) {
+module.exports = function (Rqst, Rspns, RqstInfo, Clbck) {
+  if (!RqstInfo.Bd || !RqstInfo.Bd.Ctn || !Is.String(RqstInfo.Bd.Ctn)) {
     return Clbck(-1, null);
   }
 
   let Dt = new Date(),
-      Ky = KeyGenerate(RqstInfo.Bdy.Ctn + Dt.getTime().toString());
+      Ky = KeyGenerate(RqstInfo.Bd.Ctn + Dt.getTime().toString());
 
   while(Cch.Has(Ky)) {
     Ky = KeyGenerate(Ky);
   }
 
-  Cch.Set(Ky, RqstInfo.Bdy.Ctn, 600);
+  Cch.Set(Ky, RqstInfo.Bd.Ctn, 600);
 
   return Clbck(0, Ky);
 };

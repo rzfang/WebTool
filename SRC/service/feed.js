@@ -1,27 +1,27 @@
 const request = require('request'),
       feedparser = require('feedparser'),
       Is = require('../RZ-Js-Is'),
-      Cch = require('../cache');
+      Cch = require('../RZ-Nd-Cache');
 
 /*
   @ request info object.
   @ callback function. */
-module.exports = function (RqstInfo, Clbck) {
-  if (!RqstInfo.Bdy || !RqstInfo.Bdy || !RqstInfo.Bdy.URL || !Is.String(RqstInfo.Bdy.URL)) {
+module.exports = function (Rqst, Rspns, RqstInfo, Clbck) {
+  if (!RqstInfo.Bd || !RqstInfo.Bd || !RqstInfo.Bd.URL || !Is.String(RqstInfo.Bd.URL)) {
     return Clbck(-1, null);
   }
 
-  let FdInfo = Cch.Get(RqstInfo.Bdy.URL); // feed info object.
+  let FdInfo = Cch.Get(RqstInfo.Bd.URL); // feed info object.
 
   if (FdInfo) { return Clbck(1, FdInfo); }
 
-  let Rqst = request(encodeURI(RqstInfo.Bdy.URL)),
+  let SvcRqst = request(encodeURI(RqstInfo.Bd.URL)), // server request.
       FdPrsr = new feedparser(), // feed parser.
       IsEnd = false; // is end flag.
 
-  FdInfo = { FdURL: RqstInfo.Bdy.URL, Itms: [] }; // default, feed url, items.
+  FdInfo = { FdURL: RqstInfo.Bd.URL, Itms: [] }; // default, feed url, items.
 
-  Rqst.on(
+  SvcRqst.on(
     'error',
     function (Err) {
       if (IsEnd) { return; }
@@ -31,7 +31,7 @@ module.exports = function (RqstInfo, Clbck) {
       IsEnd = true;
     });
 
-  Rqst.on(
+  SvcRqst.on(
     'response',
     function (Rspns) {
       let Strm = this; // stream object.
@@ -78,6 +78,6 @@ module.exports = function (RqstInfo, Clbck) {
     FdInfo.Itms = FdInfo.Itms.slice(0, 5);
 
     Clbck(0, FdInfo);
-    Cch.Set(RqstInfo.Bdy.URL, FdInfo, 1800);
+    Cch.Set(RqstInfo.Bd.URL, FdInfo, 1800);
   });
 };

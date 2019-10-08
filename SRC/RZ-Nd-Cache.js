@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 module.exports = {
-  Cchs: { Fls: {}, Dt: {} }, // caches, data.
+  Cchs: { Fls: {}, Dt: {} }, // caches, files, data.
   IsRolling: false,
   /*
     @ file path.
@@ -9,7 +9,13 @@ module.exports = {
   FileLoad (FlPth, Clbck) {
     const This = this;
 
-    if (this.Cchs.Fls[FlPth] && this.Cchs.Fls[FlPth]['Str']) { return Clbck(1, this.Cchs.Fls[FlPth]['Str']); }
+    if (this.Cchs.Fls[FlPth]) {
+      const { Dt = null, Str = '' } = this.Cchs.Fls[FlPth];
+
+      if (!Dt || !Str) { return Clbck(-1); }
+
+      return Clbck(1, Str, Dt);
+    }
 
     fs.readFile(
       FlPth,
@@ -17,20 +23,20 @@ module.exports = {
       function (Err, FlStr) { // error, file string.
         if (Err) { return Clbck(-1); }
 
-        This.Cchs.Fls[FlPth] = { Dt: (new Date()).getTime(), Str: FlStr };
+        const Dt = (new Date()).getTime();
 
-        Clbck(0, FlStr);
+        This.Cchs.Fls[FlPth] = { Dt, Str: FlStr };
+
+        Clbck(0, FlStr, Dt);
       });
   },
   /*
     @ key name.
-    @ date number. */
-  IsFileCached (Ky, Dt) {
+    < true | false. */
+  IsFileCached (Ky) {
     let FlInfo = this.Cchs.Fls && this.Cchs.Fls[Ky] || null;
 
     if (!FlInfo || !FlInfo.Dt || !FlInfo.Str) { return false; }
-
-    if ((typeof Dt !== 'number') || (Dt < FlInfo.Dt)) { return false; }
 
     return true;
   },
@@ -52,7 +58,7 @@ module.exports = {
   /* set the value.
     @ key name.
     @ value.
-    @ second limit.
+    @ second limit, default 300 seconds.
     < return true or false. */
   Set (Ky, Vl, ScndLmt = 300) {
     if (typeof Ky !== 'string' || typeof ScndLmt !== 'number') { return false; }
@@ -62,6 +68,7 @@ module.exports = {
     return true;
   },
   Recycle () {
+    const NwTm = (new Date()).getTime(); // now time.
     let Kys = Object.keys(this.Cchs.Dt); // keys.
 
     for (let i = 0; i < Kys.length; i++) {
@@ -72,12 +79,9 @@ module.exports = {
         continue;
       }
 
-      let Drtn = ((new Date()).getTime() - Tgt.Dt) / 1000; // duration.
+      let Drtn = (NwTm - Tgt.Dt) / 1000; // duration.
 
-      if (Drtn > Tgt.ScndLmt) {
-        delete this.Cchs.Dt[Kys[i]];
-        continue;
-      }
+      if (Drtn > Tgt.ScndLmt) { delete this.Cchs.Dt[Kys[i]]; }
     }
   },
   /*

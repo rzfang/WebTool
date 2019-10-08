@@ -99,7 +99,7 @@
     if (!window.Z || typeof window.Z !== 'object') { window.Z = Z; }
     else {
       for (var i in Z) {
-        if (Z.hasOwnProperty(i)) { window.Z[i] = Z[i]; }
+        if (Object.prototype.hasOwnProperty.call(Z, i)) { window.Z[i] = Z[i]; }
       }
     }
   }

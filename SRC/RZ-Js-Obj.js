@@ -37,7 +37,7 @@
     if (!Obj || typeof Obj !== 'object') { return Flbck; }
 
     for (var i = 0; i < Pth.length; i++) {
-      if (!Chld || !Chld.hasOwnProperty(Pth[i])) { return Flbck; }
+      if (!Chld || !Object.prototype.hasOwnProperty.call(Chld, Pth[i])) { return Flbck; }
 
       Chld = Chld[Pth[i]];
     }
@@ -60,7 +60,7 @@
     }
 
     for (var i in ExtObj) {
-      if (!ExtObj.hasOwnProperty(i)) { continue; }
+      if (!Object.prototype.hasOwnProperty.call(ExtObj, i)) { continue; }
 
       if (!BsObj[i] || typeof BsObj[i] !== 'object') {
         BsObj[i] = ExtObj[i];

@@ -1,7 +1,7 @@
 const net = require('net'),
       crypto = require('crypto'),
       Is = require('./RZ-Js-Is'),
-      Log = require('./log');
+      Log = require('./RZ-Js-Log');
 
 let Svr, // socket Server.
     SckA = []; // socket
