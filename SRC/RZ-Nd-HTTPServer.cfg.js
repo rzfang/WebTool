@@ -17,8 +17,8 @@ const DftPgRt = { // here should handle 404.
 module.exports = {
   port: 9001,
   cdn: {
-    riot: 'https://cdn.jsdelivr.net/npm/riot@3.13/riot+compiler.min.js'
-    // riot: 'https://unpkg.com/riot@4/riot+compiler.min.js'
+    riot3: 'https://cdn.jsdelivr.net/npm/riot@3.13/riot+compiler.min.js',
+    riot4: 'https://cdn.jsdelivr.net/npm/riot@4.6/riot.min.js'
   },
   uploadFilePath: TMP_PTH,
   page: {
@@ -27,51 +27,60 @@ module.exports = {
       title: 'Moment Chat - Web Tool',
       keywords: '聊天, chat, websocket, Web, Tool, Program, Develop',
       body: [ 'header.tag', 'chat.tag', 'component/footer.part.html' ]},
-    '/colors': {
+    '/colors': { // v4
       ...DftPgRt,
       title: 'Color Conside - Web Tool',
       keywords: '顏色, 色票, 樣式, color, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/colors.part.html', 'component/footer.part.html' ]},
-    '/convert': {
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/colors.part.html', 'component/footer.part.html' ]},
+    '/convert': { // v4
       ...DftPgRt,
       title: 'Convert Table - Web Tool',
       keywords: '轉換, 換算, 查表, convert, list, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/convert.part.html', 'component/footer.part.html' ]},
-    '/countdown': {
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/convert.part.html', 'component/footer.part.html' ]},
+    '/countdown': { // v4
       ...DftPgRt,
       title: 'Countdown Notify - Web Tool',
       keywords: '倒數計時, 計時, countdown, 網頁, 工具, Tool',
-      body: [ 'header.tag', 'component/countdown.part.html', 'component/footer.part.html' ]},
-    '/datauri': {
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/countdown.part.html', 'component/footer.part.html' ]},
+    '/datauri': { // v4
       ...DftPgRt,
       title: 'File to Data URI - Web Tool',
       keywords: '資料, 轉換, datauri, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/datauri.part.html', 'component/footer.part.html' ]},
-    '/datetime': {
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/datauri.part.html', 'component/footer.part.html' ]},
+    '/datetime': { // v4
       ...DftPgRt,
       title: 'Datetime Transform - Web Tool',
       keywords: '時間格式轉換, datetime transform, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/datetime.part.html', 'component/footer.part.html' ]},
-    '/endecode': {
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/datetime.part.html', 'component/footer.part.html' ]},
+    '/endecode': { // v4
       ...DftPgRt,
       title: 'String Encode/Decode - Web Tool',
       keywords: '編碼, 解碼, encoding, decoding, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/endecode.part.html', 'component/footer.part.html' ]},
-    '/ipv426': {
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/endecode.part.html', 'component/footer.part.html' ]},
+    '/ipv426': { // v4
       ...DftPgRt,
       title: 'IPv4 to v6 convert - Web Tool',
       keywords: 'ipv6, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/ipv426.part.html', 'component/footer.part.html' ]},
-    '/json': {
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/ipv426.part.html', 'component/footer.part.html' ]},
+    '/json': { // v4
       ...DftPgRt,
       title: 'JSON Edit - Web Tool',
       keywords: 'JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/json.part.html', 'component/footer.part.html' ]},
-    '/keycode': {
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/json.part.html', 'component/footer.part.html' ]},
+    '/keycode': { // v4
       ...DftPgRt,
       title: 'Key Code Detect - Web Tool',
       keywords: '鍵盤代碼, keyboard, keyCode, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/keycode.part.html', 'component/footer.part.html' ]},
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/keycode.part.html', 'component/footer.part.html' ]},
     '/payment': {
       ...DftPgRt,
       title: 'Payment - Web Tool',
@@ -79,18 +88,20 @@ module.exports = {
       js: [ '/include.js', '/payment.tag', '/coverbox.tag' ],
       body: [
         'header.tag',
-        { type: 'riot', component: './component/payment.tag', initialize: require('./component/payment') },
+        { type: 'riot3', component: './component/payment.tag', initialize: require('./component/payment') },
         'component/footer.part.html' ]},
-    '/post': {
+    '/post': { // v4
       ...DftPgRt,
       title: 'Form Post - Web Tool',
       keywords: '送出資料, form, post, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/post.part.html', 'component/footer.part.html' ]},
-    '/re': {
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/post.part.html', 'component/footer.part.html' ]},
+    '/re': { // v4
       ...DftPgRt,
       title: 'Regula Expression - Web Tool',
       keywords: '正規表示式, RegExp, regular expression, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/re.part.html', 'component/footer.part.html' ]},
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/re.part.html', 'component/footer.part.html' ]},
     '/read': {
       ...DftPgRt,
       title: 'Feed Read - Web Tool',
@@ -98,13 +109,14 @@ module.exports = {
       js: [ '/include.js', '/read.tag', '/coverbox.tag' ],
       body: [
         'header.tag',
-        { type: 'riot', component: './component/read.tag', initialize: require('./component/read') },
+        { type: 'riot3', component: './component/read.tag', initialize: require('./component/read') },
         'component/footer.part.html' ]},
-    '/window': {
+    '/window': { // v4
       ...DftPgRt,
       title: 'Window Open Script - Web Tool',
       keywords: '開新視窗, window.open, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      body: [ 'header.tag', 'component/window.part.html', 'component/footer.part.html' ]},
+      js: [ 'include.js', 'hydrate.js' ],
+      body: [ './component/header.riot', 'component/window.part.html', 'component/footer.part.html' ]},
     '/': DftPgRt
   },
   service: {
@@ -121,6 +133,13 @@ module.exports = {
   route: [
     // ==== resource ====
 
+    // node_modules
+    {
+      path: /hydrate\.js$/,
+      type: 'resource',
+      location: '../node_modules/@riotjs/hydrate'
+    },
+
     { // SEO files.
       path: /\/(favicon\.ico|robots\.txt|sitemap\.xml)/,
       type: 'resource',
@@ -134,6 +153,11 @@ module.exports = {
     { // resource: Riot tag.
       path: /\.tag$/,
       type: 'resource',
+      location: './component'
+    },
+    { // riot component js compiled in runtime.
+      path: /\.riot$/,
+      type: 'riot4js',
       location: './component'
     }
   ]

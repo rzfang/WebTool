@@ -98,7 +98,7 @@
     @ the task function will run on client (browser) side.
     return: bool. */
   function OnBrowser (Tsk) {
-    if (typeof window === 'undefined' || typeof Tsk !== 'function') { return false; }
+    if (typeof window === 'undefined' || window !== global || typeof Tsk !== 'function') { return false; }
 
     Tsk();
 
@@ -107,11 +107,12 @@
 
   /* do the 'Tsk' function if on the node environment.
     @ the task function will run on server (node) side.
+    @ the request object, this needs node.js code help to provide, optional.
     return: bool. */
-  function OnNode (Tsk) {
+  function OnNode (Tsk, Rqst) {
     if (typeof module === 'undefined' || typeof Tsk !== 'function') { return false; }
 
-    Tsk();
+    Tsk(Rqst);
 
     return true;
   }
@@ -222,7 +223,7 @@
     RM.StoreSet = StoreSet;
     RM.StoreGet = StoreGet;
 
-    if (!window.Z || typeof window.Z !== 'object') { window.Z = {RM: RM}; }
+    if (!window.Z || typeof window.Z !== 'object') { window.Z = { RM: RM }; }
     else { window.Z.RM = RM; }
   }
 })();
