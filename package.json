@@ -4,21 +4,26 @@
   "description": "web tool",
   "main": "server.js",
   "dependencies": {
+    "@riotjs/compiler": "^4.5.4",
+    "@riotjs/hydrate": "^4.0.0",
+    "@riotjs/ssr": "^4.1.1",
     "async": "^2.6.2",
     "busboy": "^0.3.1",
     "feedparser": "^2.2.9",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "require-from-string": "^2.0.2",
+    "riot": "^4.7.2"
   },
   "devDependencies": {
-    "eslint": "^6.5.1",
+    "eslint": "^6.8.0",
     "eslint-plugin-json": "^1.4.0",
-    "node-sass": "^4.12.0",
-    "nodemon": "^1.19.3",
+    "node-sass": "^4.13.0",
+    "nodemon": "^1.19.4",
     "pre-commit": "^1.2.2",
-    "uglify-js": "^3.6.0"
+    "uglify-js": "^3.7.2"
   },
   "scripts": {
-    "dev": "nodemon -d 3 -e js,scss,html,tag -w SRC/ SRC/RZ-Nd-HTTPServer.js;",
+    "dev": "nodemon -d 3 -e js,scss,html,tag,riot -w SRC/ SRC/RZ-Nd-HTTPServer.js;",
     "ws": "nodemon -d 3 -e js -w SRC/websocket.js SRC/websocket.js",
     "lint": "eslint --ext .js,.json UTL/ SRC/",
     "test": "test"

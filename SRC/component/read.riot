@@ -1,0 +1,224 @@
+<feed>
+  <div>
+    <a if={!props.Ttl} href={props.FdUrl}>{props.FdUrl}</a>
+    <a href='{props.Lnk}' target='_blank'>{props.Ttl}</a>
+    <div>{props.Dscrptn}</div>
+    <div class='BtnBx'>
+      <button if={!props.Ttl} onclick={Load}>Reload</button>
+      <button onclick={Delete}>X</button>
+    </div>
+  </div>
+  <div>
+    <div each={Itm in props.Itms}>
+      <a href='{Itm.Lnk}' target='_blank'>{Itm.Ttl}</a>
+    </div>
+  </div>
+  <style>
+    :host { display: block; margin: 10px 0; padding: 5px; border: 1px solid; border-radius: 3px; }
+    :host>div:first-child { position: relative; }
+    :host>div:first-child>div { font-size: 14px; color: #808080; }
+    :host .BtnBx { position: absolute; right: 0px; top: 0px;  };
+    :host .BtnBx>button { margin-left: 5px; padding: 0 5px; background-color: #ffffff; }
+    :host :last-child>div { margin: 10px 0; }
+  </style>
+  <script>
+    export default {
+      /*
+        @ new props.
+        @ current props.
+        < true | false. */
+      shouldUpdate (NwPrps, CrntPrps) {
+        return (NwPrps.HsBnLdd !== CrntPrps.HsBnLdd) || (!CrntPrps.Itms && NwPrps.Itms);
+      },
+
+      TargetFeedIndexGet (Fds, Url) {
+        return Fds.findIndex(Fd => Fd.FdUrl === Url);
+      },
+
+      Load (Evt) {
+        this.ServiceCall(
+          '/service/feed',
+          { URL: this.props.FdUrl },
+          'FEEDS',
+          (Sto, Rst) => {
+            if (!Sto) { Sto = []; }
+
+            if (!Rst) {
+              console.log('can not get feed result for ' +  this.props.FdUrl);
+
+              Rst = { HsBnLdd: true };
+            }
+            else { Rst.HsBnLdd = true; }
+
+            const Idx = this.TargetFeedIndexGet(Sto, this.props.FdUrl), // target store feed index.
+                  Lth = Sto.length;
+
+            Rst.FdUrl = this.props.FdUrl;
+
+            if (Lth === 0 || Idx < 0) { Sto.push(Rst); }
+            else { Sto[Idx] = Rst; }
+
+            return Sto;
+          });
+      },
+
+      Delete (Evt) {
+          this.props.Delete && this.props.Delete(this.props.FdUrl);
+      }
+    }
+  </script>
+</feed>
+
+<!-- riot4+ edge. -->
+
+<read>
+  <div>
+    <input type='text' placeholder='enter the feed url.'/>
+    <button onclick={OneFeedAdd}>add a new feed</button>
+    <button onclick={Transfer}>Transfer</button>
+  </div>
+  <div>
+    <feed each={Fd in state.Fds} Delete={OneFeedRemove} {...Fd}/>
+  </div>
+  <cover-box if={state.IsTrnsfrOt}>
+    <p>please finish the transfering in 10 minutes by visit followed link in your device which you want the data transfer to.</p>
+    <div>{state.TrnsfrLnk}<br/>
+      <button onclick={TransferModeEnd}>OK</button>
+    </div>
+  </cover-box>
+  <cover-box if={state.HsTrnsfrCnfrm}>
+    <p>detected feed urls from remote transfering, what would you do ?</p>
+    <div>
+      <button onclick={TransferIgnore}>Ignore</button>
+      <button onclick={TransferMerge}>Merge</button>
+      <button onclick={TransferReplace}>Replace</button>
+    </div>
+  </cover-box>
+  <style scoped>
+    :host { display: block; padding-top: 5px; }
+    :host>div:first-child>* { margin-right: 10px; }
+    :host>div:first-child>button { padding: 0 5px; }
+    cover-box>div { position: relative; }
+    cover-box p { max-width: 480px; }
+    cover-box>div>div { margin: 10px 0; text-align: center; }
+    cover-box button { margin: 10px 5px 0 5px; padding: 0 5px; }
+  </style>
+  <script>
+    import coverBox from './cover-box.riot';
+
+    export default {
+      components: { coverBox, feed },
+
+      state: {
+        Fds: [],
+        HsTrnsfrCnfrm: false, // has transfer confirm.
+        IsTrnsfrOt: false, // is tranfer dialog out.
+        TrnsfrLnk: '' // transfer link.
+      },
+
+      onBeforeHydrate (Prps, Stt) {
+        if (this.StoreGet('FEEDS')) { this.state.HsTrnsfrCnfrm = true; } // has feeds before hydrate means these feeds are from server transfering.
+
+        this.StoreListen('FEEDS', Sto => { this.update({ Fds: Sto }); });
+
+        this.StoreListen(
+          'TRANSFER',
+          (Sto, TskPrms) => {
+            this.update({
+              IsTrnsfrOt: true,
+              TrnsfrLnk: Sto ? (window.location.origin + '/read?t=' + Sto) : 'can not transer data.'
+            });
+          });
+      },
+
+      onHydrated (Prps, Stt) {
+        if (!window.localStorage.FdURLs) {
+          window.localStorage.FdURLs = '';
+        }
+
+        if (!this.state.HsTrnsfrCnfrm) { this.TransferIgnore(null); }
+      },
+
+      UrlsFilter (Urls) {
+        if (!Z.Is.Array(Urls)) { return []; }
+
+        return Urls.filter(Url => { return Z.Is.URL(Url); });
+      },
+
+      OneFeedAdd (Evt) {
+        let FdUrls = window.localStorage.FdURLs,
+            Url = this.$('input[type=text]').value;
+
+        if (!Z.Is.URL(Url)) { return alert('this is not a standard Url.'); }
+
+        if (FdUrls.indexOf(Url) > -1) { return alert('this url has been added before.'); }
+
+        window.localStorage.FdURLs += '_|_' + Url;
+
+        this.state.Fds.push({FdUrl: Url, HsBnLdd: false });
+        this.update();
+      },
+
+      OneFeedRemove (Url) {
+        if (!Url) { return; }
+
+        const FdUrls = window.localStorage.FdURLs,
+              Fds = this.state.Fds;
+
+        window.localStorage.FdURLs = FdUrls.replace(Url, '').replace(/_\|__\|_/g, '_|_').replace(/^_\|_|_\|_$/g, '');
+
+        for (let i = 0; i < Fds.length; i++) {
+          if (Fds[i].FdUrl === Url) {
+            this.state.Fds.splice(i, 1);
+
+            break;
+          }
+        }
+
+        this.update();
+      },
+
+      Transfer (Evt) {
+        this.ServiceCall(
+          '/service/transfer',
+          { Ctn: window.localStorage.FdURLs },
+          'TRANSFER',
+          (Sto, Rst) => { return Rst; });
+      },
+
+      TransferModeEnd (Evt) {
+        this.update({ IsTrnsfrOt: false });
+      },
+
+      TransferIgnore (Evt) {
+        const Fds = this.UrlsFilter(window.localStorage.FdURLs.split('_|_'))
+                        .map(Url => { return { FdUrl: Url, HsBnLdd: false }; }); // feed url, has been loaded
+
+        this.state.HsTrnsfrCnfrm = false;
+
+        this.StoreSet('FEEDS', Sto => Fds);
+      },
+
+      TransferMerge (Evt) {
+        let LclFdUrls = this.UrlsFilter(window.localStorage.FdURLs.split('_|_')),
+            RmtFdUrls = this.UrlsFilter(this.opts.FdURLs.split('_|_')),
+            FdUrls = LclFdUrls;
+
+        for (let i = 0; i < RmtFdUrls.length; i++) {
+          if (FdUrls.indexOf(RmtFdUrls[i]) > -1 || !Z.Is.URL(RmtFdUrls[i])) { continue; }
+
+          FdUrls.push(RmtFdUrls[i]);
+        }
+
+        window.localStorage.FdURLs = FdUrls.join('_|_');
+        this.HsTrnsfrCnfrm = false;
+
+        this.AllFeedsLoad(FdUrls);
+      },
+
+      TransferReplace () {
+
+      }
+    }
+  </script>
+</read>
