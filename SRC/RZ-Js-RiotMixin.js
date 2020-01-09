@@ -2,8 +2,7 @@
   var Srvc = { // service.
         Rprt: {}, // report.
         Sto: {} // data store.
-      },
-      RM; // 'RM' = RiotMixin.
+      };
 
   /* make a AJAX request.
     @ AJAX Info object, key-value pairs.
@@ -98,7 +97,7 @@
     @ the task function will run on client (browser) side.
     return: bool. */
   function OnBrowser (Tsk) {
-    if (typeof window === 'undefined' || typeof Tsk !== 'function') { return false; }
+    if (typeof window === 'undefined' || window !== global || typeof Tsk !== 'function') { return false; }
 
     Tsk();
 
@@ -107,11 +106,12 @@
 
   /* do the 'Tsk' function if on the node environment.
     @ the task function will run on server (node) side.
+    @ the request object, this needs node.js code help to provide, optional.
     return: bool. */
-  function OnNode (Tsk) {
+  function OnNode (Tsk, Rqst) {
     if (typeof module === 'undefined' || typeof Tsk !== 'function') { return false; }
 
-    Tsk();
+    Tsk(Rqst);
 
     return true;
   }
@@ -124,19 +124,19 @@
 
   /*
     StoNm = name to locate the store.
-    Thn(Sto, Rst) = then, a function when the task done.
+    Then(Sto, Rst) = then, a function when the task done.
       Sto = the store object. */
-  function StoreListen (StoNm, Thn) {
-    var Clbcks = Srvc.Rprt[StoNm] || null;
+  function StoreListen (StoNm, Then) {
+    var Clbcks = this.Srvc.Rprt[StoNm] || null;
 
     if (!Clbcks || !Array.isArray(Clbcks)) {
-      Srvc.Rprt[StoNm] = [];
-      Clbcks = Srvc.Rprt[StoNm];
+      this.Srvc.Rprt[StoNm] = [];
+      Clbcks = this.Srvc.Rprt[StoNm];
     }
 
-    Srvc.Rprt[StoNm].push(Thn);
+    this.Srvc.Rprt[StoNm].push(Then);
 
-    if (Srvc.Sto[StoNm]) { Thn(Srvc.Sto[StoNm], null); } // if the task store is ready, call once first.
+    if (this.Srvc.Sto[StoNm]) { Then(this.Srvc.Sto[StoNm], null); } // if the task store is ready, call once first.
   }
 
   /*
@@ -152,6 +152,8 @@
         !StoNm || typeof StoNm !== 'string' ||
         !NewStoreGet || typeof NewStoreGet !== 'function')
     { return -1; }
+
+    var Srvc = this.Srvc;
 
     AJAX({
       URL: URL,
@@ -189,12 +191,12 @@
   function StoreSet (StoNm, NewStoreGet, PrmsToTsk) {
     if (!StoNm || typeof StoNm !== 'string' || !NewStoreGet || typeof NewStoreGet !== 'function') { return -1; }
 
-    var Rprt = Srvc.Rprt[StoNm] || [],
+    var Rprt = this.Srvc.Rprt[StoNm] || [],
         Lnth = Rprt && Array.isArray(Rprt) && Rprt.length || 0;
 
-    Srvc.Sto[StoNm] = NewStoreGet(Srvc.Sto[StoNm]);
+    this.Srvc.Sto[StoNm] = NewStoreGet(this.Srvc.Sto[StoNm]);
 
-    for (var i = 0; i < Lnth; i++) { Rprt[i](Srvc.Sto[StoNm], PrmsToTsk); }
+    for (var i = 0; i < Lnth; i++) { Rprt[i](this.Srvc.Sto[StoNm], PrmsToTsk); }
 
     return 0;
   }
@@ -205,24 +207,49 @@
   function StoreGet (Ky) {
     if (!Ky || typeof Ky !== 'string') { return null; }
 
-    return Srvc.Sto[Ky] || null;
+    return this.Srvc.Sto[Ky] || null;
   }
 
-  RM = {
-    OnBrowser: OnBrowser,
-    OnNode: OnNode,
-    Trim: Trim
-  };
+  function StorePrint () {
+    return '<script>\nwindow.Z.RM.StoreInject(\'' + JSON.stringify(this.Srvc.Sto) + '\');\n</script>\n';
+  }
 
-  if (typeof module !== 'undefined') { module.exports = RM; }
+  function StoreInject (StoStr) {
+    try {
+      this.Srvc.Sto = JSON.parse(StoStr);
+    }
+    catch (Err) {
+      console.log(Err);
+    }
+  }
+
+  /* for working with independent riot service/store instance in each environment. */
+  function ServiceInstance () {
+    this.Srvc = { Rprt: {}, Sto: {}}; // service, report, store.
+    this.OnBrowser = OnBrowser;
+    this.OnNode = OnNode;
+    this.StoreSet = StoreSet;
+    this.Trim = Trim;
+  }
+
+  if (typeof module !== 'undefined') {
+    module.exports = {
+      InstanceCreate: function (Rqst) {
+        Rqst.RM = new ServiceInstance();
+        Rqst.RM.StorePrint = StorePrint;
+      }
+    };
+  }
   else if (typeof window !== 'undefined') {
-    RM.AJAX = AJAX;
-    RM.StoreListen = StoreListen;
-    RM.ServiceCall = ServiceCall;
-    RM.StoreSet = StoreSet;
-    RM.StoreGet = StoreGet;
+    var RM = new ServiceInstance();
 
-    if (!window.Z || typeof window.Z !== 'object') { window.Z = {RM: RM}; }
+    RM.AJAX = AJAX;
+    RM.ServiceCall = ServiceCall.bind(RM);
+    RM.StoreGet = StoreGet;
+    RM.StoreInject = StoreInject;
+    RM.StoreListen = StoreListen;
+
+    if (!window.Z || typeof window.Z !== 'object') { window.Z = { RM: RM }; }
     else { window.Z.RM = RM; }
   }
 })();

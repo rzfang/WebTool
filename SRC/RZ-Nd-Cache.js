@@ -5,7 +5,7 @@ module.exports = {
   IsRolling: false,
   /*
     @ file path.
-    @ callback (error code, result data). */
+    @ callback (error code, result data, cached date). */
   FileLoad (FlPth, Clbck) {
     const This = this;
 
@@ -21,7 +21,7 @@ module.exports = {
       FlPth,
       'utf8',
       function (Err, FlStr) { // error, file string.
-        if (Err) { return Clbck(-1); }
+        if (Err) { return Clbck(-1, Err.message); }
 
         const Dt = (new Date()).getTime();
 
