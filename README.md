@@ -8,7 +8,7 @@ A website to provide many developing, daily tool.
 * [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/)
 * [Riot](https://riot.js.org/)
 * [Sass](https://sass-lang.com/)
-* [UglifyJS](http://lisperator.net/uglifyjs/)
+* [terser](https://terser.org/)
 
 ## Open community libraries that tools uses:
 * [JSON5](https://json5.org/) for [JSON Edit](https://webtool.zii.tw/json)

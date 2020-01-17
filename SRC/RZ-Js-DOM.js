@@ -1,13 +1,13 @@
 (function Z_DOM_API () {
   'use strict';
 
-  var DOM;
+  let DOM;
 
   /* Extend some function to any Element to simulate JQuery DOM Traveler. */
   function Initialize () {
     if (!Array.prototype.indexOf) { // handle indexOf function of array.
       Array.prototype.indexOf = function (Data) {
-        for (var i = 0; i < this.length; i++) {
+        for (let i = 0; i < this.length; i++) {
           if (Data === this[i]) { return true; }
         }
 
@@ -18,25 +18,25 @@
     //==== extend functions. ====
 
     NodeList.prototype.ToArray = function () {
-      var DA = []; // 'DA' = Data Array.
+      let DA = []; // 'DA' = Data Array.
 
-      for (var i = this.length; i--; DA.unshift(this[i]));
+      for (let i = this.length; i--; DA.unshift(this[i]));
 
       return DA;
     };
 
     /* chainable.
       'Fctn(Obj, Idx)' = Function.
-        'Obj' = each item of array.
-        'Idx' = Index of item in array.
-        'Lth' = Length of array.
-        Return: false to end loop immediately.
-      Return: array itself as OK, null as error. */
+        @ each item of array.
+        @ Index of item in array.
+        @ Length of array.
+        < false to end loop immediately.
+      < array itself as OK, null as error. */
     Array.prototype.Each = function (Fctn) {
       if (typeof Fctn !== 'function') { return null; }
 
-      for (var i = 0; i < this.length; i++) {
-        var Rst = Fctn(this[i], i, this.length);
+      for (let i = 0; i < this.length; i++) {
+        let Rst = Fctn(this[i], i, this.length);
 
         if (typeof Rst === 'boolean' && !Rst) { break; }
       }
@@ -46,16 +46,16 @@
 
     /*
       'Fctn(Obj, Idx)' = Function.
-        'Obj' = each item of array.
-        'Idx' = Index of item in array.
-        'Lth' = Length of array.
-        Return: true to save item, or false to drop it.
-      Return: new array the items saved, or [] otherwise. */
+        @ each item of array.
+        @ Index of item in array.
+        @ Length of array.
+        < true to save item, or false to drop it.
+      < new array the items saved, or [] otherwise. */
     Array.prototype.Some = function (Fctn) {
-      var PckA = []; // 'PckA' = Picked item Array.
+      let PckA = []; // 'PckA' = Picked item Array.
 
-      for (var i = 0; i < this.length; i++) {
-          var Rst = Fctn(this[i], i, this.length);
+      for (let i = 0; i < this.length; i++) {
+          let Rst = Fctn(this[i], i, this.length);
 
           if (typeof Rst === 'boolean' && Rst) { PckA.push(this[i]); }
       }
@@ -64,8 +64,8 @@
     };
 
     /*
-      'SltrStr' = Selector String.
-      Return: nodes array, or []. */
+      @ Selector String.
+      < nodes array, or []. */
     Element.prototype.Find = function (SltrStr) {
       if (typeof SltrStr !== 'string' || SltrStr.length === 0) { return []; }
 
@@ -73,9 +73,9 @@
     };
 
     /*
-      Return: first child node. */
+      < first child node. */
     Element.prototype.FirstChild = function () {
-      var Elt = this.firstChild;
+      let Elt = this.firstChild;
 
       while (Elt && Elt.nodeType !== 1) { Elt = Elt.nextSibling; }
 
@@ -83,9 +83,9 @@
     };
 
     /*
-      Return: last child node. */
+      < last child node. */
     Element.prototype.LastChild = function () {
-      var Elt = this.lastChild;
+      let Elt = this.lastChild;
 
       while (Elt && Elt.nodeType !== 1) { Elt = Elt.previousSibling; }
 
@@ -93,37 +93,37 @@
     };
 
     /* find Above (parent) node of current node.
-      'Lv' = Level to source up. optional, default: 1.
-      Return: parent node, or document node as top level node. */
+      @ Level to source up. optional, default: 1.
+      < parent node, or document node as top level node. */
     Element.prototype.Above = function (Lv) {
-      var PrtNd = this.parentNode;
+      let PrtNd = this.parentNode;
 
       if (typeof Lv !== 'number' || Lv < 1) { Lv = 1; }
 
       Lv = Math.floor(Lv);
 
-      for (var i = 1; (i < Lv) && (PrtNd !== document); i++) { PrtNd = PrtNd.parentNode; }
+      for (let i = 1; (i < Lv) && (PrtNd !== document); i++) { PrtNd = PrtNd.parentNode; }
 
       return PrtNd;
     };
 
     /*
-      'SltrStr' = filter Selector String. optional.
-      Return: children nodes array, or []. */
+      @ filter Selector String. optional.
+      < children nodes array, or []. */
     Element.prototype.Children = function (SltrStr) {
-      var NdA = this.childNodes,
+      let NdA = this.childNodes,
           RstNdA = [];
 
-      for (var i = 0; i < NdA.length; i++) {
+      for (let i = 0; i < NdA.length; i++) {
         if (NdA[i].nodeType === 1) { RstNdA.push(NdA[i]); }
       }
 
       if (SltrStr && typeof SltrStr === 'string') {
-        var SltrNdA = [], // 'SltrNdA' = Selector matched Nodes array.
+        let SltrNdA = [], // 'SltrNdA' = Selector matched Nodes array.
             OrgID = this.id; // 'OrgID' = Original ID.
 
         if (!this.id) {
-          var Dt = new Date();
+          let Dt = new Date();
 
           this.id = 'TmpID' + Dt.getTime().toString();
         }
@@ -131,7 +131,7 @@
         SltrStr = '#' + this.id + ' > ' + SltrStr;
         NdA = document.querySelectorAll(SltrStr);
 
-        for (var i = 0; i < NdA.length; i++)         {
+        for (let i = 0; i < NdA.length; i++)         {
           if (NdA[i].nodeType === 1) { SltrNdA.push(NdA[i]); }
         }
 
@@ -139,8 +139,8 @@
 
         NdA = [];
 
-        for (var i = 0; i < RstNdA.length; i++) {
-          for (var j = 0; j < SltrNdA.length; j++) {
+        for (let i = 0; i < RstNdA.length; i++) {
+          for (let j = 0; j < SltrNdA.length; j++) {
             if (RstNdA[i] === SltrNdA[j]) {
               NdA.push(RstNdA[i]);
 
@@ -158,7 +158,7 @@
     };
 
     Element.prototype.Prev = function () {
-      var Nd = this.previousSibling;
+      let Nd = this.previousSibling;
 
       while (Nd && Nd.nodeType !== 1) { Nd = Nd.previousSibling; }
 
@@ -166,7 +166,7 @@
     };
 
     Element.prototype.Next = function () {
-      var Nd = this.nextSibling;
+      let Nd = this.nextSibling;
 
       while (Nd && Nd.nodeType !== 1) { Nd = Nd.nextSibling; }
 
@@ -174,12 +174,12 @@
     };
 
     /*
-      'SltrStr' = filter Selector String. optional.
+      @ filter Selector String. optional.
       Need: Children(). */
     Element.prototype.Siblings = function (SltrStr) {
-      var NdA = this.parentNode.Children(SltrStr);
+      let NdA = this.parentNode.Children(SltrStr);
 
-      for (var i = 0; i < NdA.length; i++) {
+      for (let i = 0; i < NdA.length; i++) {
         if (NdA[i] === this) {
           NdA.splice(i, 1);
 
@@ -210,9 +210,9 @@
     };
 
     Element.prototype.Index = function (SltrStr) {
-      var NdA = this.Above().Children(SltrStr);
+      let NdA = this.Above().Children(SltrStr);
 
-      for (var i in NdA) {
+      for (let i in NdA) {
         if (NdA[i] === this) { return i; }
       }
 
@@ -245,10 +245,10 @@
   //==== define global Z object with useful functions. ====
 
   /* Extend some function to any Element to simulate JQuery Selector.
-    'ES' = Element object or Selector string.
-    Return: node array, or null as empty; */
+    @ Element object or Selector string.
+    < node array, or null as empty; */
   function Find (ES) {
-    var Tp = typeof ES,
+    let Tp = typeof ES,
         NdA = null; // 'NdA' = Node Array.
 
     if (Tp === 'object' && ES.tagName !== 'undefined' && ES.nodeType === 1) { NdA = [ES]; }
@@ -263,9 +263,9 @@
   }
 
   /*
-    'Tgt' = target, the DOM object, can also be window object.
-    'EvtNm' = event name, an existed event name string.
-    'NewFctn' = new function which will be add into the event. */
+    @ target, the DOM object, can also be window object.
+    @ event name, an existed event name string.
+    @ new function which will be add into the event. */
   function EventListen (Tgt, EvtNm, NewFctn) {
     if (!Tgt || !EvtNm || typeof Tgt !== 'object' || typeof EvtNm !== 'string' || typeof NewFctn !== 'function')
     { return; }
@@ -276,7 +276,7 @@
       return;
     }
 
-    var OldFctn = Tgt[EvtNm];
+    let OldFctn = Tgt[EvtNm];
 
     Tgt[EvtNm] = function (Evt) {
       OldFctn(Evt);

@@ -2,26 +2,26 @@
 
 'use strict';
 
-var fs = require('fs'),
-    sass = require('node-sass'),
-    uglifyjs = require('uglify-js');
+const fs = require('fs'),
+      sass = require('node-sass'),
+      terser = require('terser');
 
 function SCSS_CSS (FrmPth, ToPth) {
-  var Src = fs.readFileSync(FrmPth, 'utf8'), // 'Src' = Source.
-      CSS = sass.renderSync({'data': Src}).css.toString().replace(/\n +/g, ' ').replace(/\n\n/g, "\n");
+  const Src = fs.readFileSync(FrmPth, 'utf8'), // 'Src' = Source.
+        CSS = sass.renderSync({'data': Src}).css.toString().replace(/\n +/g, ' ').replace(/\n\n/g, "\n");
 
   fs.writeFileSync(ToPth, CSS);
 }
 
 function JsCompress (FrmPthA, ToPth) {
-  var Srcs = [], // sources.
+  let Srcs = [], // sources.
       Rst;
 
-  for (var i = 0; i < FrmPthA.length; i++) {
+  for (let i = 0; i < FrmPthA.length; i++) {
     Srcs.push(fs.readFileSync(FrmPthA[i], 'utf8'));
   }
 
-  Rst = uglifyjs.minify(Srcs, {});
+  Rst = terser.minify(Srcs, {});
 
   if (Rst.error) { return console.log(Rst.error); }
 

@@ -1,42 +1,42 @@
 (function Z_Obj_API () {
-  var Obj;
+  let Obj;
 
   /* Combine the seconde object into first object.
-    'BsObj' = Base Object.
-    'ExtObj' = Extend Object.
-    'Md' = Mode, 0: always create another object, 1: overwrite the BsObj.
-    Return: new object after combined, or null as error.
+    @ Base Object.
+    @ Extend Object.
+    @ Mode, 0: always create another object, 1: overwrite the BsObj.
+    < new object after combined, or null as error.
     Note: this is not perfect. */
   function Combine (BsObj, ExtObj, Md) {
-    var RstObj;
+    let RstObj;
 
     if (typeof BsObj !== 'object' || typeof ExtObj !== 'object') { return null; }
 
     if (!Md) {
       RstObj = {};
 
-      for (var i in BsObj) { RstObj[i] = BsObj[i]; }
+      for (let i in BsObj) { RstObj[i] = BsObj[i]; }
     }
     else { RstObj = BsObj; }
 
-    for (var i in ExtObj) { RstObj[i] = ExtObj[i]; }
+    for (let i in ExtObj) { RstObj[i] = ExtObj[i]; }
 
     return RstObj;
   }
 
   /* dig the children of given object.
-    'Obj' = Object. the origin object which will be digged.
-    'Pth' = Path. an array records each level of path.
-    'Flbck' = Fallback. optional, default undefined.
-    Return: sub object, or fallback value. */
+    @ Object. the origin object which will be digged.
+    @ Path. an array records each level of path.
+    @ Fallback. optional, default undefined.
+    < sub object, or fallback value. */
   function Dig (Obj, Pth, Flbck) {
-    var Chld = Obj;
+    let Chld = Obj;
 
     if (!(Pth instanceof Array) || Pth.length === 0) { return Flbck; }
 
     if (!Obj || typeof Obj !== 'object') { return Flbck; }
 
-    for (var i = 0; i < Pth.length; i++) {
+    for (let i = 0; i < Pth.length; i++) {
       if (!Chld || !Object.prototype.hasOwnProperty.call(Chld, Pth[i])) { return Flbck; }
 
       Chld = Chld[Pth[i]];
@@ -46,9 +46,9 @@
   }
 
   /* Merge the seconde object into first object.
-    'BsObj' = Base Object.
-    'ExtObj' = Extend Object.
-    Return: BsObj after merge with ExtObj.
+    @ Base Object.
+    @ Extend Object.
+    < BsObj after merge with ExtObj.
     Note: this is not perfect. */
   function Merge (BsObj, ExtObj) {
     if (BsObj === ExtObj || typeof ExtObj !== 'object' || ExtObj === null) { return ExtObj; }
@@ -59,7 +59,7 @@
       return BsObj;
     }
 
-    for (var i in ExtObj) {
+    for (let i in ExtObj) {
       if (!Object.prototype.hasOwnProperty.call(ExtObj, i)) { continue; }
 
       if (!BsObj[i] || typeof BsObj[i] !== 'object') {

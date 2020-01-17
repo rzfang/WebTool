@@ -1,12 +1,12 @@
 (function Z_API () {
-  var Z;
+  let Z;
 
   /* Pad Characters into a string.
-    'Str' = String.
-    'Lth' = Length. minimum length of string should be padding to.
-    'Chr' = Character. optional, default '0';
-    'Sd' = Side. optional, default 'l'. 'l'|'L': left padding, 'r'|'R': right padding.
-    Return: string after handle. */
+    @ String.
+    @ Length. minimum length of string should be padding to.
+    @ Character. optional, default '0';
+    @ Side. optional, default 'l'. 'l'|'L': left padding, 'r'|'R': right padding.
+    < string after handle. */
   function CharPad (Str, Lth, Chr, Sd) {
     if (typeof Str !== 'string') { Str = Str.toString(); }
 
@@ -21,7 +21,7 @@
       if (Sd !== 'l' && Sd !== 'r') { return Str; }
     }
 
-    var PN = Lth - Str.length, // 'PN' = Padding Number.
+    let PN = Lth - Str.length, // 'PN' = Padding Number.
         PS = ''; // 'PS' = Padding String.
 
     for (PS = ''; PS.length < PN; PS += Chr);
@@ -33,17 +33,17 @@
   }
 
   /* get a Data String by giving Second number.
-    'Scd' = Second, float to include millisecond.
-    'Fmt' = Format.
+    @ Second, float to include millisecond.
+    @ Format.
       0: YYYY-MM-DD HH:II:SS.CCC+ZZ. (default)
       1: YYYY-MM-DD HH:II:SS.CCC+ZZ (W).
       2: YYYYMMDDHHIISS.
       3: YYYY-MM-DD.
       4: YYYYMMDD.
-    Return: datatime string.
+    < datatime string.
     Need: CharPad(). */
   function Second2Datetime (Scd, Fmt) {
-    var Dt = new Date(Scd * 1000), // 'Dt' = Date.
+    let Dt = new Date(Scd * 1000), // 'Dt' = Date.
         DtStr = '',
         TZOM = Dt.getTimezoneOffset(), // 'TZOM' = Time Zone Offset Minute.
         TZOH = TZOM / 60; // 'TZOH' = Time Zone Offset Hour.
@@ -98,7 +98,7 @@
   else if (typeof window !== 'undefined') {
     if (!window.Z || typeof window.Z !== 'object') { window.Z = Z; }
     else {
-      for (var i in Z) {
+      for (let i in Z) {
         if (Object.prototype.hasOwnProperty.call(Z, i)) { window.Z[i] = Z[i]; }
       }
     }

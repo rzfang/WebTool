@@ -1,14 +1,14 @@
 (function Z_RiotMixin_API () {
-  var Srvc = { // service.
+  let Srvc = { // service.
         Rprt: {}, // report.
         Sto: {} // data store.
       };
 
   /* make a AJAX request.
     @ AJAX Info object, key-value pairs.
-    Return: XMLHttpRequest object. or null as error. */
+    < XMLHttpRequest object. or null as error. */
   function AJAX (Info) {
-    var DftInfo = {
+    let DftInfo = {
           URL: '',
           Data: {},
           Files: {},
@@ -33,15 +33,15 @@
     XHR = new XMLHttpRequest();
     Kys = Object.keys(Info.Data);
 
-    for (var i = 0; i < Kys.length; i++) {
-      var Tp = typeof Info.Data[Kys[i]];
+    for (let i = 0; i < Kys.length; i++) {
+      let Tp = typeof Info.Data[Kys[i]];
 
       if (Array.isArray(Info.Data[Kys[i]])) {
-        var Ky = Kys[i] + '[]',
+        let Ky = Kys[i] + '[]',
             Vl = Info.Data[Kys[i]],
             Lth = Vl.length;
 
-        for (var j = 0; j < Lth; j++) { FmDt.append(Ky, Vl[j]); }
+        for (let j = 0; j < Lth; j++) { FmDt.append(Ky, Vl[j]); }
       }
       else if (Tp === 'string' || Tp === 'number') { FmDt.append(Kys[i], Info.Data[Kys[i]]); }
     }
@@ -49,7 +49,7 @@
     if (typeof Info.File === 'object' && Info.File !== null) {
       Kys = Object.keys(Info.File);
 
-      for (var i = 0; i < Kys.length; i++) { FmDt.append(Kys[i], Info.File[Kys[i]]); }
+      for (let i = 0; i < Kys.length; i++) { FmDt.append(Kys[i], Info.File[Kys[i]]); }
     }
 
     XHR.timeout = 5000;
@@ -63,7 +63,7 @@
     if (typeof Info.Hdrs === 'object' && Info.Hdrs !== null) {
       Kys = Object.keys(Info.Hdrs);
 
-      for (var i = 0; i < Kys.length; i++) { XHR.setRequestHeader(Kys[i], Info.Hdrs[Kys[i]]); }
+      for (let i = 0; i < Kys.length; i++) { XHR.setRequestHeader(Kys[i], Info.Hdrs[Kys[i]]); }
     }
 
     XHR.send(FmDt);
@@ -95,11 +95,11 @@
 
   /* do the 'Tsk' function is on the browser environment.
     @ the task function will run on client (browser) side.
-    return: bool. */
+    < bool. */
   function OnBrowser (Tsk) {
-    if (typeof window === 'undefined' || window !== global || typeof Tsk !== 'function') { return false; }
+    if (typeof window === 'undefined' || typeof Tsk !== 'function') { return false; }
 
-    Tsk();
+    Tsk && Tsk();
 
     return true;
   }
@@ -107,11 +107,11 @@
   /* do the 'Tsk' function if on the node environment.
     @ the task function will run on server (node) side.
     @ the request object, this needs node.js code help to provide, optional.
-    return: bool. */
+    < bool. */
   function OnNode (Tsk, Rqst) {
     if (typeof module === 'undefined' || typeof Tsk !== 'function') { return false; }
 
-    Tsk(Rqst);
+    Tsk && Tsk(Rqst);
 
     return true;
   }
@@ -123,11 +123,11 @@
   }
 
   /*
-    StoNm = name to locate the store.
-    Then(Sto, Rst) = then, a function when the task done.
-      Sto = the store object. */
+    @ name to locate the store.
+    @ Then(Sto, Rst) = then, a function when the task done.
+      @ the store object. */
   function StoreListen (StoNm, Then) {
-    var Clbcks = this.Srvc.Rprt[StoNm] || null;
+    let Clbcks = this.Srvc.Rprt[StoNm] || null;
 
     if (!Clbcks || !Array.isArray(Clbcks)) {
       this.Srvc.Rprt[StoNm] = [];
@@ -140,20 +140,20 @@
   }
 
   /*
-    URL = URL string, the service entry point.
-    Prms = params object to call service.
-    StoNm = name to locate the store.
-    NewStoreGet (Sto, Rst) = the function to get new store, this must return something to replace original store.
-      Sto = original store data.
-      Rst = result from API.
-    PrmsToTsk = params object passing to each task. */
+    @ URL string, the service entry point.
+    @ params object to call service.
+    @ name to locate the store.
+    @ NewStoreGet (Sto, Rst) = the function to get new store, this must return something to replace original store.
+      @ original store data.
+      @ result from API.
+    @ params object passing to each task. */
   function ServiceCall (URL, Prms, StoNm, NewStoreGet, PrmsToTsk) {
     if (!URL || typeof URL !== 'string' ||
         !StoNm || typeof StoNm !== 'string' ||
         !NewStoreGet || typeof NewStoreGet !== 'function')
     { return -1; }
 
-    var Srvc = this.Srvc;
+    let Srvc = this.Srvc;
 
     AJAX({
       URL: URL,
@@ -167,7 +167,7 @@
         Srvc.Sto[StoNm] = NewStoreGet(Srvc.Sto[StoNm], '');
       },
       OK: function (RspnsTxt, Sts, XHR) {
-        var CntTp = XHR.getResponseHeader('content-type'),
+        let CntTp = XHR.getResponseHeader('content-type'),
             Rst = RspnsTxt,
             Rprt = Srvc.Rprt[StoNm] || [],
             Lnth = Rprt && Array.isArray(Rprt) && Rprt.length || 0;
@@ -176,7 +176,7 @@
 
         Srvc.Sto[StoNm] = NewStoreGet(Srvc.Sto[StoNm], Rst);
 
-        for (var i = 0; i < Lnth; i++) { Rprt[i](Srvc.Sto[StoNm], PrmsToTsk); }
+        for (let i = 0; i < Lnth; i++) { Rprt[i](Srvc.Sto[StoNm], PrmsToTsk); }
       }
     });
 
@@ -184,26 +184,26 @@
   }
 
   /*
-    StoNm = name to locate the store.
-    NewStoreGet (Sto, Rst) = the function to get new store, this must return something to replace original store.
-      Sto = original store data.
-    PrmsToTsk = params object passing to each task. */
+    @ name to locate the store.
+    @ NewStoreGet (Sto, Rst) = the function to get new store, this must return something to replace original store.
+      @ original store data.
+    @ params object passing to each task. */
   function StoreSet (StoNm, NewStoreGet, PrmsToTsk) {
     if (!StoNm || typeof StoNm !== 'string' || !NewStoreGet || typeof NewStoreGet !== 'function') { return -1; }
 
-    var Rprt = this.Srvc.Rprt[StoNm] || [],
+    let Rprt = this.Srvc.Rprt[StoNm] || [],
         Lnth = Rprt && Array.isArray(Rprt) && Rprt.length || 0;
 
     this.Srvc.Sto[StoNm] = NewStoreGet(this.Srvc.Sto[StoNm]);
 
-    for (var i = 0; i < Lnth; i++) { Rprt[i](this.Srvc.Sto[StoNm], PrmsToTsk); }
+    for (let i = 0; i < Lnth; i++) { Rprt[i](this.Srvc.Sto[StoNm], PrmsToTsk); }
 
     return 0;
   }
 
   /* get a store.
-    Ky = a string of store key.
-    return: store object, or null. */
+    @ a string of store key.
+    < store object, or null. */
   function StoreGet (Ky) {
     if (!Ky || typeof Ky !== 'string') { return null; }
 
@@ -241,7 +241,7 @@
     };
   }
   else if (typeof window !== 'undefined') {
-    var RM = new ServiceInstance();
+    let RM = new ServiceInstance();
 
     RM.AJAX = AJAX;
     RM.ServiceCall = ServiceCall.bind(RM);
