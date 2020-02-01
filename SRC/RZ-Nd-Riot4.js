@@ -5,7 +5,39 @@ const async = require('async'),
 const Cch = require('./RZ-Nd-Cache'),
       Log = require('./RZ-Js-Log');
 
-function Riot4ModulesCompile (FlPth, EdgPtrn, Then) {
+function SourceCodeSplit (SrcCd) {
+  if (!SrcCd) { return []; }
+
+  let Cds = [];
+
+  while (SrcCd.length > 0) {
+    let Nm = SrcCd.match(/<([^/<>]+)>\n/); // name.
+
+    if (!Nm || !Nm[1]) { break; }
+
+    Nm = Nm[1];
+
+    const StTg = `<${Nm}>`, // start tag.
+          EndTg = `</${Nm}>`, // end tag.
+          EndIdx = SrcCd.indexOf(EndTg) + EndTg.length; // end index.
+
+    // ==== change name to be camel case. ====
+
+    const NmChk = Nm.match(/-\w/);
+
+    if (NmChk) { Nm = Nm.replace(NmChk[0], NmChk[0].substr(1).toUpperCase()); }
+
+    // ====
+
+    Cds.push({ Nm, Cd: SrcCd.substring(SrcCd.indexOf(StTg), EndIdx) });
+
+    SrcCd = SrcCd.substr(EndIdx);
+  }
+
+  return Cds;
+}
+
+function Riot4ModulesCompile (FlPth, Then) {
   Cch.FileLoad(
     FlPth,
     (ErrCd, SrcCd, Dt) => { // error code, source code, cached date.
@@ -15,6 +47,8 @@ function Riot4ModulesCompile (FlPth, EdgPtrn, Then) {
         return Then(-1, '');
       }
 
+      SrcCd = SrcCd.replace(/<!--[\s\S]+?-->/g, ''); // trim all HTML comments.
+
       // ==== get all 'import ... from ...;' and remove them from source code. ====
 
       let Mdls = SrcCd.match(/import .+ from .+;\n/g) || [], // modules.
@@ -22,6 +56,9 @@ function Riot4ModulesCompile (FlPth, EdgPtrn, Then) {
 
       SrcCd = SrcCd.replace(/import .+ from .+;\n/g, '');
 
+      // ====
+
+      // prepare import components compiling tasks.
       Tsks = Mdls
         .filter((Itm, Idx) => Mdls.indexOf(Itm) === Idx)
         .map(Mdl => {
@@ -30,7 +67,6 @@ function Riot4ModulesCompile (FlPth, EdgPtrn, Then) {
           return Done => {
             Riot4ModulesCompile(
               path.dirname(FlPth) + '/' + Pth, // handle module path.
-              EdgPtrn,
               (ErrCd, RsltMdls) => {
                 if (ErrCd < 0) {
                   Log('can not do Riot4ModulesCompile. error code: ' + ErrCd, 'error');
@@ -46,24 +82,23 @@ function Riot4ModulesCompile (FlPth, EdgPtrn, Then) {
       async.parallel(
         Tsks,
         Mdls => {
-          let RsltMdls = Mdls || {}; // packed Js module codes.
+          let RsltMdls = Mdls || {}; // packed Js module codes, modules.
 
           // ==== compile separated component, and combine them after parse. ====
 
-          SrcCd.replace(/^\n+|\n+$/g, '') // clean head, tail end line characters.
-            .split(EdgPtrn) // separate component codes by pattern.
-            .map(Cd => {
-              let Nm = Cd.substr(0, Cd.indexOf('>')).replace(/\n|<|>/g, ''), // component name.
-                  NmPrts = Nm.match(/-\w/g); // name part.
+          SourceCodeSplit(SrcCd).map(({ Nm, Cd }) => {
+            if (RsltMdls[Nm]) { return ; }
 
-              if (NmPrts) {
-                NmPrts.map(Prt => { Nm = Nm.replace(Prt, Prt.substr(1).toUpperCase()); });
-              }
+            const Dt1 = new Date();
 
-              if (RsltMdls[Nm]) { return; }
+            RsltMdls[Nm] = compile(Cd).code.replace('export default', 'const ' + Nm + ' ='); // trim 'export default'.
 
-              RsltMdls[Nm] = compile(Cd).code.replace('export default', 'const ' + Nm + ' ='); // trim 'export default'.
-            }); // adjust compiled code to be ready for becoming a single Js module.
+            const Dt2 = new Date();
+
+            console.log('---- 101 ---- ' + Nm + ' ----');
+            console.log(Dt2.getTime() - Dt1.getTime());
+
+          }); // adjust compiled code to be ready for becoming a single Js module.
 
           Then(0, RsltMdls);
         });
@@ -73,12 +108,14 @@ function Riot4ModulesCompile (FlPth, EdgPtrn, Then) {
 /* compile riot 4 component file with some more feature support.
   @ file path.
   @ type, can be 'node' or 'esm', default 'esm'.
-  @ edge pattern.
   @ callback function (error code, code string). */
-function Riot4Compile (FlPth, Tp = 'esm', EdgPtrn, Then) {
+function Riot4Compile (FlPth, Tp = 'esm', Then) {
+  const CchKy = `${FlPth}-${Tp}`;
+
+  if (Cch.Has(CchKy)) { return Then(1, Cch.Get(CchKy)); }
+
   Riot4ModulesCompile(
     FlPth,
-    EdgPtrn,
     (ErrCd, Mdls) => {
       const Kys = Object.keys(Mdls);
 
@@ -88,7 +125,8 @@ function Riot4Compile (FlPth, Tp = 'esm', EdgPtrn, Then) {
         ('\n\nmodule.exports.default = ' + Kys.pop() + ';\n') :
         ('\n\nexport default ' + Kys.pop() + ';\n');
 
-      Then(1, RsltCd);
+      Then(0, RsltCd);
+      Cch.Set(CchKy, RsltCd, 60 * 60 * 24);
     });
 }
 

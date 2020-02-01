@@ -69,8 +69,6 @@
   </script>
 </feed>
 
-<!-- riot4+ edge. -->
-
 <read>
   <div>
     <input type='text' placeholder='enter the feed url.'/>
@@ -178,6 +176,25 @@
         this.update();
       },
 
+      /* load all feeds in the beginning. */
+      AllFeedsFirstLoad () {
+        const Btns = this.$$('.BtnBx>button:first-child'), // buttons.
+              BtnLngth = Btns.length;
+
+        function OneLoad (Idx) {
+          if (Idx >= BtnLngth) { return; }
+
+          setTimeout(
+            () => {
+              Btns[Idx].click();
+              OneLoad(Idx + 1);
+            },
+            1000);
+        }
+
+        setTimeout(() => { OneLoad(0); }, 2000);
+      },
+
       Transfer (Evt) {
         this.ServiceCall(
           '/service/transfer',
@@ -197,27 +214,38 @@
         this.state.HsTrnsfrCnfrm = false;
 
         this.StoreSet('FEEDS', Sto => Fds);
+        this.AllFeedsFirstLoad();
       },
 
       TransferMerge (Evt) {
-        let LclFdUrls = this.UrlsFilter(window.localStorage.FdURLs.split('_|_')),
-            RmtFdUrls = this.UrlsFilter(this.opts.FdURLs.split('_|_')),
-            FdUrls = LclFdUrls;
+        const LclFds = this.UrlsFilter(window.localStorage.FdURLs.split('_|_'))
+                           .map(Url => { return { FdUrl: Url, HsBnLdd: false }; }), // local feeds, feed url, has been loaded
+              RmtFds = this.state.Fds, // remote feeds.
+              LclFdUrls = LclFds.map(Fd => Fd.FdUrl), // local feed urls.
+              RmtFdUrls = RmtFds.map(Fd => Fd.FdUrl), // remote feed urls.
+              RmtFdUrlsLngth = RmtFdUrls.length; // remote feeds urls length.
 
-        for (let i = 0; i < RmtFdUrls.length; i++) {
-          if (FdUrls.indexOf(RmtFdUrls[i]) > -1 || !Z.Is.URL(RmtFdUrls[i])) { continue; }
-
-          FdUrls.push(RmtFdUrls[i]);
+        for (let i = 0; i < RmtFdUrlsLngth; i++) {
+          if (!LclFdUrls.includes(RmtFdUrls[i])) { LclFds.push(RmtFds[i]); }
         }
 
-        window.localStorage.FdURLs = FdUrls.join('_|_');
-        this.HsTrnsfrCnfrm = false;
+        const FdUrls = LclFds.map(Fd => Fd.FdUrl);
 
-        this.AllFeedsLoad(FdUrls);
+        window.localStorage.FdURLs = FdUrls.join('_|_');
+        this.state.HsTrnsfrCnfrm = false;
+
+        this.StoreSet('FEEDS', Sto => LclFds);
+        this.AllFeedsFirstLoad();
       },
 
       TransferReplace () {
+        const RmtFds = this.state.Fds, // remote feeds.
+              RmtFdUrls = RmtFds.map(Fd => Fd.FdUrl); // remote feed urls.
 
+        window.localStorage.FdURLs = RmtFds.map(Fd => Fd.FdUrl).join('_|_');
+
+        this.update({ HsTrnsfrCnfrm: false });
+        this.AllFeedsFirstLoad();
       }
     }
   </script>

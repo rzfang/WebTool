@@ -29,8 +29,7 @@ const MM_TP = {
         '.tag':  'text/plain',
         '.tar':  'application/x-tar',
         '.txt':  'text/plain',
-        '.xml':  'application/xml' }, // mime type map.
-      RIOT4_COMPONENT_EDGE_PATTERN = '<!-- riot4+ edge. -->';
+        '.xml':  'application/xml' }; // mime type map.
 
 const { port: Pt = 9004,
         keyword: Kwd = {},
@@ -79,11 +78,18 @@ function Riot4ComponentJsRespond (Rqst, Rspns, FlPth, ExprScd = 3600) {
     return;
   }
 
+  const Dt1 = new Date();
+
   Riot4Compile(
     FlPth,
     'esm',
-    RIOT4_COMPONENT_EDGE_PATTERN,
-    (ErrCd, RsltCd) => {
+    (ErrCd, Cd) => { // error code, code string.
+
+      const Dt2 = new Date();
+
+      console.log('---- 002 ---- ' + FlPth + ' ----');
+      console.log(Dt2.getTime() - Dt1.getTime());
+
       if (ErrCd < 0) {
         Rspns.writeHead(
           500,
@@ -99,10 +105,10 @@ function Riot4ComponentJsRespond (Rqst, Rspns, FlPth, ExprScd = 3600) {
       Rspns.writeHead(
         200,
         { 'Cache-Control': 'public, max-age=' + Expr,
-          'Content-Length': RsltCd.length,
+          'Content-Length': Cd.length,
           'Content-Type': MmTp,
           'Last-Modified': (new Date()).toUTCString() });
-      Rspns.write(RsltCd);
+      Rspns.write(Cd);
       Rspns.end();
     });
 }
@@ -233,14 +239,20 @@ function PageRespond (Rqst, Rspns, UrlInfo, BdInfo) {
   }
 
   function Riot4Render (Bd, Clbck) {
-    // const Cmpnt = require(Bd.component).default;
     const { base: Bs, ext: Ext, name: Nm } = path.parse(Bd.component); // path info.
+
+    const Dt1 = new Date();
 
     Riot4Compile(
       './SRC/' + Bd.component,
       'node',
-      RIOT4_COMPONENT_EDGE_PATTERN,
       (ErrCd, Cd) => {
+
+        const Dt2 = new Date();
+
+        console.log('---- 001 ---- ' + './SRC/' + Bd.component + ' ----');
+        console.log(Dt2.getTime() - Dt1.getTime());
+
         if (ErrCd < 0) {
           Log('riot 4 compile+ failed: ' + ErrCd, 'error');
 

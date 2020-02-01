@@ -18,16 +18,16 @@ module.exports = {
   port: 9001,
   cdn: {
     riot3: 'https://cdn.jsdelivr.net/npm/riot@3.13/riot+compiler.min.js',
-    riot4: 'https://cdn.jsdelivr.net/npm/riot@4.7/riot.min.js'
+    riot4: 'https://cdn.jsdelivr.net/npm/riot@4.8/riot.min.js'
   },
   uploadFilePath: TMP_PTH,
   page: {
-    '/chat': {
+    '/chat': { // v3
       ...DftPgRt,
       title: 'Moment Chat - Web Tool',
       keywords: '聊天, chat, websocket, Web, Tool, Program, Develop',
       body: [ 'header.tag', 'chat.tag', 'component/footer.part.html' ]},
-    '/colors': { // v4
+    '/colors': {
       ...DftPgRt,
       title: 'Color Conside - Web Tool',
       keywords: '顏色, 色票, 樣式, color, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
@@ -90,7 +90,7 @@ module.exports = {
         './component/header.riot',
         { component: './component/payment.riot', initialize: require('./component/payment') },
         'component/footer.part.html' ]},
-    '/post': { // v4
+    '/post': {
       ...DftPgRt,
       title: 'Form Post - Web Tool',
       keywords: '送出資料, form, post, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
@@ -111,7 +111,7 @@ module.exports = {
         './component/header.riot',
         { component: './component/read.riot', initialize: require('./component/read') },
         'component/footer.part.html' ]},
-    '/window': { // v4
+    '/window': {
       ...DftPgRt,
       title: 'Window Open Script - Web Tool',
       keywords: '開新視窗, window.open, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
