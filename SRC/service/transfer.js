@@ -23,7 +23,7 @@ function KeyGenerate (Sd) {
 /*
   @ request info object. format as { Bd: { Ctn: '...' }}.
   @ callback function. */
-module.exports = function (Rqst, Rspns, RqstInfo, Clbck) {
+module.exports = (Rqst, Rspns, RqstInfo, Clbck) => {
   if (!RqstInfo.Bd || !RqstInfo.Bd.Ctn || !Is.String(RqstInfo.Bd.Ctn)) {
     return Clbck(-1, null);
   }

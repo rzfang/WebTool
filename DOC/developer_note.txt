@@ -1,5 +1,12 @@
 ==== To Do =============================================================================================================
 
+* 20191124
+  make my ideal riot.js
+  so far
+    - put root component in the end of file.
+  ideal
+    - auto detect root component.
+
 * 20170522
   sitemap.xml can provide by server.js itself, by passing the page.json.
 

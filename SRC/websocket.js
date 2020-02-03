@@ -42,12 +42,13 @@ function HandShakeResponse (Sck, DataStr) {
   Key = SHA1.digest('base64');
   Prtcl = (!T.Prtcl || T.Prtcl.length < 2) ? '' : T.Prtcl[1];
 
-  Sck.write("HTTP/1.1 101 Switching Protocols\r\n" +
-            "Upgrade: websocket\r\n" +
-            "Connection: Upgrade\r\n" +
-            'Sec-WebSocket-Accept: ' + Key + "\r\n" +
-            (Prtcl ? ('Sec-WebSocket-Protocol: ' + Prtcl) : 'chat') +
-            "\r\n\r\n");
+  Sck.write(
+    "HTTP/1.1 101 Switching Protocols\r\n" +
+    "Upgrade: websocket\r\n" +
+    "Connection: Upgrade\r\n" +
+    'Sec-WebSocket-Accept: ' + Key + "\r\n" +
+    (Prtcl ? ('Sec-WebSocket-Protocol: ' + Prtcl) : 'chat') +
+    "\r\n\r\n");
 
   Sck.IsShkd = true;
 
@@ -165,7 +166,7 @@ function Disconnect (Sck) {
 }
 
 module.exports = {
-  Initialize: function (Port) {
+  Initialize: Port => {
     if (!Port || !Is.Number(Port)) {
       Log('socket server can not work with such values.');
 
@@ -174,7 +175,7 @@ module.exports = {
 
     Svr = net.createServer(ServerCreate);
 
-    Svr.listen(Port, function () { Log('socket server starts with port 9002.'); });
+    Svr.listen(Port, () => { Log('socket server starts with port 9002.'); });
 
     return;
 
@@ -189,18 +190,18 @@ module.exports = {
       Sck.Data = new Buffer(0);
 
       SckA.push(Sck);
-      Sck.on('end', function () { Log('end', 3); });
+      Sck.on('end', () => { Log('end', 3); });
 
       Sck.on(
         'error',
-        function (error) {
+        error => {
           Log('error', 3);
           Log(error, 3);
         });
 
       Sck.on(
         'data',
-        function (Data) {
+        Data => {
           if (!this.IsShkd) {
             let DataStr = Data.toString();
 

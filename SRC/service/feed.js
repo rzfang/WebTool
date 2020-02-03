@@ -6,7 +6,7 @@ const request = require('request'),
 /*
   @ request info object.
   @ callback function. */
-module.exports = function (Rqst, Rspns, RqstInfo, Clbck) {
+module.exports = (Rqst, Rspns, RqstInfo, Clbck) => {
   if (!RqstInfo.Bd || !RqstInfo.Bd || !RqstInfo.Bd.URL || !Is.String(RqstInfo.Bd.URL)) {
     return Clbck(-1, null);
   }
@@ -23,7 +23,7 @@ module.exports = function (Rqst, Rspns, RqstInfo, Clbck) {
 
   SvcRqst.on(
     'error',
-    function (Err) {
+    (Err) => {
       if (IsEnd) { return; }
 
       Clbck(-2, null);
@@ -42,7 +42,7 @@ module.exports = function (Rqst, Rspns, RqstInfo, Clbck) {
 
   FdPrsr.on(
     'error',
-    function (Err) {
+    (Err) => {
       if (IsEnd) { return; }
 
       Clbck(-3, null);
@@ -52,7 +52,7 @@ module.exports = function (Rqst, Rspns, RqstInfo, Clbck) {
 
   FdPrsr.on(
     'meta',
-    function ({ title: Ttl = '', description: Dscrptn = '', link: Lnk = '', date: Dt = '', author: Athr = '' }) {
+    ({ title: Ttl = '', description: Dscrptn = '', link: Lnk = '', date: Dt = '', author: Athr = '' }) => {
       FdInfo = Object.assign(FdInfo, { Ttl, Dscrptn, Lnk, Dt, Athr});
     });
 
@@ -72,12 +72,14 @@ module.exports = function (Rqst, Rspns, RqstInfo, Clbck) {
       }
     });
 
-  FdPrsr.on('end', function () {
-    if (IsEnd) { return; }
+  FdPrsr.on(
+    'end',
+    () => {
+      if (IsEnd) { return; }
 
-    FdInfo.Itms = FdInfo.Itms.slice(0, 5);
+      FdInfo.Itms = FdInfo.Itms.slice(0, 5);
 
-    Clbck(0, FdInfo);
-    Cch.Set(RqstInfo.Bd.URL, FdInfo, 1800);
-  });
+      Clbck(0, FdInfo);
+      Cch.Set(RqstInfo.Bd.URL, FdInfo, 1800);
+    });
 };

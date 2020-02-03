@@ -12,8 +12,8 @@
           URL: '',
           Data: {},
           Files: {},
-          Err: function (Sts) {}, // Error callback function. optional. 'Sts' = HTTP Status code.
-          OK: function (RpsTxt, Sts) {}}, // OK callback function. optional. 'RpsTxt' = Response Text, 'Sts' = HTTP Status code.
+          Err: Sts => {}, // Error callback function. optional. 'Sts' = HTTP Status code.
+          OK: (RpsTxt, Sts) => {}}, // OK callback function. optional. 'RpsTxt' = Response Text, 'Sts' = HTTP Status code.
         FmDt, // 'FmDt' = Form Data.
         XHR,
         Kys, // 'Kys' = Keys.
@@ -23,11 +23,11 @@
 
     Info.Data = (typeof Info.Data === 'object' && Info.Data !== null) ? Info.Data : DftInfo.Data;
     Info.Mthd = Info.Mthd === 'POST' ? 'POST' : 'GET'; // Method. can only be 'GET'|'POST'. optional, default 'GET'.
-    Info.Bfr = (typeof Info.Bfr === 'function') ? Info.Bfr : function () {}; // Before callback function. optional.
+    Info.Bfr = (typeof Info.Bfr === 'function') ? Info.Bfr : () => {}; // Before callback function. optional.
     Info.Err = (typeof Info.Err === 'function') ? Info.Err : DftInfo.Err;
     Info.OK = (typeof Info.OK === 'function') ? Info.OK : DftInfo.OK;
-    Info.End = (typeof Info.End === 'function') ? Info.End : function () {};
-    Info.Pgs = (typeof Info.Pgs === 'function') ? Info.Pgs : function () {}; // Progress callback function. optional.
+    Info.End = (typeof Info.End === 'function') ? Info.End : () => {};
+    Info.Pgs = (typeof Info.Pgs === 'function') ? Info.Pgs : () => {}; // Progress callback function. optional.
 
     FmDt = new FormData(),
     XHR = new XMLHttpRequest();
@@ -54,7 +54,7 @@
 
     XHR.timeout = 5000;
     XHR.onreadystatechange = StateChange;
-    XHR.upload.onprogress =  function (Evt) { Info.Pgs(Evt.loaded, Evt.total, Evt); };
+    XHR.upload.onprogress =  Evt => { Info.Pgs(Evt.loaded, Evt.total, Evt); };
 
     // XHR.overrideMimeType('text/xml');
     XHR.open(Info.Mthd, Info.URL);
@@ -159,14 +159,14 @@
       URL: URL,
       Mthd: 'POST',
       Data: Prms,
-      Err: function (Sts) {
+      Err: Sts => {
         console.log('---- AJAX query fail ----\nURL: ' + URL + '\nparams:');
         console.log(Prms);
         console.log('----\n');
 
         Srvc.Sto[StoNm] = NewStoreGet(Srvc.Sto[StoNm], '');
       },
-      OK: function (RspnsTxt, Sts, XHR) {
+      OK: (RspnsTxt, Sts, XHR) => {
         let CntTp = XHR.getResponseHeader('content-type'),
             Rst = RspnsTxt,
             Rprt = Srvc.Rprt[StoNm] || [],
@@ -234,7 +234,7 @@
 
   if (typeof module !== 'undefined') {
     module.exports = {
-      InstanceCreate: function (Rqst) {
+      InstanceCreate: Rqst => {
         Rqst.RM = new ServiceInstance();
         Rqst.RM.StorePrint = StorePrint;
       }
