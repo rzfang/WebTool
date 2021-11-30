@@ -18,7 +18,7 @@ module.exports = {
   port: 9001,
   cdn: {
     riot3: 'https://cdn.jsdelivr.net/npm/riot@3.13/riot+compiler.min.js',
-    riot4: 'https://cdn.jsdelivr.net/npm/riot@4.8/riot.min.js'
+    riot4: 'https://cdn.jsdelivr.net/npm/riot@6.0/riot.min.js'
   },
   uploadFilePath: TMP_PTH,
   page: {
@@ -81,7 +81,16 @@ module.exports = {
       keywords: '鍵盤代碼, keyboard, keyCode, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
       js: [ 'include.js', 'hydrate.js' ],
       body: [ './component/header.riot', 'component/keycode.part.html', 'component/footer.part.html' ]},
-    '/payment': {
+    '/payment': { // v3
+      ...DftPgRt,
+      title: 'Payment - Web Tool',
+      keywords: 'JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
+      js: [ '/include.js', '/payment.tag', '/coverbox.tag' ],
+      body: [
+        'header.tag',
+        { type: 'riot', component: './component/payment.tag', initialize: require('./component/payment') },
+        'component/footer.part.html' ]},
+    '/payment2': {
       ...DftPgRt,
       title: 'Payment - Web Tool',
       keywords: 'JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',

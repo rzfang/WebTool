@@ -1,247 +1,16 @@
-<payment class='Pymnt'>
-  <div if={IsSvdHnt}>Saved !</div>
-  <tab-box dftidx={1} tbs={Tbs}>
-    <buyer-list if={Idx === 0} nms={parent.ByrNms} add={parent.BuyerAdd} edit={parent.BuyerEdit}/>
-    <item-list if={Idx === 1} itms={parent.Itms} add={parent.ItemAdd} edit={parent.ItemEdit} sort={parent.ItemSort}/>
-    <check-list if={Idx === 2} byrnms={parent.ByrNms} itms={parent.Itms}/>
-  </tab-box>
-  <button onclick={Transfer}>Transfer</button>
-  <cover-box if={EdtMd}>
-    <buyer-editor if={parent.EdtMd === 'BUYER'} edtnm={parent.EdtByr} cancel={parent.EditorDoneOrCancel} done={parent.EditorDoneOrCancel}/>
-    <item-editor if={parent.EdtMd === 'ITEM'} info={parent.EdtItm} edtclmn={parent.EdtItmClmn} byrnms={parent.ByrNms} cancel={parent.EditorDoneOrCancel} done={parent.EditorDoneOrCancel}/>
-  </cover-box>
-  <cover-box if={IsTrnsfrOt}>
-    <p>please finish the transfering in 10 minutes by visit followed link in your device which you want the data transfer to.</p>
-    <div>
-      {parent.TrnsfrLnk}<br/>
-      <button onclick={parent.TransferModeToggle}>OK</button>
-    </div>
-  </cover-box>
-  <cover-box if={HsTrnsfrCnfrm}>
-    <p>detected feed urls from remote transfering, what would you do ?</p>
-    <div>
-      <button onclick={parent.TransferIgnore}>Ignore</button>
-      <button onclick={parent.TransferReplace}>Replace</button>
-    </div>
-  </cover-box>
-  <style>
-    @keyframes Fd { /* fade */
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-  </style>
-  <style scoped>
-    :scope { display: block; position: relative; margin-top: 10px; }
-    :scope>div { position: absolute; right: 0; animation-name: Fd; animation-duration: 3s; }
-    :scope>button { position: absolute; left: 220px; top: 0; }
-    cover-box>div { position: relative; }
-    cover-box p { max-width: 480px; }
-    cover-box>div>div { margin: 10px 0; text-align: center; }
-    cover-box button { margin-top: 10px; }
-  </style>
-  <script>
-    let LclStrgKy = 'PaymentData', // localStorage key.
-        AtSvClck = 0; // auto save clock.
-
-    this.IsSvdHnt = false; // is saved hint.
-    this.EdtByr = null; // editing buyer.
-    this.EdtItm = null; // editing item.
-    this.EdtItmClmn = 1, // editing item column.
-    this.EdtMd = ''; // editing mode, 'BUYER' | 'ITEM';
-    this.HsTrnsfrCnfrm = this.opts.TrnsfrData ? true : false; // has transfering confirmation.
-    this.IsTrnsfrOt = false; // is transfer out.
-    this.TrnsfrLnk = ''; // transfer link.
-    this.ByrNms = [];
-    this.Itms = [];
-    this.Tbs = [
-        { Nm: 'Buyers' },
-        { Nm: 'Items' },
-        { Nm: 'Check' }];
-
-    this.mixin('Z.RM');
-
-    this.StoreListen(
-      'TRANSFER',
-      (Sto, TskPrms) => {
-        this.update({ TrnsfrLnk: Sto ? (window.location.origin + '/payment?t=' + Sto) : 'can not transer data.' });
-      });
-
-    this.StoreListen(
-      'PAYMENTS',
-      (Pymnts) => {
-        if (Z.Is.Array(Pymnts)) { this.AutoSave({ EdtMd: '', Itms: Pymnts }); }
-      });
-
-    this.StoreListen(
-      'BUYER_NAMES',
-      (ByrNms) => { this.update({ ByrNms }); });
-
-    this.on('mount', () => { this.DataFromJSON(window.localStorage.getItem(LclStrgKy)); });
-
-    /* set up data from JSON string.
-      Str = JSON string.
-      Return: result code number. */
-    DataFromJSON (Str) {
-      let Data = { Itms: [], Byrs: [] };
-
-      if (!Str) { return -1; }
-
-      Data = JSON.parse(Str);
-
-      if (!Data || !Z.Is.Object(Data)) { return -1; }
-
-      let Pymnts = Data,
-          ByrNms = []; // buyer names.
-
-      //==== transfer the old version format data to be new one. ====
-
-      if (!Z.Is.Array(Pymnts) && Pymnts.Itms && Z.Is.Array(Pymnts.Itms)) { Pymnts = Pymnts.Itms; }
-
-      for (let i = 0; i < Pymnts.length; i++) {
-        let Byr = Pymnts[i].Byr || {},
-            Prc = Pymnts[i].Prc || 0;
-
-        if (!Pymnts[i].Byrs || !Z.Is.Array(Pymnts[i].Byrs)) { Pymnts[i].Byrs = []; }
-
-        if (Byr && Byr.Nm && Z.Is.String(Byr.Nm)) { Pymnts[i].Byrs.push({ Nm: Byr.Nm, Prc }); }
-
-        for (let j = 0; j < Pymnts[i].Byrs.length; j++) {
-          if (ByrNms.indexOf(Pymnts[i].Byrs[j].Nm) < 0) { ByrNms.push(Pymnts[i].Byrs[j].Nm); }
-        }
-
-        delete Pymnts[i].Byr;
-        delete Pymnts[i].Prc;
-      }
-
-      //====
-
-      this.StoreSet('PAYMENTS', () => { return Pymnts; });
-      this.StoreSet('BUYER_NAMES', () => { return ByrNms; });
-    }
-
-    EditorDoneOrCancel (Evt) {
-      this.update({ EdtMd: '' });
-    }
-
-    BuyerEdit (Evt) {
-      this.update({ EdtMd: 'BUYER', EdtByr: Evt.Element().innerText });
-    }
-
-    BuyerAdd () {
-      this.update({ EdtMd: 'BUYER', EdtByr: '' });
-    }
-
-    ItemEdit (Evt, RwIdx, ClmnIdx) {
-      this.update({ EdtMd: 'ITEM', EdtItm: this.Itms[RwIdx], EdtItmClmn: ClmnIdx });
-    }
-
-    ItemAdd (Evt) {
-      this.update({ EdtMd: 'ITEM', EdtItm: null, EdtItmClmn: -1 });
-    }
-
-    ItemSort (Evt) {
-      let Itms = Array.from(this.Itms);
-
-      Itms.sort((A, B) => {
-        if (!A.Dt || !B.Dt) { return 0; }
-
-        if (A.Dt > B.Dt) { return 1; }
-        else if (A.Dt < B.Dt) { return -1; }
-
-        return 0;
-      });
-
-      this.StoreSet('PAYMENTS', () => { return Itms; });
-      this.update({ Itms });
-    }
-
-    /*
-      @ updated options object. */
-    AutoSave (UpdtOpts) {
-      UpdtOpts.IsSvdHnt = false;
-
-      clearTimeout(AtSvClck);
-      this.update(UpdtOpts);
-
-      AtSvClck = setTimeout(
-        () => {
-          let Data = JSON.stringify({ Itms: this.Itms });
-
-          window.localStorage.setItem(LclStrgKy, Data);
-          this.update({ IsSvdHnt: true });
-          setTimeout(() => { this.update({ IsSvdHnt: false }); }, 3000);
-        },
-        1000);
-    }
-
-    Transfer (Evt) {
-      this.ServiceCall(
-        '/service/transfer',
-        { Ctn: window.localStorage.PaymentData },
-        'TRANSFER',
-        (Sto, Rst) => { return Rst; });
-
-      this.TransferModeToggle(Evt);
-    }
-
-    TransferModeToggle (Evt) {
-      this.IsTrnsfrOt = !this.IsTrnsfrOt;
-    }
-
-    TransferIgnore (Evt) {
-      this.HsTrnsfrCnfrm = false;
-    }
-
-    TransferReplace (Evt) {
-      this.DataFromJSON(this.opts.TrnsfrData);
-      this.AutoSave({ HsTrnsfrCnfrm: false });
-    }
-  </script>
-</payment>
-
-<tab-box>
-  <ul>
-    <li each={Tbs} class="Tb {Pckd ? 'Pckd' : ''}" onclick={Switch}>{Nm}</li>
-  </ul>
-  <yield/>
-  <style scoped>
-    ul { margin: 0; padding: 0; }
-    :scope>ul>li { display: inline-block; margin-right: 5px; padding: 3px; border-width: 1px; color: #808080; cursor: pointer; }
-    ul>li.Pckd { color: #202020; }
-  </style>
-  <script>
-    this.Idx = 0;
-    this.Tbs = [];
-
-    this.mixin('Z.RM');
-
-    this.OnBrowser(() => {
-      if (Z.Is.Number(this.opts.dftidx)) { this.Idx = this.opts.dftidx; }
-
-      if (this.opts.tbs && Z.Is.Array(this.opts.tbs)) {
-        this.Tbs = this.opts.tbs;
-        this.Tbs[this.Idx].Pckd = true;
-      }
-    });
-
-    Switch (Evt) {
-      this.Tbs[this.Idx].Pckd = false;
-      this.Idx = this.Tbs.indexOf(Evt.item);
-      this.Tbs[this.Idx].Pckd = true;
-    }
-  </script>
-</tab-box>
-
 <buyer-list>
   <ul>
-    <li each={Nm, i in opts.nms}>
-      <button onclick={parent.opts.edit}>{Nm}</button>
+    <li each={(Nm, i) in props.nms}>
+      <button onclick={props.edit}>{Nm}</button>
     </li>
   </ul>
-  <button onclick={opts.add}>Add</button>
-  <style scoped>
-    :scope>ul { margin: 10px 0; }
-    :scope>ul>li { margin: 3px 0; list-style: none; }
+  <button onclick={props.add}>Add</button>
+  <style type='scss'>
+    :host {
+      >ul { margin: 10px 0;
+        >li { margin: 3px 0; list-style: none; }
+      }
+    }
   </style>
 </buyer-list>
 
@@ -659,3 +428,231 @@
     }
   </script>
 </item-editor>
+
+<payment class='Pymnt'>
+  <div if={IsSvdHnt}>Saved !</div>
+  <tab-box tabs={[ 'Buyers', 'Items', 'Check' ]}>
+    <buyer-list if={Idx === 0} nms={parent.ByrNms} add={parent.BuyerAdd} edit={parent.BuyerEdit}/>
+    <item-list if={Idx === 1} itms={parent.Itms} add={parent.ItemAdd} edit={parent.ItemEdit} sort={parent.ItemSort}/>
+    <check-list if={Idx === 2} byrnms={parent.ByrNms} itms={parent.Itms}/>
+  </tab-box>
+  <button onclick={Transfer}>Transfer</button>
+  <cover-box if={EdtMd}>
+    <buyer-editor if={parent.EdtMd === 'BUYER'} edtnm={parent.EdtByr} cancel={parent.EditorDoneOrCancel} done={parent.EditorDoneOrCancel}/>
+    <item-editor if={parent.EdtMd === 'ITEM'} info={parent.EdtItm} edtclmn={parent.EdtItmClmn} byrnms={parent.ByrNms} cancel={parent.EditorDoneOrCancel} done={parent.EditorDoneOrCancel}/>
+  </cover-box>
+  <cover-box if={IsTrnsfrOt}>
+    <p>please finish the transfering in 10 minutes by visit followed link in your device which you want the data transfer to.</p>
+    <div>
+      {parent.TrnsfrLnk}<br/>
+      <button onclick={parent.TransferModeToggle}>OK</button>
+    </div>
+  </cover-box>
+  <cover-box if={HsTrnsfrCnfrm}>
+    <p>detected feed urls from remote transfering, what would you do ?</p>
+    <div>
+      <button onclick={parent.TransferIgnore}>Ignore</button>
+      <button onclick={parent.TransferReplace}>Replace</button>
+    </div>
+  </cover-box>
+  <style type='scss'>
+    @keyframes Fd { /* fade */
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    :host { display: block; position: relative; margin-top: 10px;
+      >div { position: absolute; right: 0; animation-name: Fd; animation-duration: 3s; }
+      >button { position: absolute; left: 220px; top: 0; }
+    }
+
+    cover-box {
+      >div { position: relative;
+        >div { margin: 10px 0; text-align: center; }
+      }
+
+      p { max-width: 480px; }
+      button { margin-top: 10px; }
+    }
+  </style>
+  <script>
+    import tabBox from './tabBox.riot';
+
+    export default {
+      components: { tabBox },
+
+      state: {
+        IsSvdHnt,
+        EdtByr,
+        EdtItm,
+        EdtItmClmn,
+        EdtMd,
+        HsTrnsfrCnfrm,
+        IsTrnsfrOt,
+        TrnsfrLnk,
+        ByrNms,
+        Itms,
+        Tbs
+      },
+
+      onBeforeMount (props, state) {
+        state.IsSvdHnt = false; // is saved hint.
+        state.EdtByr = null; // editing buyer.
+        state.EdtItm = null; // editing item.
+        state.EdtItmClmn = 1, // editing item column.
+        state.EdtMd = ''; // editing mode, 'BUYER' | 'ITEM';
+        state.HsTrnsfrCnfrm = props.TrnsfrData ? true : false; // has transfering confirmation.
+        state.IsTrnsfrOt = false; // is transfer out.
+        state.TrnsfrLnk = ''; // transfer link.
+        state.ByrNms = [];
+        state.Itms = [];
+        state.Tbs = [
+            { Nm: 'Buyers' },
+            { Nm: 'Items' },
+            { Nm: 'Check' }];
+      },
+
+      onMounted (props, state) {
+        let LclStrgKy = 'PaymentData', // localStorage key.
+            AtSvClck = 0; // auto save clock.
+
+        this.DataFromJSON(window.localStorage.getItem(LclStrgKy));
+
+        this.StoreListen(
+          'TRANSFER',
+          (Sto, TskPrms) => {
+            this.update({ TrnsfrLnk: Sto ? (window.location.origin + '/payment?t=' + Sto) : 'can not transer data.' });
+          });
+
+        this.StoreListen(
+          'PAYMENTS',
+          (Pymnts) => {
+            if (Z.Is.Array(Pymnts)) { this.AutoSave({ EdtMd: '', Itms: Pymnts }); }
+          });
+
+        this.StoreListen(
+          'BUYER_NAMES',
+          (ByrNms) => { this.update({ ByrNms }); });
+      },
+
+      /* set up data from JSON string.
+        Str = JSON string.
+        Return: result code number. */
+      DataFromJSON (Str) {
+        let Data = { Itms: [], Byrs: [] };
+
+        if (!Str) { return -1; }
+
+        Data = JSON.parse(Str);
+
+        if (!Data || !Z.Is.Object(Data)) { return -1; }
+
+        let Pymnts = Data,
+            ByrNms = []; // buyer names.
+
+        //==== transfer the old version format data to be new one. ====
+
+        if (!Z.Is.Array(Pymnts) && Pymnts.Itms && Z.Is.Array(Pymnts.Itms)) { Pymnts = Pymnts.Itms; }
+
+        for (let i = 0; i < Pymnts.length; i++) {
+          let Byr = Pymnts[i].Byr || {},
+              Prc = Pymnts[i].Prc || 0;
+
+          if (!Pymnts[i].Byrs || !Z.Is.Array(Pymnts[i].Byrs)) { Pymnts[i].Byrs = []; }
+
+          if (Byr && Byr.Nm && Z.Is.String(Byr.Nm)) { Pymnts[i].Byrs.push({ Nm: Byr.Nm, Prc }); }
+
+          for (let j = 0; j < Pymnts[i].Byrs.length; j++) {
+            if (ByrNms.indexOf(Pymnts[i].Byrs[j].Nm) < 0) { ByrNms.push(Pymnts[i].Byrs[j].Nm); }
+          }
+
+          delete Pymnts[i].Byr;
+          delete Pymnts[i].Prc;
+        }
+
+        //====
+
+        this.StoreSet('PAYMENTS', () => { return Pymnts; });
+        this.StoreSet('BUYER_NAMES', () => { return ByrNms; });
+      },
+
+      EditorDoneOrCancel (Evt) {
+        this.update({ EdtMd: '' });
+      },
+
+      BuyerEdit (Evt) {
+        this.update({ EdtMd: 'BUYER', EdtByr: Evt.Element().innerText });
+      },
+
+      BuyerAdd () {
+        this.update({ EdtMd: 'BUYER', EdtByr: '' });
+      },
+
+      ItemEdit (Evt, RwIdx, ClmnIdx) {
+        this.update({ EdtMd: 'ITEM', EdtItm: this.Itms[RwIdx], EdtItmClmn: ClmnIdx });
+      },
+
+      ItemAdd (Evt) {
+        this.update({ EdtMd: 'ITEM', EdtItm: null, EdtItmClmn: -1 });
+      },
+
+      ItemSort (Evt) {
+        let Itms = Array.from(this.Itms);
+
+        Itms.sort((A, B) => {
+          if (!A.Dt || !B.Dt) { return 0; }
+
+          if (A.Dt > B.Dt) { return 1; }
+          else if (A.Dt < B.Dt) { return -1; }
+
+          return 0;
+        });
+
+        this.StoreSet('PAYMENTS', () => { return Itms; });
+        this.update({ Itms });
+      },
+
+      /*
+        @ updated options object. */
+      AutoSave (UpdtOpts) {
+        UpdtOpts.IsSvdHnt = false;
+
+        clearTimeout(AtSvClck);
+        this.update(UpdtOpts);
+
+        AtSvClck = setTimeout(
+          () => {
+            let Data = JSON.stringify({ Itms: this.Itms });
+
+            window.localStorage.setItem(LclStrgKy, Data);
+            this.update({ IsSvdHnt: true });
+            setTimeout(() => { this.update({ IsSvdHnt: false }); }, 3000);
+          },
+          1000);
+      },
+
+      Transfer (Evt) {
+        this.ServiceCall(
+          '/service/transfer',
+          { Ctn: window.localStorage.PaymentData },
+          'TRANSFER',
+          (Sto, Rst) => { return Rst; });
+
+        this.TransferModeToggle(Evt);
+      },
+
+      TransferModeToggle (Evt) {
+        this.IsTrnsfrOt = !this.IsTrnsfrOt;
+      },
+
+      TransferIgnore (Evt) {
+        this.HsTrnsfrCnfrm = false;
+      },
+
+      TransferReplace (Evt) {
+        this.DataFromJSON(this.opts.TrnsfrData);
+        this.AutoSave({ HsTrnsfrCnfrm: false });
+      }
+    }
+  </script>
+</payment>

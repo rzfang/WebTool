@@ -4,23 +4,24 @@
   "description": "web tool",
   "main": "server.js",
   "dependencies": {
-    "@riotjs/compiler": "^4.5.5",
-    "@riotjs/hydrate": "^4.0.0",
-    "@riotjs/ssr": "^4.2.0",
-    "async": "^2.6.2",
+    "@riotjs/compiler": "^6.0.4",
+    "@riotjs/hydrate": "^6.0.0",
+    "@riotjs/ssr": "^7.1.1",
+    "async": "^3.2.2",
     "busboy": "^0.3.1",
     "feedparser": "^2.2.9",
-    "request": "^2.88.0",
+    "request": "^2.88.2",
     "require-from-string": "^2.0.2",
-    "riot": "^4.8.7"
+    "riot": "^6.0.4",
+    "rzjs": "github:rzfang/Js"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-plugin-json": "^1.4.0",
-    "node-sass": "^4.13.1",
-    "nodemon": "^1.19.4",
+    "eslint": "^8.3.0",
+    "eslint-plugin-json": "^3.1.0",
+    "node-sass": "^6.0.1",
+    "nodemon": "^2.0.5",
     "pre-commit": "^1.2.2",
-    "terser": "^4.6.3"
+    "terser": "^5.10.0"
   },
   "scripts": {
     "dev": "nodemon -d 3 -e js,scss,html,tag,riot -w SRC/ SRC/RZ-Nd-HTTPServer.js;",

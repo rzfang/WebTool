@@ -10,11 +10,11 @@ const async = require('async'),
 const riot = require('riot'),
       ssr = require('@riotjs/ssr');
 
-const Cch = require('./RZ-Nd-Cache'),
-      Is = require('./RZ-Js-Is'),
-      Log = require('./RZ-Js-Log'),
-      Riot4Compile = require('./RZ-Nd-Riot4'),
-      RM = require('./RZ-Js-RiotMixin');
+const Cch = require('rzjs/node/Cache.js'),
+      Is = require('rzjs/Is.js'),
+      Log = require('rzjs/Log.js'),
+      Riot4Compile = require('rzjs/node/Riot4Compile.js'),
+      RM = require('rzjs/RiotMixin.js');
 
 const MM_TP = {
         '.bmp':  'image/x-windows-bmp',
@@ -78,18 +78,10 @@ function Riot4ComponentJsRespond (Rqst, Rspns, FlPth, ExprScd = 3600) {
     return;
   }
 
-  const Dt1 = new Date();
-
   Riot4Compile(
     FlPth,
     'esm',
     (ErrCd, Cd) => { // error code, code string.
-
-      const Dt2 = new Date();
-
-      console.log('---- 002 ---- ' + FlPth + ' ----');
-      console.log(Dt2.getTime() - Dt1.getTime());
-
       if (ErrCd < 0) {
         Rspns.writeHead(
           500,
@@ -183,14 +175,12 @@ function PageRespond (Rqst, Rspns, UrlInfo, BdInfo) {
     return;
   }
 
-  RM.InstanceCreate(Rqst); // create a RM instance.
+  const RMI = RM.InstanceCreate({ Rqst, Rspns }); // create a RM instance.
+
+  Rqst.RMI = RMI;
 
   // bind RiotMixin to each component on server side rendering.
-  riot.install(Cmpnt => {
-    Object.assign(Cmpnt, Rqst.RM);
-
-    Cmpnt.OnNode = (Tsk) => { Rqst.RM.OnNode(Tsk, Rqst); }; // pass Rqst object to OnNode function.
-  });
+  riot.install(Cmpnt => { Object.assign(Cmpnt, RMI); });
 
   let LdCsss = '',
       LdScrpts = '', // loading scripts.
@@ -241,18 +231,10 @@ function PageRespond (Rqst, Rspns, UrlInfo, BdInfo) {
   function Riot4Render (Bd, Clbck) {
     const { base: Bs, ext: Ext, name: Nm } = path.parse(Bd.component); // path info.
 
-    const Dt1 = new Date();
-
     Riot4Compile(
       './SRC/' + Bd.component,
       'node',
       (ErrCd, Cd) => {
-
-        const Dt2 = new Date();
-
-        console.log('---- 001 ---- ' + './SRC/' + Bd.component + ' ----');
-        console.log(Dt2.getTime() - Dt1.getTime());
-
         if (ErrCd < 0) {
           Log('riot 4 compile+ failed: ' + ErrCd, 'error');
 
@@ -413,7 +395,7 @@ function PageRespond (Rqst, Rspns, UrlInfo, BdInfo) {
         Bds.join('\n') +
         '</div>\n' +
         KwdScrpt +
-        Rqst.RM.StorePrint() +
+        Rqst.RMI.StorePrint() +
         MntScrpts +
         `<script>if (top != self) { document.body.innerHTML = ''; }</script>\n` + // this defend being iframe.
         '</body>\n</html>\n');
