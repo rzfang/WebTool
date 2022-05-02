@@ -1,0 +1,160 @@
+<page-colors>
+  <page-layout>
+    <div class='input-panel'>
+      <div>Color Tag</div>:
+      <div>
+        &nbsp;#<input type="text" id="Clr" style='width: 100px;' value='0080ff' maxlength=6 onkeypress={KeyboardTrigger} data-format='0'/> >
+        <span>rgba(???, ???, ???, 1.0)</span> or<br/>
+        R:<input type="text" id="R" value='255' onkeypress={KeyboardTrigger} data-format='1'/>,
+        G:<input type="text" id="G" value='128' onkeypress={KeyboardTrigger} data-format='1'/>,
+        B:<input type="text" id="B" value='0' onkeypress={KeyboardTrigger} data-format='1'/>,
+        A:<input type="text" id="A" value='1' onkeypress={KeyboardTrigger} data-format='1'/>
+      </div>
+      <div>
+        <button onclick={ColorTagAdd} data-format='0'>Add</button><br/>
+        <button onclick={ColorTagAdd} data-format='1'>Add</button>
+      </div>
+      <button onclick={ColorTagsClear}>Clear</button>
+    </div>
+    <hr/>
+    <div id="CmpBx">
+    </div>
+  </page-layout>
+  <style type='scss'>
+    :host {
+      .input-panel {
+        display: flex;
+
+        input[type='text'] { width: 70px; }
+      }
+    }
+
+    #CmpBx>div {
+      margin: 5px 0px;
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAAXNSR0IArs4c6QAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAd0SU1FB9sGHhAhHuEdGLAAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAI0lEQVQY02P8//8/AxK4ePEiMpeJAS+gqTQLmlv09fUHi9MAN8AIhsxMmMQAAAAASUVORK5CYII=);
+
+      >span {
+        display: inline-block; margin: 5px; border: 2px solid; padding: 1px; min-width: 100px; text-align: center;
+      }
+    }
+  </style>
+  <script>
+      import pageLayout from './page-layout.riot';
+
+      export default {
+        components: { pageLayout },
+
+        /* Pad Characters into a string.
+          'Str' = String.
+          'Chr' = Character.
+          'Lth' = Length.
+          'Sd' = Side. 'l'|'L': left padding, 'r'|'R': right padding.
+          Return: string after handle. */
+        CharPad (Str, Chr, Lth, Sd) {
+          if (typeof Str !== 'string')
+          { Str = Str.toString(); }
+
+          if (typeof Chr !== 'string' || typeof Lth !== 'number' || Lth < 2 || typeof Sd !== 'string' || Str.length >= Lth)
+          { return Str; }
+
+          Sd = Sd.toLowerCase();
+          if (Sd !== 'l' && Sd !== 'r')
+          { return Str; }
+
+          var PN = Lth - Str.length, // 'PN' = Padding Number.
+              PS = ''; // 'PS' = Padding String.
+
+          for (var i = 0; i < PN; i++)
+          { PS += Chr; }
+
+          if (Sd === 'l')
+          { Str = PS + Str; }
+          else
+          { Str += PS; }
+
+          return Str;
+        },
+
+        /* convert CSS Color code from hex to RGBA format.
+          'Str' = color string in hex format.
+          Return: CSS color code with RGBA format. */
+        Color16ToRGBA (Str) {
+          if (Str.charAt(0) === '#')
+          { Str = Str.substr(0); }
+
+          var Clr = 'rgba(255, 255, 255, 1.0)';
+
+          if (Str.length < 6)
+          {
+            var R = parseInt(Str.charAt(0) + '0', 16).toString(),
+                G = parseInt(Str.charAt(1) + '0', 16).toString(),
+                B = parseInt(Str.charAt(2) + '0', 16).toString();
+          }
+          else
+          {
+            var R = parseInt(Str.substr(0, 2), 16).toString(),
+                G = parseInt(Str.substr(2, 2), 16).toString(),
+                B = parseInt(Str.substr(4, 2), 16).toString();
+          }
+          Clr = 'rgba(' + R + ', ' + G + ', ' + B + ', 1)';
+
+          return Clr;
+        },
+
+        /* convert CSS Color code from RGB to hex format.
+          'R' = Red color value.
+          Return: CSS color code with hex format. */
+        ColorRGBTo16 (R, G, B) {
+          R = CharPad(parseInt(R, 10).toString(16), '0', 2, 'l');
+          G = CharPad(parseInt(G, 10).toString(16), '0', 2, 'l');
+          B = CharPad(parseInt(B, 10).toString(16), '0', 2, 'l');
+          return '#' + R + G + B;
+        },
+
+        ColorTagAdd (Evt) {
+          const Bx = document.createElement('div'),
+                Fmt = parseInt(Evt.target.dataset.format, 10);
+
+          let Clr = '',
+              Clr16 = '#ffffff';
+
+
+          if (Fmt === 1) {
+            var R = this.$('#R').value,
+                G = this.$('#G').value,
+                B = this.$('#B').value,
+                A = this.$('#A').value;
+
+            Clr = 'rgba(' + R + ', ' + G + ', ' + B + ', ' + A + ')';
+            Clr16 = this.ColorRGBTo16(R, G, B);
+          }
+          else {
+            Clr16 = this.$('#Clr').value.toLowerCase();
+            Clr = this.Color16ToRGBA(Clr16);
+            this.$('#Clr+*').innerHTML = Clr;
+            Clr16 = '#' + Clr16;
+          }
+
+          //Bx.style.backgroundColor = '#e0e0e0';
+          Bx.innerHTML = '<span style="color: ' + Clr + '; background: ' + Clr + ';">' + Clr + '</span>' +
+                         '<span style="border-radius: 10px; color: #ffffff; background: ' + Clr + ';">' + Clr16 + '</span>' +
+                         '<span style="border-radius: 10px; color: #000000; background: ' + Clr + ';">' + Clr16 + '</span>' +
+                         '<span style="text-shadow: 3px 3px 2px ' + Clr + '; box-shadow: 3px 3px 4px ' + Clr + '; color: ' + Clr + '; background: #c0c0c0;">' + Clr16 + '</span>' +
+                         '<span style="text-shadow: 3px 3px 2px ' + Clr + '; box-shadow: 3px 3px 4px ' + Clr + '; color: #ffffff; background: #c0c0c0;">' + Clr16 + '</span>' +
+                         '<span style="text-shadow: 3px 3px 2px ' + Clr + '; box-shadow: 3px 3px 4px ' + Clr + '; color: #000000; background: #c0c0c0;">' + Clr16 + '</span>';
+          this.$('#CmpBx').appendChild(Bx);
+        },
+
+        ColorTagsClear () {
+          this.$('#CmpBx').innerHTML = '';
+        },
+
+        KeyboardTrigger (Evt) {
+          if (Evt.keyCode !== 13)
+          { return 0; }
+
+          this.ColorTagAdd(Evt);
+        }
+      }
+    </script>
+</page-colors>

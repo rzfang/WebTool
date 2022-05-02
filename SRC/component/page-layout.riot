@@ -1,0 +1,174 @@
+<page-header>
+  <div>
+    <h2>Web Tool</h2>
+    <div>
+      <h3>{TgtItm.Ttl}</h3>
+      <button onclick={NavToggle}>Menu</button>
+    </div>
+  </div>
+  <nav if={state.IsNavOn}>
+    <ul>
+      <li each={Itm in Itms}>
+        <a if={Itm.URL && !Itm.IsTgt} href={Itm.URL}>{Itm.Ttl}</a>
+        <span if={!Itm.URL || Itm.IsTgt}>{Itm.Ttl}</span>
+      </li>
+    </ul>
+  </nav>
+  <style type='scss'>
+    :host {
+      display: block;
+      position: sticky;
+      position: -webkit-sticky;
+      top: 0;
+      z-index: 1;
+      background-color: rgba(255,255,255,.9);
+
+      >div {
+        border-bottom-width: 1px; padding: 5px 0 0 5px;
+
+        >div { display: flex; align-items: baseline; }
+      }
+
+      >nav {
+        z-index: 10;
+        position: absolute;
+        right: 5px;
+        border-width: 1px;
+        padding: 5px;
+        box-shadow: -1px 1px 3px;
+        background-color: #ffffff;
+      }
+    }
+    h2 { margin: 0; font-size: 32px; font-style: italic; }
+    h3 { flex: 1; margin: 0; font-weight: normal; }
+    button { flex: 50px; max-width: 50px; }
+
+    @media screen and (min-width: 480px) {
+      :host>div {
+        display: flex; align-items: baseline;
+
+        >div { flex: 1; }
+      }
+      h2 { flex: initial; padding-right: 10px; }
+    }
+
+    ul { margin: 0; padding: 0; }
+    li { list-style-type: none; }
+    a { display: block; }
+  </style>
+  <script>
+    export default {
+      state: {
+        IsNavOn: false
+      },
+
+      Itms: [
+        { Ttl: 'keyCode Detect',          URL: 'keycode' },
+        { Ttl: 'Regular Expression Test', URL: 're' },
+        { Ttl: 'Datetime Transform',      URL: 'datetime' },
+        { Ttl: 'Convert List',            URL: 'convert' },
+        { Ttl: 'Color Conside',           URL: 'colors' },
+        { Ttl: 'String EnDecode',         URL: 'endecode' },
+        { Ttl: 'POST to a Page',          URL: 'post' },
+        { Ttl: 'Window Open Script',      URL: 'window' },
+        { Ttl: 'IP v4 to v6 Convert',     URL: 'ipv426' },
+        { Ttl: 'File to Data URI',        URL: 'datauri' },
+        { Ttl: 'JSON Edit',               URL: 'json' },
+        { Ttl: '----',                    URL: '' },
+        { Ttl: 'Payment Note',            URL: 'payment' },
+        { Ttl: 'Feed Read',               URL: 'read' },
+        { Ttl: 'Countdown Notify',        URL: 'countdown' },
+        { Ttl: 'Moment Chat',             URL: 'chat' },
+        { Ttl: 'Test',                    URL: 'test' }
+      ],
+      TgtItm: null, // target item.
+
+      onBeforeMount (Prps, Stt) {
+        this.TgtItm = this.Itms[0];
+
+        let PthNm = ''
+
+        this.OnNode(Rqst => { PthNm = Rqst.url; });
+        this.OnBrowser(() => { PthNm = location.pathname; });
+
+        for (let i = 0; i < this.Itms.length; i++) {
+          if (this.Itms[i].URL === PthNm.substr(1)) {
+            this.Itms[i].IsTgt = true;
+            this.TgtItm = this.Itms[i];
+
+            break;
+          }
+
+          this.Itms[i].IsTgt = false;
+        }
+      },
+
+      NavToggle () {
+        this.update({ IsNavOn: !this.state.IsNavOn });
+      }
+    }
+  </script>
+</page-header>
+
+<page-footer id='footer'>
+  <a href='/'> Web Tool - ZII</a>
+  <span>© 2011-2019 RZ Fang</span>
+  <button onclick={ScrollToTop}>^Top</button>
+  <style type='scss'>
+    :host {
+      display: block; position: relative; border-top-width: 1px; text-align: center;
+
+      >button {
+        display: none; position: fixed; right: 15px; bottom: 25px; padding: 0 3px; background-color: #ffffff;
+      }
+    }
+  </style>
+  <script>
+    export default {
+      Btn: null,
+
+      onMounted () {
+        if (!this.OnBrowser()) { return; }
+
+        const Btn = this.$('button');
+
+        // scroll to toggle button.
+        window.addEventListener(
+          'scroll',
+          Evt => {
+            const Y = window.scrollY || Evt.pageY || null;
+
+            if (!Y || Y < 40) {
+              if (Btn.style.display === 'none') { return; }
+
+              Btn.style.display = 'none';
+
+              return;
+            }
+
+            if (Btn.style.display !== 'none') { return; }
+
+            Btn.style.display = 'inline-block';
+          });
+      },
+
+      ScrollToTop (Evt) {
+        window.scrollTo(0, 0);
+      }
+    }
+  </script>
+</page-footer>
+
+<page-layout>
+  <page-header/>
+  <slot/>
+  <page-footer/>
+  <style>
+    :host { display: block; margin: 0 auto; max-width: 1000px; }
+  </style>
+  <script>
+    export default {
+      components: { pageHeader, pageFooter }
+    }
+  </script>
+</page-layout>
