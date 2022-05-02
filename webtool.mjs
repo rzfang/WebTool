@@ -58,8 +58,10 @@ const RHC = {
       ...DftPgRt,
       title: 'File to Data URI - Web Tool',
       keywords: '資料, 轉換, datauri, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'include.js', 'hydrate.js' ],
-      body: { type: 'html', component: path.resolve(__dirname, './SRC/component/datauri.part.html') }},
+      css: [],
+      js: [],
+      // body: { type: 'html', component: path.resolve(__dirname, './SRC/component/datauri.part.html') }},
+      body: { type: 'riot', component: './SRC/component/page-datauri.riot' }},
     '/datetime': {
       ...DftPgRt,
       title: 'Datetime Transform - Web Tool',

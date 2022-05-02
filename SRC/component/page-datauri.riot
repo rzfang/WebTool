@@ -1,0 +1,53 @@
+<page-datauri>
+  <page-layout>
+    <input type='file'/>
+    <button value='convert' onclick={Convert}>convert</button>
+    <hr/>
+    <table>
+      <tbody>
+        <tr><td>File Name:</td><td></td></tr>
+        <tr><td>Mime Type:</td><td></td></tr>
+      </tbody>
+    </table><br/>
+    <textarea rows='10' cols='50'>
+    </textarea>
+  </page-layout>
+  <style type='scss'>
+    :host {
+      table { display: inline-block; }
+      table tr > td { text-align: left; }
+      table tr > td:first-child { text-align: right; }
+    }
+  </style>
+  <script>
+      import pageLayout from './page-layout.riot';
+
+      export default {
+        components: { pageLayout },
+
+        Convert () {
+          let FlsBx = this.$('input[type=file]'), // file box.
+              Fls = FlsBx.files; // files.
+
+          if (Fls.length === 0) {
+            alert('尚未選擇檔案。');
+
+            return -1;
+          }
+
+          let Fl = Fls[0], // file.
+              Flds = this.$$('table > tbody > tr > td:nth-child(2)'), // fields.
+              FR = new FileReader(),
+              Txtara = this.$('textarea');
+
+          FR.onloadend = function () {
+            Flds[0].innerHTML = Fl.name;
+            Flds[1].innerHTML = this.result.substr(0, 64).replace(/^data:(.+);base64,.+$/, '$1')
+            Txtara.value = this.result;
+          }
+
+          FR.readAsDataURL(Fl);
+        }
+      }
+    </script>
+</page-datauri>
