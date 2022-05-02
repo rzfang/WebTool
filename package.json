@@ -13,21 +13,25 @@
     "request": "^2.88.2",
     "require-from-string": "^2.0.2",
     "riot": "^6.0.4",
-    "rzjs": "github:rzfang/Js"
+    "rzjs": "file:../Js"
   },
   "devDependencies": {
-    "eslint": "^8.3.0",
+    "eslint": "^8.14.0",
     "eslint-plugin-json": "^3.1.0",
     "node-sass": "^6.0.1",
     "nodemon": "^2.0.5",
     "pre-commit": "^1.2.2",
-    "terser": "^5.10.0"
+    "terser": "^5.12.1"
   },
   "scripts": {
     "dev": "nodemon -d 3 -e js,scss,html,tag,riot -w SRC/ SRC/RZ-Nd-HTTPServer.js;",
     "ws": "nodemon -d 3 -e js -w SRC/websocket.js SRC/websocket.js",
     "lint": "eslint --ext .js,.json UTL/ SRC/",
-    "test": "test"
+    "test": "test",
+    "dev2": "nodemon --experimental-json-modules -d 3 -e js,scss,html,riot -w SRC/ ./webtool.mjs",
+    "lint2": "eslint --ext .js,.json,.mjs --ignore-pattern *.riot.*.mjs *.*js SRC",
+    "start": "node --experimental-json-modules webtool.mjs",
+    "start:pm2": "pm2 start --name webtool npm -- run start"
   },
   "repository": {
     "type": "git",
