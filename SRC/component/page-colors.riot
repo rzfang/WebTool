@@ -105,9 +105,9 @@
           'R' = Red color value.
           Return: CSS color code with hex format. */
         ColorRGBTo16 (R, G, B) {
-          R = CharPad(parseInt(R, 10).toString(16), '0', 2, 'l');
-          G = CharPad(parseInt(G, 10).toString(16), '0', 2, 'l');
-          B = CharPad(parseInt(B, 10).toString(16), '0', 2, 'l');
+          R = this.CharPad(parseInt(R, 10).toString(16), '0', 2, 'l');
+          G = this.CharPad(parseInt(G, 10).toString(16), '0', 2, 'l');
+          B = this.CharPad(parseInt(B, 10).toString(16), '0', 2, 'l');
           return '#' + R + G + B;
         },
 
