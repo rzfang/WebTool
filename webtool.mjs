@@ -60,14 +60,14 @@ const RHC = {
       keywords: '資料, 轉換, datauri, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
       css: [],
       js: [],
-      // body: { type: 'html', component: path.resolve(__dirname, './SRC/component/datauri.part.html') }},
       body: { type: 'riot', component: './SRC/component/page-datauri.riot' }},
     '/datetime': {
       ...DftPgRt,
       title: 'Datetime Transform - Web Tool',
       keywords: '時間格式轉換, datetime transform, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'include.js', 'hydrate.js' ],
-      body: { type: 'html', component: path.resolve(__dirname, './SRC/component/datetime.part.html') }},
+      css: [],
+      js: [],
+      body: { type: 'riot', component: './SRC/component/page-datetime.riot' }},
     '/endecode': {
       ...DftPgRt,
       title: 'String Encode/Decode - Web Tool',

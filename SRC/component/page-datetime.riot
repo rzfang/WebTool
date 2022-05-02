@@ -1,0 +1,144 @@
+<page-datauri>
+  <page-layout>
+    <div>
+      <div>
+        <button onclick={DateUpdate}>Now Date</button> or
+        <input type='number' id='Mlscd' placeholder='Millisecond'>
+        <button onclick={DateUpdate} value='#Mlscd'>Update</button>
+      </div><br/>
+      <b>Basic Format</b>
+      <table>
+        <tr><td>Second</td><td id='NowDateScd'></td></tr>
+        <tr><td>Local</td><td id='NowDate'></td></tr>
+        <tr><td>UTC</td><td id='UTCDate'></td></tr>
+      </table><br/>
+      <b>Date Object Function Result</b>
+      <table id='DftFmt'></table>
+    </div>
+    <br/><hr/><br/>
+    <div>
+      <b>Date String ---> Millisecond</b><br/><br/>
+      <div id='DtStrBx'>
+        <input type='number' maxlength=4 value='2011'/>&nbsp;-
+        <input type='number' maxlength=2 value='06'/>&nbsp;-
+        <input type='number' maxlength=2 value='27'/>&nbsp;
+        <input type='number' maxlength=2 value='03'/>&nbsp;:
+        <input type='number' maxlength=2 value='45'/>&nbsp;:
+        <input type='number' maxlength=2 value='00'/>&nbsp;.
+        <input type='number' maxlength=3 value='000'/>
+      </div><br>
+      <button onclick={DateToSecond}>Get Second</button>
+      <span id="Scd">???</span>
+    </div>
+  </page-layout>
+  <style type='scss'>
+    :host {
+      table { border-spacing: 0; }
+      #DtStrBx > input { max-width: 50px; }
+    }
+  </style>
+  <script>
+    import pageLayout from './page-layout.riot';
+
+    export default {
+      components: { pageLayout },
+
+      onMounted () {
+        if (this.OnBrowser()) {
+          setTimeout(this.DateUpdate, 999);
+        }
+      },
+
+      /* Pad Characters into a string.
+        @ string.
+        @ length. minimum length of string should be padding to.
+        @ character. optional, default '0';
+        @ side. optional, default 'l'. 'l'|'L': left padding, 'r'|'R': right padding.
+        < a string after handle. */
+      CharPad (Str, Lth, Chr, Sd) {
+        if (typeof Str !== 'string') { Str = Str.toString(); }
+
+        if (typeof Lth !== 'number' || Lth < 2 || Str.length >= Lth) { return Str; }
+
+        if (typeof Chr !== 'string' || Chr.length === 0) { Chr = '0'; }
+
+        if (typeof Sd !== 'string') { Sd = 'l'; }
+        else {
+          Sd = Sd.toLowerCase();
+
+          if (Sd !== 'l' && Sd !== 'r') { return Str; }
+        }
+
+        var PN = Lth - Str.length, // 'PN' = Padding Number.
+            PS = ''; // 'PS' = Padding String.
+
+        for (PS = ''; PS.length < PN; PS += Chr);
+
+        if (Sd === 'l') { Str = PS + Str; }
+        else { Str += PS; }
+
+        return Str;
+      },
+
+      DateUpdate (Evt) {
+        let Mlscd = 0;
+
+        if (Evt && Evt?.target?.value) {
+          Mlscd = parseInt(this.$(Evt.target.value).value, 10);
+        }
+
+        let Dt = Mlscd ? new Date(Mlscd) : new Date(),
+            Scd = Dt.getTime().toString(), // 'Scd' = Second.
+            TZOH = Dt.getTimezoneOffset() / 60; // 'TZOH' = Time Zone Offset Hour.
+
+        Scd = Scd.substr(0, Scd.length - 3) + '.' + Scd.substr(Scd.length - 3);
+        this.$('#NowDateScd').innerHTML = ': ' + Scd;
+
+        TZOH = (TZOH > 0 ? '-' : '+') + this.CharPad(Math.abs(TZOH), 2);
+
+        let DtStr = '';
+
+        DtStr = Dt.getFullYear() + '-' + this.CharPad((Dt.getMonth() + 1), 2) + '-' +
+                this.CharPad(Dt.getDate(), 2) + ' ' + this.CharPad(Dt.getHours(), 2) + ':' +
+                this.CharPad(Dt.getMinutes(), 2) + ':' + this.CharPad(Dt.getSeconds(), 2) + '.' +
+                this.CharPad(Dt.getMilliseconds(), 3) + ' (' + Dt.getDay() + ') ' + TZOH;
+
+        this.$('#NowDate').innerHTML = ': ' + DtStr;
+
+        DtStr = Dt.getUTCFullYear() + '-' + this.CharPad((Dt.getUTCMonth() + 1), 2) + '-' +
+                this.CharPad(Dt.getUTCDate(), 2) + ' ' + this.CharPad(Dt.getUTCHours(), 2) + ':' +
+                this.CharPad(Dt.getUTCMinutes(), 2) + ':' + this.CharPad(Dt.getUTCSeconds(), 2) + '.' +
+                this.CharPad(Dt.getUTCMilliseconds(), 3) + ' (' + Dt.getUTCDay() + ')';
+
+        this.$('#UTCDate').innerHTML = ': ' + DtStr;
+
+        this.$('#DftFmt').innerHTML =
+          '<tr><td>toString</td><td>: ' + Dt.toString() + '</td></tr>' +
+          '<tr><td>toDateString</td><td>: ' + Dt.toDateString() + '</td></tr>' +
+          '<tr><td>toTimeString</td><td>: ' + Dt.toTimeString() + '</td></tr>' +
+
+          '<tr><td>toLocaleString</td><td>: ' + Dt.toLocaleString() + '</td></tr>' +
+          '<tr><td>toLocaleDateString</td><td>: ' + Dt.toLocaleDateString() + '</td></tr>' +
+          '<tr><td>toLocaleTimeString</td><td>: ' + Dt.toLocaleTimeString() + '</td></tr>' +
+
+          '<tr><td>toGMTString</td><td>: ' + Dt.toGMTString() + '</td></tr>' +
+          '<tr><td>toISOString</td><td>: ' + Dt.toISOString() + '</td></tr>' +
+          '<tr><td>toUTCString</td><td>: ' + Dt.toUTCString() + '</td></tr>';
+      },
+
+      DateToSecond () {
+        let DtA = this.$$('#DtStrBx>*');
+        let Dt = new Date(
+          DtA[0].value,
+          (DtA[1].value - 1),
+          DtA[2].value,
+          DtA[3].value,
+          DtA[4].value,
+          DtA[5].value,
+          DtA[6].value);
+
+        this.$('#Scd').innerHTML = Dt.getTime() / 1000;
+      }
+    }
+  </script>
+</page-datauri>
