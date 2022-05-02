@@ -20,34 +20,34 @@
     }
   </style>
   <script>
-      import pageLayout from './page-layout.riot';
+    import pageLayout from './page-layout.riot';
 
-      export default {
-        components: { pageLayout },
+    export default {
+      components: { pageLayout },
 
-        Convert () {
-          let FlsBx = this.$('input[type=file]'), // file box.
-              Fls = FlsBx.files; // files.
+      Convert () {
+        let FlsBx = this.$('input[type=file]'), // file box.
+            Fls = FlsBx.files; // files.
 
-          if (Fls.length === 0) {
-            alert('尚未選擇檔案。');
+        if (Fls.length === 0) {
+          alert('尚未選擇檔案。');
 
-            return -1;
-          }
-
-          let Fl = Fls[0], // file.
-              Flds = this.$$('table > tbody > tr > td:nth-child(2)'), // fields.
-              FR = new FileReader(),
-              Txtara = this.$('textarea');
-
-          FR.onloadend = function () {
-            Flds[0].innerHTML = Fl.name;
-            Flds[1].innerHTML = this.result.substr(0, 64).replace(/^data:(.+);base64,.+$/, '$1')
-            Txtara.value = this.result;
-          }
-
-          FR.readAsDataURL(Fl);
+          return -1;
         }
+
+        let Fl = Fls[0], // file.
+            Flds = this.$$('table > tbody > tr > td:nth-child(2)'), // fields.
+            FR = new FileReader(),
+            Txtara = this.$('textarea');
+
+        FR.onloadend = function () {
+          Flds[0].innerHTML = Fl.name;
+          Flds[1].innerHTML = this.result.substr(0, 64).replace(/^data:(.+);base64,.+$/, '$1')
+          Txtara.value = this.result;
+        }
+
+        FR.readAsDataURL(Fl);
       }
-    </script>
+    }
+  </script>
 </page-datauri>

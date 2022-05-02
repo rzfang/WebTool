@@ -46,35 +46,35 @@
     }
   </style>
   <script>
-      import pageLayout from './page-layout.riot';
+    import pageLayout from './page-layout.riot';
 
-      export default {
-        components: { pageLayout },
+    export default {
+      components: { pageLayout },
 
-        TableSwitch (Evt) {
-          let TgtIdx = 0; // target index.
+      TableSwitch (Evt) {
+        let TgtIdx = 0; // target index.
 
-          this.$$('#List button').forEach((Btn, Idx) => {
-            if (Btn === Evt.target) {
-              TgtIdx = Idx;
-              Btn.disabled = 'true';
+        this.$$('#List button').forEach((Btn, Idx) => {
+          if (Btn === Evt.target) {
+            TgtIdx = Idx;
+            Btn.disabled = 'true';
 
-              return;
-            }
+            return;
+          }
 
-            if (Btn.disabled !== '') { Btn.disabled = ''; }
-          });
+          if (Btn.disabled !== '') { Btn.disabled = ''; }
+        });
 
-          this.$$('#Table>div').forEach((Tbl, Idx) => {
-            if ((Idx === TgtIdx) && (Tbl.style.display !== 'block')) {
-              Tbl.style.display = 'block';
+        this.$$('#Table>div').forEach((Tbl, Idx) => {
+          if ((Idx === TgtIdx) && (Tbl.style.display !== 'block')) {
+            Tbl.style.display = 'block';
 
-              return;
-            }
+            return;
+          }
 
-            if (Tbl.style.display !== 'none') { Tbl.style.display = 'none'; }
-          });
-        }
+          if (Tbl.style.display !== 'none') { Tbl.style.display = 'none'; }
+        });
       }
-    </script>
+    }
+  </script>
 </page-convert>
