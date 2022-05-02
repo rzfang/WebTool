@@ -72,8 +72,9 @@ const RHC = {
       ...DftPgRt,
       title: 'String Encode/Decode - Web Tool',
       keywords: '編碼, 解碼, encoding, decoding, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'include.js', 'hydrate.js' ],
-      body: { type: 'html', component: path.resolve(__dirname, './SRC/component/endecode.part.html') }},
+      css: [],
+      js: [],
+      body: { type: 'riot', component: './SRC/component/page-endecode.riot' }},
     '/ipv426': {
       ...DftPgRt,
       title: 'IPv4 to v6 convert - Web Tool',
