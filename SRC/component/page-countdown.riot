@@ -1,0 +1,126 @@
+<page-countdown>
+  <page-layout>
+    <div>
+      <h1>00:00:00</h1>
+    </div>
+    <div id='FctnBx'>
+      Countdown in
+      <input type="number" value='0'/>
+      :
+      <input type="number" value='0'/>
+      :
+      <input type="number" value='0'/>
+      <br/><br/>
+      <input type="text" placeholder="the words to notify." />
+      <br/><br/>
+      <button onclick={Start}>Start</button>
+      <button onclick={Cancel}>Cancel</button>
+    </div>
+  </page-layout>
+  <style type='scss'>
+    :host {
+      #FctnBx>input[type=number] { max-width: 100px; }
+    }
+  </style>
+  <script>
+      import pageLayout from './page-layout.riot';
+
+      export default {
+        components: { pageLayout },
+
+        CnNtf: false, // can notify.
+        Btns: [], // button elements.
+        Inpts: [], // input elements.
+        Cntdn: null, // countdown, setTimeout Id.
+        Clck: null, // clock, requestAnimateionFrame Id.
+        Dt: null, // date object.
+
+        onMounted () {
+          if (this.OnBrowser()) {
+            this.Btns = this.$$('#FctnBx>button');
+            this.Inpts = this.$$('#FctnBx>input');
+          }
+        },
+
+        Start () {
+          var Hr = parseInt(this.Inpts[0].value || 0, 10) || 0, // hour.
+              Mnt = parseInt(this.Inpts[1].value || 0, 10) || 0, // minute.
+              Scnd = parseInt(this.Inpts[2].value || 0, 10) || 0, // second.
+              Mlscnd; // millisecond.
+
+          if (window.Notification) {
+            if (Notification.permission !== "granted") {
+              Notification.requestPermission(function (Pmsn) { this.CnNtf = (Pmsn === 'granted'); });
+            }
+            else { this.CnNtf = true; }
+          }
+
+          if (Scnd > 59) {
+            Mnt += Math.floor(Scnd / 60);
+            Scnd %= 60;
+          }
+
+          if (Mnt > 59) {
+            Hr += Math.floor(Mnt / 60);
+            Mnt %= 60;
+          }
+
+          if (this.Cntdn) { clearTimeout(this.Cntdn); }
+
+          if (this.Clck) { cancelAnimationFrame(this.Clck); }
+
+          Mlscnd = ((Hr * 60 + Mnt) * 60 + Scnd) * 1000;
+          this.Cntdn = setTimeout(this.TimesUp, Mlscnd);
+          this.Clck = setInterval( () => { requestAnimationFrame(this.Countdown); }, 100);
+          this.Dt = new Date();
+          this.Btns[0].disabled = true;
+
+          this.Dt.setTime(this.Dt.getTime() + Mlscnd);
+        },
+
+        Cancel () {
+          if (this.Cntdn) { clearTimeout(this.Cntdn); }
+
+          if (this.Clck) { clearInterval(this.Clck); }
+
+          this.Cntdn = 0;
+          this.Btns[0].disabled = false;
+        },
+
+        TimesUp () {
+          if (this.CnNtf) {
+            var Wrds = this.$('#FctnBx>input[type=text]').value || 'Countdown Notify';
+
+            new Notification(Wrds + '\n - WebTool');
+          }
+
+          if (this.Cntdn) { clearTimeout(this.Cntdn); }
+
+          if (this.Clck) { clearInterval(this.Clck); }
+
+          this.Btns[0].disabled = false;
+        },
+
+        /*
+          DOMHghRsTmStmp = DOMHighResTimeStamp. */
+        Countdown (DOMHghRsTmStmp) {
+          var Now = Math.floor((this.Dt - (new Date())) / 1000),
+              Hr = parseInt(Math.floor(Now / 3600), 10).toString(),
+              Mnt,
+              Scnd;
+
+          Now %= 3600;
+          Mnt = parseInt(Math.floor(Now / 60), 10).toString();
+          Scnd = (Now % 60).toString();
+
+          if (Hr.length < 2) { Hr = '0' + Hr; }
+
+          if (Mnt.length < 2) { Mnt = '0' + Mnt; }
+
+          if (Scnd.length < 2) { Scnd = '0' + Scnd; }
+
+          this.$('div>h1').innerHTML = Hr + ':' + Mnt + ':' + Scnd;
+        }
+      }
+    </script>
+</page-countdown>

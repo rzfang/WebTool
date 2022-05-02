@@ -46,14 +46,14 @@ const RHC = {
       keywords: '轉換, 換算, 查表, convert, list, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
       css: [],
       js: [],
-      // body: { type: 'html', component: path.resolve(__dirname, './SRC/component/convert.part.html') }},
       body: { type: 'riot', component: './SRC/component/page-convert.riot' }},
     '/countdown': {
       ...DftPgRt,
       title: 'Countdown Notify - Web Tool',
       keywords: '倒數計時, 計時, countdown, 網頁, 工具, Tool',
-      js: [ 'include.js', 'hydrate.js' ],
-      body: { type: 'html', component: path.resolve(__dirname, './SRC/component/countdown.part.html') }},
+      css: [],
+      js: [],
+      body: { type: 'riot', component: './SRC/component/page-countdown.riot' }},
     '/datauri': {
       ...DftPgRt,
       title: 'File to Data URI - Web Tool',
