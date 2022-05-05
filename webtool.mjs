@@ -79,8 +79,9 @@ const RHC = {
       ...DftPgRt,
       title: 'IPv4 to v6 convert - Web Tool',
       keywords: 'ipv6, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'include.js', 'hydrate.js' ],
-      body: { type: 'html', component: path.resolve(__dirname, './SRC/component/ipv426.part.html') }},
+      css: [],
+      js: [],
+      body: { type: 'riot', component: './SRC/component/page-ipv426.riot' }},
     '/json': {
       ...DftPgRt,
       title: 'JSON Edit - Web Tool',
