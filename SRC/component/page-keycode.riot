@@ -1,0 +1,82 @@
+<page-keycode>
+  <page-layout>
+    Key in:
+    <input type='text' id='Keyin' onkeydown={KeyDown} onkeypress={KeyPress} onkeyup={KeyUp}/><br/>
+    <span class='Title'>Key Down:</span><span id='KeyDown'>?</span><br/>
+    <span class='Title'>Key Press:</span><span id='KeyPress'>?</span><br/>
+    <span class='Title'>Key Up:</span><span id='KeyUp'>?</span>
+    <hr/>
+    History:<br/>
+    <table style='display: inline-block;'>
+      <tbody id='Hst'></tbody>
+    </table>
+    <div style='display: inline-block; padding: 5px; border: 1px solid; border-radius: 5px; vertical-align: top;'>
+      Log with:<br/>
+      <label><input type='checkbox' id='LgDwnChk' checked='true'/> KeyDown</label><br/>
+      <label><input type='checkbox' id='LgPrsChk' checked='true'/> KeyPress</label><br/>
+      <label><input type='checkbox' id='LgUpChk' checked='true'/> KeyUp</label><br/>
+      <button onclick={HistoryClear}>Clear</button>
+    </div>
+  </page-layout>
+  <style type='scss'>
+    :host {
+      .Title { display: inline-block; width: 100px; }
+    }
+  </style>
+  <script>
+    import pageLayout from './page-layout.riot';
+
+    export default {
+      components: { pageLayout },
+
+      KeyDown (Evt) {
+        this.KeyCodeGet(Evt, 'KeyDown');
+      },
+
+      KeyPress (Evt) {
+        this.KeyCodeGet(Evt, 'KeyPress');
+      },
+
+      KeyUp (Evt) {
+        this.KeyCodeGet(Evt, 'KeyUp');
+      },
+
+      KeyCodeGet (Evt, ID) {
+        /*==== current state show. ====*/
+
+        var Elt = Z.DOM.Find('#' + ID)[0], // 'Elt' = Element.
+            KyStr = 'keyCode: ' + Evt.keyCode + ' (0x' + Evt.keyCode.toString(16) + ')'; // 'KyStr' = Key String.
+
+        if (Evt.keyCode === 0)
+        { KyStr += ', charCode: ' + Evt.charCode + ' (0x' + Evt.charCode.toString(16) + ')'; }
+
+        Elt.innerHTML = KyStr;
+
+        /*==== history log process. ====*/
+
+        var ChkIDMpO = {'KeyDown': 'LgDwnChk', 'KeyPress': 'LgPrsChk', 'KeyUp': 'LgUpChk'},
+            ChkElt = Z.DOM.Find('#' + ChkIDMpO[ID])[0],
+            HstElt,
+            LgElt; // 'LgElt' = Log Element.
+
+
+        if (!ChkElt.checked)
+        { return -1; }
+
+        HstElt = Z.DOM.Find('#Hst')[0],
+        LgElt = Z.DOM.NewNode('tr'),
+        LgElt.innerHTML = '<td>' + ID + '</td><td>' + KyStr + '</td>';
+
+        HstElt.Prepend(LgElt);
+
+        HstElt.Children()
+              .Some(function (Elt, Idx) { return (Idx > (20 - 1)); })
+              .Each(function (Elt, Idx) { Elt.Remove(); });
+      },
+
+      HistoryClear () {
+        Z.DOM.Find('#Hst')[0].innerHTML = '';
+      }
+    }
+  </script>
+</page-keycode>

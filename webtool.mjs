@@ -93,8 +93,9 @@ const RHC = {
       ...DftPgRt,
       title: 'Key Code Detect - Web Tool',
       keywords: '鍵盤代碼, keyboard, keyCode, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'include.js', 'hydrate.js' ],
-      body: { type: 'html', component: path.resolve(__dirname, './SRC/component/keycode.part.html') }},
+      css: [],
+      js: [ 'RZ-Js-DOM.js' ],
+      body: { type: 'riot', component: './SRC/component/page-keycode.riot' }},
     // '/payment': { // v3
     //   ...DftPgRt,
     //   title: 'Payment - Web Tool',
