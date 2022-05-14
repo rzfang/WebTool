@@ -86,8 +86,9 @@ const RHC = {
       ...DftPgRt,
       title: 'JSON Edit - Web Tool',
       keywords: 'JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'include.js', 'hydrate.js' ],
-      body: { type: 'html', component: path.resolve(__dirname, './SRC/component/json.part.html') }},
+      css: [],
+      js: [ 'https://unpkg.com/json5@^2.0.0/dist/index.min.js', 'RZ-Js-DOM.js' ],
+      body: { type: 'riot', component: './SRC/component/page-json.riot' }},
     '/keycode': {
       ...DftPgRt,
       title: 'Key Code Detect - Web Tool',
@@ -150,11 +151,22 @@ const RHC = {
     // ==== resource ====
 
     // node_modules
+    {
+      path: /Is\.js$/,
+      type: 'resource',
+      location: './node_modules/rzjs',
+      nameOnly: true
+    },
 
     { // SEO files.
       path: /\/(favicon\.ico|robots\.txt|sitemap\.xml)/,
       type: 'resource',
       location: STTC_PTH
+    },
+    {
+      path: /RZ-Js-DOM\.js$/,
+      type: 'resource',
+      location: './SRC'
     },
     { // resource: Js, CSS.
       path: /\.(css|js)$/,

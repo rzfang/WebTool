@@ -1,0 +1,391 @@
+<page-json>
+  <page-layout>
+      <div id='FctnBx'>
+      <div class='Grid'>
+        <div class='Cell'>
+          use
+          <a href='https://json5.org/' title='what is JSON5?' target='_blank'>JONS5</a>
+          <input type='checkbox' checked='true'/><br/>
+          select a local JSON file:
+          <input type='file' onchange={JSONLoad}/><br/>
+          or<br/>
+          paste a JSON string:
+          <textarea cols='20' rows='2'></textarea>
+          <button onclick={JSONRead}>parse</button>
+        </div>
+        <div class='Cell'>
+          <button onclick={JSONToString}>export</button><br/>
+          <textarea cols='20' rows='4'></textarea>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div id='Rt'></div>
+    <div id='IptBx'>
+      <textarea rows='1'></textarea>
+      <div>
+        <button value='OK'>OK</button><br/>
+        <button value='Cancel'>Cancel</button>
+      </div>
+    </div>
+  </page-layout>
+  <style type='scss'>
+    :host {
+      .Grid { display: table; }
+      .Grid > .Cell { display: table-cell; vertical-align: middle; }
+
+      #FctnBx > textarea { vertical-align: top; }
+      #FctnBx .Grid > .Cell { padding: 5px; }
+      #FctnBx .Grid > .Cell:first-child { border-right: 1px solid; }
+      #FctnBx .Grid > .Cell > * { vertical-align: top; }
+      #IptBx { display: none; position: absolute; top: 0px; left: 0px; background-color: rgba(255, 255, 255, 0.9); }
+      #IptBx > div { display: inline-block; vertical-align: top; }
+      #Rt { display: inline-block; }
+      #Rt * { line-height: 1.5em; }
+      #Rt .EdtNd,
+      #Rt .TglNd { padding-right: 10px; cursor: pointer; }
+      #Rt .TglNd::after { content: attr(data-suffix); margin-left: 10px; }
+      #Rt ul { margin: 0px; padding-left: 20px; list-style-type: none; }
+      #Rt pre { display: inline-block; margin: 0px; vertical-align: top; }
+      #Rt li:not(:last-child) > ul ~ span::after { content: ','; }
+    }
+  </style>
+  <script>
+    import pageLayout from './page-layout.riot';
+    import { Is } from '../../node_modules/rzjs/Is.js';
+
+    export default {
+      components: { pageLayout },
+
+      onMounted () {
+        if (this.OnNode()) { return; }
+
+        var FctnBx = this.$('#FctnBx'),
+            Btns = this.$$('#IptBx > div > button'),
+            RtNd = this.$('#Rt');
+
+        RtNd.AddEvent('click', this.TreeToggle);
+        RtNd.AddEvent('click', this.DataEdit);
+
+        Btns[0].onclick = this.DataReplace;
+        Btns[1].onclick = function (Evt) { Evt.Element().Above(2).style.display = 'none'; };
+
+        // this.$('#IptBx > textarea').onkeyup = function (Evt) {
+        //   switch (Evt.keyCode) {
+        //     case 27:
+        //       this.Above().style.display = 'none';
+        //       break;
+        //   }
+        // };
+      },
+
+      JSONLoad (Evt) {
+        let Fl = Evt.target.files[0];
+
+        if (!Fl) {
+          alert('please select a JSON file.');
+
+          return -1;
+        }
+
+        if (Fl.size > 1048576) {
+          alert('the file size is more than 1mb.');
+
+          return -2;
+        }
+
+        let FR = new FileReader();
+
+        FR.onloadend = () => this.JSONRender(FR.result);
+
+        FR.readAsText(Fl);
+      },
+
+      JSONRead (Evt) {
+        let Txt = Evt.target.previousSibling.value.replace(/\n/g, '');
+
+        this.JSONRender(Txt);
+      },
+
+      JSONRender (string) {
+        var JO = null,
+            Rt = this.$('#Rt'),
+            Is5 = this.$('#FctnBx input[type=checkbox]').checked; // 'Is5' = Is using JSON5.
+
+        try { JO = Is5 ? JSON5.parse(string) : JSON.parse(string); }
+        catch (Ecpt) {
+          alert('the stream is not JSON.');
+
+          return -1;
+        }
+
+        if (JO === null) {
+          alert('the stream is not JSON.');
+
+          return -2;
+        }
+
+        Rt.innerHTML = '';
+        Rt.className = '';
+
+        if (Is.Number(JO)) {
+          Rt.className = 'EdtNd number';
+
+          Rt.appendChild(document.createTextNode(JO.toString()));
+        }
+        else if (Is.String(JO)) {
+          Rt.className = 'EdtNd string';
+
+          Rt.appendChild(document.createTextNode('"' + JO + '"'));
+        }
+        else if (Is.Number(JO.length)) { QuoteMarkRender(Rt, JO, 'array'); }
+        else { QuoteMarkRender(Rt, JO, 'object'); }
+
+        return 0;
+
+        /*
+          'Rt' = DOM Root node object.
+          'Obj' = Object to render.
+          'Tp' = Type of object. optional, 'object'|'array', default 'object'. */
+        function QuoteMarkRender (Rt, Obj, Tp) {
+          var FstNd = document.createElement('span'),
+              LstNd = document.createElement('span');
+
+          FstNd.className = 'TglNd';
+          FstNd.dataset.suffix = '-';
+
+          if (!Is.Object(Rt) || !Is.Object(Obj)) { return -1; }
+
+          if (Tp === 'array') {
+            FstNd.textContent = '[';
+            LstNd.textContent = ']';
+            Rt.className = 'array';
+          }
+          else {
+            FstNd.textContent = '{';
+            LstNd.textContent = '}';
+            Rt.className = 'object';
+          }
+
+          Rt.appendChild(FstNd);
+          Rt.appendChild(ObjectRender(Obj));
+          Rt.appendChild(LstNd);
+
+          return 0;
+        }
+
+        function ObjectRender (Obj) {
+          var Rt = document.createElement('ul'),
+              IsA = false;
+
+          if (!Is.Object(Obj) || Obj === null) { return document.createElement('span'); }
+
+          if (Is.Number(Obj.length)) { IsA = true; }
+
+          for (var i in Obj) {
+            var NdStt = IsA ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : '),
+                Nd;
+
+            switch (typeof Obj[i]) {
+              case 'string':
+                Nd = document.createElement('li');
+                Nd.className = 'string';
+                Nd.innerHTML = NdStt + '<pre class=\'EdtNd\'>"' + Obj[i] + '"</pre>';
+
+                Rt.appendChild(Nd);
+
+                break;
+
+              case 'number':
+                Nd = document.createElement('li');
+                Nd.className = 'number';
+                Nd.innerHTML = NdStt + '<span class=\'EdtNd\'>' + Obj[i] + '</span>';
+
+                Rt.appendChild(Nd);
+
+                break;
+
+              case 'object':
+                Nd = document.createElement('li');
+
+                if (Is.Array(Obj[i]) && Is.Number(Obj[i].length)) {
+                  Nd.innerHTML = NdStt;
+
+                  QuoteMarkRender(Nd, Obj[i], 'array');
+                }
+                else {
+                  Nd.innerHTML = NdStt;
+
+                  QuoteMarkRender(Nd, Obj[i], 'object');
+                }
+
+                Rt.appendChild(Nd);
+
+                break;
+
+              default:
+            }
+          }
+
+          return Rt;
+        }
+      },
+
+      DataEdit (Evt) {
+        var Nd = Evt.Element(),
+            IptBx = Z.DOM.Find('#IptBx')[0],
+            IptNd = IptBx.Children('textarea')[0];
+
+        if (Nd.className.indexOf('EdtNd') < 0) { return -1; }
+
+        IptNd.style.width = (Nd.offsetWidth * 1.3) + 'px';
+        IptNd.style.height = Nd.offsetHeight + 'px';
+        IptNd.value = Nd.textContent;
+        IptBx.style.left = Nd.offsetLeft + 'px';
+        IptBx.style.top = Nd.offsetTop + 'px';
+        IptBx.style.display = 'inline-block';
+        IptBx.target = Nd;
+
+        IptNd.focus();
+
+        return 0;
+      },
+
+      TreeToggle (Evt) {
+        var Nd = Evt.Element(),
+            TrNd;
+
+        if (Nd.className.indexOf('TglNd') < 0) { return -1; }
+
+        TrNd = Nd.Above().Children('ul')[0];
+
+        if (TrNd.style.display === 'none') {
+          Nd.dataset.suffix = '-';
+          TrNd.style.display = '';
+        }
+        else {
+          Nd.dataset.suffix = '+';
+          TrNd.style.display = 'none';
+        }
+
+        return 0;
+      },
+
+      DataReplace (Evt) {
+        var IptStr = '',
+            TgtNd = null,
+            IptBx = Evt
+              .Element()
+              .Above()
+              .Process(function (Self) { IptStr = Self.Prev().value; })
+              .Above()
+              .Process(function (Self) { TgtNd = Self.target; });
+
+        if (!TgtNd) {
+          alert('there\'s no target you point.');
+
+          return -1;
+        }
+
+        if (IptStr.length === 0) {
+          alert('you should never give a empty string.')
+
+          return -2;
+        }
+
+        TgtNd.textContent = IptStr;
+        IptBx.style.display = 'none';
+
+        return 0;
+      },
+
+      JSONToString (Evt) {
+        var RtNd = this.$('#Rt'),
+            Obj = RtNd.className === 'array' ? [] : {},
+            Nds = RtNd.querySelectorAll(':scope>ul>li');
+
+        NodesLoop(Nds, Obj);
+
+        Evt.target.nextSibling.nextSibling.value = JSON.stringify(Obj);
+
+        return;
+
+        /*
+          'Nds' = Nodes array.
+          'Obj' = Object to collect JSON data. */
+        function NodesLoop (Nds, Obj) {
+          if (!Is.Object(Nds) || !Is.Number(Nds.length)) { return -1; }
+
+          for (var i = 0; i < Nds.length; i++) {
+            if (Nds[i].nodeType !== 1 || Nds[i].nodeName !== 'LI') { return -2; }
+
+            DataFetch(Nds[i], Obj);
+          }
+
+          return 0;
+        }
+
+        /*
+          'RtNd' = Root Node.
+          'Obj' = Object to collect JSON data. */
+        function DataFetch(RtNd, Obj) {
+          if (!Is.Object(RtNd) || !Is.String(RtNd.nodeName) || !Is.Object(Obj)) { return -1; }
+
+          var Nds = RtNd.querySelectorAll(':scope>*');
+
+          if (Nds.length === 0) { return -2; }
+
+          if (Nds[0].textContent.length === 0) { // is array.
+            switch (RtNd.className) {
+              case 'string':
+                Obj.push(Nds[1].textContent.replace(/^"(.?)"$/, "\$1"));
+                break;
+
+              case 'number':
+                Obj.push(window.parseFloat(Nds[1].textContent));
+                break;
+
+              case 'array':
+                Obj.push([]);
+                NodesLoop(Nds[2].querySelectorAll(':scope>*'), Obj[Obj.length - 1]);
+                break;
+
+              case 'object':
+                Obj.push({});
+                NodesLoop(Nds[2].querySelectorAll(':scope>*'), Obj[Obj.length - 1]);
+                break;
+
+              default:
+            }
+          }
+          else {
+            switch (RtNd.className) {
+              case 'string':
+                Obj[Nds[0].textContent] = Nds[1].textContent.replace(/^"|"$/g, '');
+                break;
+
+              case 'number':
+                Obj[Nds[0].textContent] = window.parseFloat(Nds[1].textContent);
+                break;
+
+              case 'array':
+                Obj[Nds[0].textContent] = [];
+
+                NodesLoop(Nds[2].querySelectorAll(':scope>*'), Obj[Nds[0].textContent]);
+                break;
+
+              case 'object':
+                Obj[Nds[0].textContent] = {};
+                NodesLoop(Nds[2].querySelectorAll(':scope>*'), Obj[Nds[0].textContent]);
+                break;
+
+              default:
+            }
+          }
+
+          return 0;
+        }
+      }
+    }
+  </script>
+</page-json>

@@ -17,7 +17,7 @@
 
     //==== extend functions. ====
 
-    NodeList.prototype.ToArray = () => {
+    NodeList.prototype.ToArray = function ToArray () {
       let DA = []; // 'DA' = Data Array.
 
       for (let i = this.length; i--; DA.unshift(this[i]));
@@ -32,7 +32,7 @@
         @ Length of array.
         < false to end loop immediately.
       < array itself as OK, null as error. */
-    Array.prototype.Each = Fctn => {
+    Array.prototype.Each = function Each (Fctn) {
       if (typeof Fctn !== 'function') { return null; }
 
       for (let i = 0; i < this.length; i++) {
@@ -51,7 +51,7 @@
         @ Length of array.
         < true to save item, or false to drop it.
       < new array the items saved, or [] otherwise. */
-    Array.prototype.Some = Fctn => {
+    Array.prototype.Some = function Some (Fctn) {
       let PckA = []; // 'PckA' = Picked item Array.
 
       for (let i = 0; i < this.length; i++) {
@@ -66,7 +66,7 @@
     /*
       @ Selector String.
       < nodes array, or []. */
-    Element.prototype.Find = SltrStr => {
+    Element.prototype.Find = function Find (SltrStr) {
       if (typeof SltrStr !== 'string' || SltrStr.length === 0) { return []; }
 
       return this.querySelectorAll(SltrStr).ToArray();
@@ -74,7 +74,7 @@
 
     /*
       < first child node. */
-    Element.prototype.FirstChild = () => {
+    Element.prototype.FirstChild = function FirstChild () {
       let Elt = this.firstChild;
 
       while (Elt && Elt.nodeType !== 1) { Elt = Elt.nextSibling; }
@@ -84,7 +84,7 @@
 
     /*
       < last child node. */
-    Element.prototype.LastChild = () => {
+    Element.prototype.LastChild = function LastChild () {
       let Elt = this.lastChild;
 
       while (Elt && Elt.nodeType !== 1) { Elt = Elt.previousSibling; }
@@ -95,7 +95,7 @@
     /* find Above (parent) node of current node.
       @ Level to source up. optional, default: 1.
       < parent node, or document node as top level node. */
-    Element.prototype.Above = Lv => {
+    Element.prototype.Above = function Above (Lv) {
       let PrtNd = this.parentNode;
 
       if (typeof Lv !== 'number' || Lv < 1) { Lv = 1; }
@@ -110,7 +110,7 @@
     /*
       @ filter Selector String. optional.
       < children nodes array, or []. */
-    Element.prototype.Children = SltrStr => {
+    Element.prototype.Children = function Children (SltrStr) {
       let NdA = this.childNodes,
           RstNdA = [];
 
@@ -157,7 +157,7 @@
       return RstNdA;
     };
 
-    Element.prototype.Prev = () => {
+    Element.prototype.Prev = function Prev () {
       let Nd = this.previousSibling;
 
       while (Nd && Nd.nodeType !== 1) { Nd = Nd.previousSibling; }
@@ -165,7 +165,7 @@
       return Nd;
     };
 
-    Element.prototype.Next = () => {
+    Element.prototype.Next = function Next () {
       let Nd = this.nextSibling;
 
       while (Nd && Nd.nodeType !== 1) { Nd = Nd.nextSibling; }
@@ -176,7 +176,7 @@
     /*
       @ filter Selector String. optional.
       Need: Children(). */
-    Element.prototype.Siblings = SltrStr => {
+    Element.prototype.Siblings = function Siblings (SltrStr) {
       let NdA = this.parentNode.Children(SltrStr);
 
       for (let i = 0; i < NdA.length; i++) {
@@ -190,26 +190,26 @@
       return NdA;
     };
 
-    Element.prototype.Append = Elt => {
+    Element.prototype.Append = function Append (Elt) {
       this.appendChild(Elt);
 
       return this;
     };
 
-    Element.prototype.Prepend = Elt => {
+    Element.prototype.Prepend = function Prepend (Elt) {
       this.appendChild(Elt);
       this.insertBefore(Elt, this.firstChild);
 
       return this;
     };
 
-    Element.prototype.Process = Fctn => {
+    Element.prototype.Process = function Process (Fctn) {
       Fctn(this);
 
       return this;
     };
 
-    Element.prototype.Index = SltrStr => {
+    Element.prototype.Index = function Index (SltrStr) {
       let NdA = this.Above().Children(SltrStr);
 
       for (let i in NdA) {
@@ -219,13 +219,13 @@
       return -1;
     };
 
-    Element.prototype.Remove = () => {
+    Element.prototype.Remove = function Remove () {
       this.Above().removeChild(this);
 
       return this;
     };
 
-    Element.prototype.AddEvent = (EvtStr, Fctn) => {
+    Element.prototype.AddEvent = function AddEvent (EvtStr, Fctn) {
       if (!EvtStr || typeof EvtStr !== 'string' || !Fctn || typeof Fctn !== 'function') { return null; }
 
       this.addEventListener(EvtStr, Fctn);
@@ -234,10 +234,10 @@
     };
 
     /* Not Yet. */
-    Element.prototype.Attr = (Attr, Val) => {
+    Element.prototype.Attr = function Attr (Attr, Val) {
     };
 
-    Event.prototype.Element = () => {
+    Event.prototype.Element = function Element () {
       return (this.srcElement && !this.target) ? this.srcElement : this.target;
     };
   }
