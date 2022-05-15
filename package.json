@@ -6,7 +6,7 @@
   "dependencies": {
     "@riotjs/compiler": "^6.0.4",
     "@riotjs/hydrate": "^6.0.0",
-    "@riotjs/ssr": "^7.1.1",
+    "@riotjs/ssr": "^8.0.1",
     "async": "^3.2.2",
     "busboy": "^0.3.1",
     "feedparser": "^2.2.9",
@@ -16,12 +16,12 @@
     "rzjs": "file:../Js"
   },
   "devDependencies": {
-    "eslint": "^8.14.0",
+    "eslint": "^8.15.0",
     "eslint-plugin-json": "^3.1.0",
-    "node-sass": "^6.0.1",
-    "nodemon": "^2.0.5",
+    "node-sass": "^7.0.1",
+    "nodemon": "^2.0.16",
     "pre-commit": "^1.2.2",
-    "terser": "^5.12.1"
+    "terser": "^5.13.1"
   },
   "scripts": {
     "dev": "nodemon -d 3 -e js,scss,html,tag,riot -w SRC/ SRC/RZ-Nd-HTTPServer.js;",

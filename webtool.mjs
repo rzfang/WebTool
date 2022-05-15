@@ -115,8 +115,9 @@ const RHC = {
       ...DftPgRt,
       title: 'Form Post - Web Tool',
       keywords: '送出資料, form, post, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'include.js', 'hydrate.js' ],
-      body: { type: 'html', component: path.resolve(__dirname, './SRC/component/post.part.html') }},
+      css: [],
+      js: [ 'RZ-Js-DOM.js' ],
+      body: { type: 'riot', component: './SRC/component/page-post.riot' }},
     '/re': {
       ...DftPgRt,
       title: 'Regula Expression - Web Tool',
