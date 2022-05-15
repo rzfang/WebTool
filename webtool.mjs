@@ -122,8 +122,9 @@ const RHC = {
       ...DftPgRt,
       title: 'Regula Expression - Web Tool',
       keywords: '正規表示式, RegExp, regular expression, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'include.js', 'hydrate.js' ],
-      body: { type: 'html', component: path.resolve(__dirname, './SRC/component/re.part.html') }},
+      css: [],
+      js: [],
+      body: { type: 'riot', component: './SRC/component/page-re.riot' }},
     '/read': {
       ...DftPgRt,
       title: 'Feed Read - Web Tool',
