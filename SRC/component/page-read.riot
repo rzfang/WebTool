@@ -69,29 +69,31 @@
   </script>
 </feed>
 
-<read>
-  <div>
-    <input type='text' placeholder='enter the feed url.'/>
-    <button onclick={OneFeedAdd}>add a new feed</button>
-    <button onclick={Transfer}>Transfer</button>
-  </div>
-  <div>
-    <feed each={Fd in state.Fds} Delete={OneFeedRemove} {...Fd}/>
-  </div>
-  <cover-box if={state.IsTrnsfrOt}>
-    <p>please finish the transfering in 10 minutes by visit followed link in your device which you want the data transfer to.</p>
-    <div>{state.TrnsfrLnk}<br/>
-      <button onclick={TransferModeEnd}>OK</button>
-    </div>
-  </cover-box>
-  <cover-box if={state.HsTrnsfrCnfrm}>
-    <p>detected feed urls from remote transfering, what would you do ?</p>
+<page-read>
+  <page-layout>
     <div>
-      <button onclick={TransferIgnore}>Ignore</button>
-      <button onclick={TransferMerge}>Merge</button>
-      <button onclick={TransferReplace}>Replace</button>
+      <input type='text' placeholder='enter the feed url.'/>
+      <button onclick={OneFeedAdd}>add a new feed</button>
+      <button onclick={Transfer}>Transfer</button>
     </div>
-  </cover-box>
+    <div>
+      <feed each={Fd in state.Fds} Delete={OneFeedRemove} {...Fd}/>
+    </div>
+    <cover-box if={state.IsTrnsfrOt}>
+      <p>please finish the transfering in 10 minutes by visit followed link in your device which you want the data transfer to.</p>
+      <div>{state.TrnsfrLnk}<br/>
+        <button onclick={TransferModeEnd}>OK</button>
+      </div>
+    </cover-box>
+    <cover-box if={state.HsTrnsfrCnfrm}>
+      <p>detected feed urls from remote transfering, what would you do ?</p>
+      <div>
+        <button onclick={TransferIgnore}>Ignore</button>
+        <button onclick={TransferMerge}>Merge</button>
+        <button onclick={TransferReplace}>Replace</button>
+      </div>
+    </cover-box>
+  </page-layout>
   <style scoped>
     :host { display: block; padding-top: 5px; }
     :host>div:first-child>* { margin-right: 10px; }
@@ -103,9 +105,11 @@
   </style>
   <script>
     import coverBox from './cover-box.riot';
+    import pageLayout from './page-layout.riot';
+    import { Is } from '../../node_modules/rzjs/Is.js';
 
     export default {
-      components: { coverBox, feed },
+      components: { coverBox, feed, pageLayout },
 
       state: {
         Fds: [],
@@ -138,16 +142,16 @@
       },
 
       UrlsFilter (Urls) {
-        if (!Z.Is.Array(Urls)) { return []; }
+        if (!Is.Array(Urls)) { return []; }
 
-        return Urls.filter(Url => { return Z.Is.URL(Url); });
+        return Urls.filter(Url => { return Is.URL(Url); });
       },
 
       OneFeedAdd (Evt) {
         let FdUrls = window.localStorage.FdURLs,
             Url = this.$('input[type=text]').value;
 
-        if (!Z.Is.URL(Url)) { return alert('this is not a standard Url.'); }
+        if (!Is.URL(Url)) { return alert('this is not a standard Url.'); }
 
         if (FdUrls.indexOf(Url) > -1) { return alert('this url has been added before.'); }
 
@@ -249,4 +253,4 @@
       }
     }
   </script>
-</read>
+</page-read>

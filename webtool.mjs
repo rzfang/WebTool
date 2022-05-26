@@ -109,7 +109,8 @@ const RHC = {
     //   ...DftPgRt,
     //   title: 'Payment - Web Tool',
     //   keywords: 'JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-    //   js: [ 'include.js', 'hydrate.js' ],
+    //   css: [],
+    //   js: [],
     //   body: { type: 'riot', component: './SRC/component/payment.riot', initialize: payment }},
     '/post': {
       ...DftPgRt,
@@ -129,8 +130,9 @@ const RHC = {
       ...DftPgRt,
       title: 'Feed Read - Web Tool',
       keywords: '閱讀器, RSS, Atom, 網頁, 工具, Web, Tool',
-      js: [ '/include.js', 'hydrate.js' ],
-      body: { type: 'riot', component: './SRC/component/read.riot', initialize: read }},
+      css: [],
+      js: [],
+      body: { type: 'riot', component: './SRC/component/page-read.riot', initialize: read }},
     '/window': {
       ...DftPgRt,
       title: 'Window Open Script - Web Tool',
@@ -140,7 +142,6 @@ const RHC = {
     '/': DftPgRt
   },
   service: {
-    pathPatterm: /^\/service\//,
     case: {
       '/service/feed': {
         post: feed

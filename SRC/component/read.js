@@ -21,6 +21,6 @@ module.exports = function (Rqst, URLInfo, Clbck) {
 
   Rst = Cch.Get(TrnsfrKy).split('_|_').map(Url => { return { FdUrl: Url, HsBnLdd: false }; });
 
-  Rqst.RM.StoreSet('FEEDS', () => Rst);
+  Rqst.RMI.StoreSet('FEEDS', () => Rst);
   Clbck(0, Rst);
 };
