@@ -8,7 +8,7 @@
     "@riotjs/hydrate": "^6.0.0",
     "@riotjs/ssr": "^8.0.1",
     "async": "^3.2.2",
-    "busboy": "^0.3.1",
+    "busboy": "^1.6.0",
     "feedparser": "^2.2.9",
     "request": "^2.88.2",
     "require-from-string": "^2.0.2",
@@ -21,15 +21,13 @@
     "node-sass": "^7.0.1",
     "nodemon": "^2.0.16",
     "pre-commit": "^1.2.2",
-    "terser": "^5.13.1"
+    "terser": "^5.14.0"
   },
   "scripts": {
-    "dev": "nodemon -d 3 -e js,scss,html,tag,riot -w SRC/ SRC/RZ-Nd-HTTPServer.js;",
+    "dev": "nodemon --experimental-json-modules -d 3 -e js,scss,html,riot -w SRC/ ./webtool.mjs",
     "ws": "nodemon -d 3 -e js -w SRC/websocket.js SRC/websocket.js",
-    "lint": "eslint --ext .js,.json UTL/ SRC/",
+    "lint": "eslint --ext .js,.json,.mjs --ignore-pattern *.riot.*.mjs *.*js SRC",
     "test": "test",
-    "dev2": "nodemon --experimental-json-modules -d 3 -e js,scss,html,riot -w SRC/ ./webtool.mjs",
-    "lint2": "eslint --ext .js,.json,.mjs --ignore-pattern *.riot.*.mjs *.*js SRC",
     "start": "node --experimental-json-modules webtool.mjs",
     "start:pm2": "pm2 start --name webtool npm -- run start"
   },
