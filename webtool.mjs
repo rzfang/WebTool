@@ -21,7 +21,7 @@ const DftPgRt = { // here should handle 404.
   favicon: '',
   css: [ '/css.css' ],
   js: [ '/include.js' ],
-  body: { type: 'html', component: path.resolve(__dirname, './SRC/component/keycode.part.html') }
+  body: { type: 'riot', component: './SRC/component/page-keycode.riot' }
 };
 
 const RHC = {
