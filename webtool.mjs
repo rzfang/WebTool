@@ -133,6 +133,13 @@ const RHC = {
       css: [],
       js: [],
       body: { type: 'riot', component: './SRC/component/page-read.riot', initialize: read }},
+    '/url': {
+      ...DftPgRt,
+      title: 'URL Compare - Web Tool',
+      keywords: '網址比對, url, compare, 網頁, 工具, Web, Tool',
+      css: [],
+      js: [],
+      body: { type: 'riot', component: './SRC/component/page-url.riot' }},
     '/window': {
       ...DftPgRt,
       title: 'Window Open Script - Web Tool',

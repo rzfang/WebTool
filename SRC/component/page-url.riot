@@ -1,0 +1,70 @@
+<page-url>
+  <page-layout>
+    <table class='output-box'>
+      <thead>
+        <tr>
+            <td></td>
+            <td><input type='text' oninput={UrlsParseAndCompare}/></td>
+            <td><input type='text' oninput={UrlsParseAndCompare}/></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr each={Ky in PrprtyKys}>
+            <td class={state.ChckLst[Ky] && 'same'}>{Ky}</td>
+            <td each={Url in state.Urls}>{Url[Ky]}</td>
+        </tr>
+      </tbody>
+    </table>
+  </page-layout>
+  <style type='scss'>
+    :host {
+      .output-box>tbody>tr>td {
+        border-bottom: 1px solid;
+
+        &.same {
+          background-color: #80ff80;
+        }
+      }
+    }
+  </style>
+  <script>
+    import pageLayout from './page-layout.riot';
+
+    export default {
+      components: { pageLayout },
+
+      PrprtyKys: [
+        'href',
+        'origin',
+        'username',
+        'password',
+        'protocol',
+        'host',
+        'hostname',
+        'port',
+        'pathname',
+        'search',
+        'hash',
+        'searchParams'
+      ], // property keys.
+
+      state: {
+        ChckLst: {}, // fieldd same check list.
+        Urls: []
+      },
+
+      UrlsParseAndCompare (Evt) {
+        let ChckLst = {},
+            Urls = this.$$('input[type=text]').map(DOM => DOM.value ? new URL(DOM.value) : '');
+
+        if (Urls[0] && Urls[1]) {
+          this.PrprtyKys.forEach(Ky => {
+            ChckLst[Ky] = Urls[0][Ky] === Urls[1][Ky];
+          });
+        }
+
+        this.update({ ChckLst, Urls });
+      }
+    }
+  </script>
+</page-url>
