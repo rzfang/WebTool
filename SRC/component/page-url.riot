@@ -10,19 +10,28 @@
       </thead>
       <tbody>
         <tr each={Ky in PrprtyKys}>
-            <td class={state.ChckLst[Ky] && 'same'}>{Ky}</td>
+            <td>{Ky}</td>
             <td each={Url in state.Urls}>{Url[Ky]}</td>
+        </tr>
+        <tr>
+          <td colspan='3'>parsed searchParams</td>
+        </tr>
+        <tr each={Ky in state.SrchPrmKys}>
+          <td>{Ky}</td>
+          <td each={Url in state.Urls}>{Url && Url.SrchPrmsObjct && Url.SrchPrmsObjct[Ky] || ''}</td>
         </tr>
       </tbody>
     </table>
   </page-layout>
   <style type='scss'>
     :host {
-      .output-box>tbody>tr>td {
-        border-bottom: 1px solid;
+      .output-box>tbody>tr {
+        &:hover {
+          background-color: #f0f0f0;
+        }
 
-        &.same {
-          background-color: #80ff80;
+        >td[colspan='3'] {
+          text-align: center;
         }
       }
     }
@@ -44,26 +53,44 @@
         'port',
         'pathname',
         'search',
-        'hash',
-        'searchParams'
+        'hash'
       ], // property keys.
 
       state: {
-        ChckLst: {}, // fieldd same check list.
+        SrchPrmKys: [],
         Urls: []
       },
 
       UrlsParseAndCompare (Evt) {
-        let ChckLst = {},
+        let RsltUrls = [ {}, {} ],
+            SrchPrmKys = [],
             Urls = this.$$('input[type=text]').map(DOM => DOM.value ? new URL(DOM.value) : '');
 
-        if (Urls[0] && Urls[1]) {
-          this.PrprtyKys.forEach(Ky => {
-            ChckLst[Ky] = Urls[0][Ky] === Urls[1][Ky];
-          });
+        Urls.forEach((Url, Idx) => {
+          if (!Url) { return; }
+
+          this.PrprtyKys.forEach(Ky => { RsltUrls[Idx][Ky] = Urls[Idx][Ky]; });
+
+          RsltUrls[Idx].SrchPrmsObjct = this.SearchParamsToObject(Urls[Idx].searchParams);
+          SrchPrmKys = SrchPrmKys.concat(Object.keys(RsltUrls[Idx].SrchPrmsObjct));
+        });
+
+        this.update({ SrchPrmKys, Urls: RsltUrls });
+      },
+
+      // reference - https://developer.mozilla.org/en-US/docs/Web/API/URL_API#examples
+      SearchParamsToObject (SrchPrms) {
+        SrchPrms.sort();
+
+        const Kys = SrchPrms.keys();
+
+        let Rslt = {};
+
+        for (let Ky of Kys) {
+          Rslt[Ky] = SrchPrms.get(Ky);
         }
 
-        this.update({ ChckLst, Urls });
+        return Rslt;
       }
     }
   </script>
