@@ -72,8 +72,10 @@
           this.PrprtyKys.forEach(Ky => { RsltUrls[Idx][Ky] = Urls[Idx][Ky]; });
 
           RsltUrls[Idx].SrchPrmsObjct = this.SearchParamsToObject(Urls[Idx].searchParams);
-          SrchPrmKys = SrchPrmKys.concat(Object.keys(RsltUrls[Idx].SrchPrmsObjct));
+          SrchPrmKys = [ ...SrchPrmKys, ...Object.keys(RsltUrls[Idx].SrchPrmsObjct) ];
         });
+
+        SrchPrmKys = SrchPrmKys.filter((Vl, Idx, Arr) => Arr.indexOf(Vl) == Idx);
 
         this.update({ SrchPrmKys, Urls: RsltUrls });
       },
