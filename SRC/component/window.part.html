@@ -8,48 +8,46 @@
   <!--
     /* Parse each Option to string.
       Return: string of option. */
-    function OptionParse()
-    {
-      var TRA = Z.DOM.Find('tr'),
+    function OptionParse () {
+      let TRA = Z.DOM.Find('tr'),
           Info = '';
 
       TRA = TRA.slice(1);
 
-      for (var i = 0; i < TRA.length; i++)
-      {
-        var TDA = TRA[i].Children();
+      for (let i = 0; i < TRA.length; i++) {
+        let TDA = TRA[i].Children();
 
-        if (!TDA[0].Children()[0].checked)
-        { continue; }
+        if (!TDA[0].Children()[0].checked) { continue; }
 
-        var TA = TDA[2].Children(),
+        let TA = TDA[2].Children(),
             Tp = TA[0].getAttribute('type');
 
-        if (Tp === 'radio')
-        { Info += TDA[1].innerHTML + '=' + (TA[0].checked ? 'yes' : 'no') + ', '; }
-        else
-        { Info += TDA[1].innerHTML + '=' + TA[0].value + ', '; }
+        if (Tp === 'radio') {
+          Info += TDA[1].innerHTML + '=' + (TA[0].checked ? 'yes' : 'no') + ', ';
+        }
+        else {
+          Info += TDA[1].innerHTML + '=' + TA[0].value + ', ';
+        }
       }
       delete TRA;
 
-      if (Info.length > 2)
-      { Info = Info.substr(0, Info.length - 2); }
+      if (Info.length > 2) {
+        Info = Info.substr(0, Info.length - 2);
+      }
 
       return Info;
     }
 
-    function ScriptMake()
-    {
-      var Info = OptionParse(),
+    function ScriptMake () {
+      let Info = OptionParse(),
           URL = Z.DOM.Find('#URL')[0].value,
           Nm = Z.DOM.Find('#Nm')[0].value;
 
       Z.DOM.Find('#ScptBx')[0].innerHTML = 'window.open(\'' + URL + '\', \'' + Nm + '\', \'' + Info + '\');';
     }
 
-    function Test()
-    {
-      var Info = OptionParse(),
+    function Test () {
+      let Info = OptionParse(),
           URL = Z.DOM.Find('#URL')[0].value,
           Nm = Z.DOM.Find('#Nm')[0].value;
 

@@ -25,7 +25,7 @@
       },
 
       RowAdd () {
-        var Nm = Z.DOM.Find('#Nm')[0].value,
+        let Nm = Z.DOM.Find('#Nm')[0].value,
             Bx = document.createElement('div');
 
         if (Nm.length === 0) { return 0; }
@@ -37,7 +37,7 @@
         Z.DOM.Find('#PstDataBx')[0].Append(Bx);
         Bx.LastChild().onclick = function (Evt) { console.log(Bx.Children()); Bx.Remove(); };
 
-        var Txt = Bx.Children()[1];
+        let Txt = Bx.Children()[1];
 
         Txt.onkeypress = function(Evt){ if (Evt.keyCode === 13){ return false; } };
         Txt.focus();
@@ -50,7 +50,7 @@
       },
 
       PostData () {
-        var URL = this.Trim(Z.DOM.Find('#URL')[0].value),
+        let URL = this.Trim(Z.DOM.Find('#URL')[0].value),
             Frm = Z.DOM.Find('#PstDataBx')[0];
 
         Frm.action = URL;

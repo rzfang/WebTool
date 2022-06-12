@@ -85,7 +85,7 @@ module.exports = {
       ...DftPgRt,
       title: 'Payment - Web Tool',
       keywords: 'JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ '/include.js', '/payment.tag', '/coverbox.tag' ],
+      js: [ 'include.js', 'hydrate.js' ],
       body: [
         'header.tag',
         { type: 'riot', component: './component/payment.tag', initialize: require('./component/payment') },

@@ -48,38 +48,40 @@
     td>button { width: 100%; }
   </style>
   <script>
-    Edit (Evt) {
-      const Elmnt = Evt.Element(), // element.
-            RwIdx = Elmnt.Above(2).Index(), // row index.
-            ClmnIdx = Elmnt.Above(1).Index(); // column index.
+    export default {
+      Edit (Evt) {
+        const Elmnt = Evt.Element(), // element.
+              RwIdx = Elmnt.Above(2).Index(), // row index.
+              ClmnIdx = Elmnt.Above(1).Index(); // column index.
 
-      this.opts.edit(Evt, RwIdx, ClmnIdx);
-    }
+        this.opts.edit(Evt, RwIdx, ClmnIdx);
+      },
 
-    /*
-      Byrs = buyers arary. */
-    PricePrint (Byrs) {
-      if (!Z.Is.Array(Byrs)) { return 0; }
+      /*
+        Byrs = buyers arary. */
+      PricePrint (Byrs) {
+        if (!Z.Is.Array(Byrs)) { return 0; }
 
-      let Prc = 0; // price.
+        let Prc = 0; // price.
 
-      for (let i = 0; i < Byrs.length; i++) {
-        if (Byrs[i].Prc && Z.Is.Number(Byrs[i].Prc)) { Prc += Byrs[i].Prc; }
+        for (let i = 0; i < Byrs.length; i++) {
+          if (Byrs[i].Prc && Z.Is.Number(Byrs[i].Prc)) { Prc += Byrs[i].Prc; }
+        }
+
+        return Prc;
+      },
+
+      /*
+        Byrs = buyers arary. */
+      BuyersPrint (Byrs) {
+        if (!Z.Is.Array(Byrs) || Byrs.length < 1 || !Z.Is.String(Byrs[0].Nm)) { return '-'; }
+
+        let Nms = Byrs[0].Nm; // names.
+
+        if (Byrs.length > 1) { Nms += ' (' + (Byrs.length).toString() + ')'; }
+
+        return Nms;
       }
-
-      return Prc;
-    }
-
-    /*
-      Byrs = buyers arary. */
-    BuyersPrint (Byrs) {
-      if (!Z.Is.Array(Byrs) || Byrs.length < 1 || !Z.Is.String(Byrs[0].Nm)) { return '-'; }
-
-      let Nms = Byrs[0].Nm; // names.
-
-      if (Byrs.length > 1) { Nms += ' (' + (Byrs.length).toString() + ')'; }
-
-      return Nms;
     }
   </script>
 </item-list>
@@ -118,14 +120,11 @@
     tfoot td { border-top-width: 1px; }
   </style>
   <script>
-    this.Chks = []; // checking list.
-    this.Ttl = 0; // total.
+    export default {
+      Chks: [], // checking list.
+      Ttl: 0, // total.
 
-    this.mixin('Z.RM');
-
-    this.on(
-      'before-mount',
-      () => {
+      onBeforeMount () {
         // fill checking list.
         for (let i = 0; i < this.opts.byrnms.length; i++) {
           this.Chks.push({ Nm: this.opts.byrnms[i], Amnt: 0, Pd: 0, Blnc: 0 });
@@ -161,7 +160,8 @@
         }
 
         console.log(this.Chks);
-      });
+      }
+    }
   </script>
 </check-list>
 
@@ -178,50 +178,52 @@
     div>div { text-align: right; }
   </style>
   <script>
-    this.mixin('Z.RM');
+    export default {
+      onMounted () {
+        this.refs.Nm.focus();
+      },
 
-    this.on('mount', () => { this.refs.Nm.focus(); });
+      KeyAction (Evt) {
+        if (Evt.keyCode === 27) { return this.opts.cancel(Evt); }
 
-    KeyAction (Evt) {
-      if (Evt.keyCode === 27) { return this.opts.cancel(Evt); }
+        if (Evt.keyCode !== 13) { return; }
 
-      if (Evt.keyCode !== 13) { return; }
+        this.Done(Evt);
+      },
 
-      this.Done(Evt);
-    }
+      Done (Evt) {
+        let NwNm = this.Trim(this.refs.Nm.value), // new name.
+            ByrNms, // buyer names.
+            Idx; // index.
 
-    Done (Evt) {
-      let NwNm = this.Trim(this.refs.Nm.value), // new name.
-          ByrNms, // buyer names.
-          Idx; // index.
+        if (!NwNm) { return alert('empty name ?'); }
 
-      if (!NwNm) { return alert('empty name ?'); }
+        ByrNms = this.StoreGet('BUYER_NAMES');
+        Idx = ByrNms.indexOf(NwNm);
 
-      ByrNms = this.StoreGet('BUYER_NAMES');
-      Idx = ByrNms.indexOf(NwNm);
+        if (Idx > -1) { return alert('the name has been existed.'); }
 
-      if (Idx > -1) { return alert('the name has been existed.'); }
+        if (!this.opts.edtnm) { ByrNms.push(NwNm); } // add.
+        else { // edit.
+          Idx = ByrNms.indexOf(this.opts.edtnm);
+          ByrNms[Idx] = NwNm;
 
-      if (!this.opts.edtnm) { ByrNms.push(NwNm); } // add.
-      else { // edit.
-        Idx = ByrNms.indexOf(this.opts.edtnm);
-        ByrNms[Idx] = NwNm;
-
-        this.StoreSet(
-          'PAYMENTS',
-          (Pymnts) => {
-            for (let i = 0; i < Pymnts.length; i++) {
-              for (let j = 0; j < Pymnts[i].Byrs.length; j++) {
-                if (Pymnts[i].Byrs[j].Nm === this.opts.edtnm) { Pymnts[i].Byrs[j].Nm = NwNm; }
+          this.StoreSet(
+            'PAYMENTS',
+            (Pymnts) => {
+              for (let i = 0; i < Pymnts.length; i++) {
+                for (let j = 0; j < Pymnts[i].Byrs.length; j++) {
+                  if (Pymnts[i].Byrs[j].Nm === this.opts.edtnm) { Pymnts[i].Byrs[j].Nm = NwNm; }
+                }
               }
-            }
 
-            return Pymnts;
-          });
+              return Pymnts;
+            });
+        }
+
+        this.StoreSet('BUYER_NAMES', () => { return ByrNms; });
+        this.opts.done(Evt);
       }
-
-      this.StoreSet('BUYER_NAMES', () => { return ByrNms; });
-      this.opts.done(Evt);
     }
   </script>
 </buyer-editor>
@@ -283,14 +285,11 @@
     :scope tr:nth-child(3) ul>li>button { margin-top: 0; min-width: 20px; }
   </style>
   <script>
-    this.EdtItm = this.opts.info ? Z.Obj.Clone(this.opts.info) : { Dt: '', Itm: '', Byrs: [], Cmt: '' };
-    this.Sgstns = [];
+    export default {
+      EdtItm: { Dt: '', Itm: '', Byrs: [], Cmt: '' };
+      Sgstns: [],
 
-    this.mixin('Z.RM');
-
-    this.on(
-      'mount',
-      () => {
+      onMounted () {
         let Tgt; // target.
 
         switch (this.opts.edtclmn) {
@@ -316,115 +315,116 @@
         }
 
         Tgt.focus();
-      });
-
-    BuyerAdd (Evt) {
-      let EdtItm = this.EdtItm;
-
-      EdtItm.Byrs.push({ Nm: '', Prc: 0});
-
-      this.update({ EdtItm });
-    }
-
-    BuyerDelete (Evt) {
-      let EdtItm = this.EdtItm,
-          Idx = Evt.Element().Above().Index();
-
-      EdtItm.Byrs.splice(Idx, 1);
-
-      this.update({ EdtItm });
-    }
-
-    KeyAction (Evt) {
-      if (Evt.keyCode === 27) { return this.opts.cancel(Evt); }
-
-      if (Evt.keyCode !== 13) { return; }
-
-      this.Done(Evt);
-    }
-
-    ItemSuggest (Evt) {
-      if (Evt.target.value.trim().length === 0) {
-        this.Sgstns = [];
-
-        return;
-      }
-
-      const Pymnts = this.StoreGet('PAYMENTS');
-      let Sgstns = []; // suggestions.
-
-      for (let i = 0; i < Pymnts.length; i++) {
-        const Pymnt = Pymnts[i].Itm;
-
-        if (Pymnt.indexOf(Evt.target.value) < 0 || Sgstns.indexOf(Pymnt) > -1) { continue; }
-
-        Sgstns.push(Pymnt);
-      }
-
-      this.Sgstns = Sgstns;
-    }
-
-    SuggestionHide (Evt) {
-      setTimeout(() => {
-        this.Sgstns = [];
-        this.update();
       },
-      100); // slow down 'onblur' event so that 'SuggestionPick' can do first.
-    }
 
-    SuggestionPick (Evt) {
-      this.refs.Itm.value = Evt.target.innerText;
-      this.Sgstns = [];
-    }
+      BuyerAdd (Evt) {
+        let EdtItm = this.EdtItm;
 
-    Delete (Evt) {
-      this.StoreSet(
-        'PAYMENTS',
-        (Pymnts) => {
-          let Idx = Pymnts.indexOf(this.opts.info);
+        EdtItm.Byrs.push({ Nm: '', Prc: 0});
 
-          Pymnts.splice(Idx, 1);
+        this.update({ EdtItm });
+      },
 
-          return Pymnts;
-        });
+      BuyerDelete (Evt) {
+        let EdtItm = this.EdtItm,
+            Idx = Evt.Element().Above().Index();
 
-      this.opts.done(Evt);
-    }
+        EdtItm.Byrs.splice(Idx, 1);
 
-    Done (Evt) {
-      let NwInfo = {
-            Dt: this.refs.Dt.value,
-            Itm: this.refs.Itm.value,
-            Byrs: [],
-            Cmt: this.refs.Cmt.value
-          }, // new info.
-          ByrNds = this.refs.Byrs.Find('select,input[type=number]'), // buyer nodes.
-          Hnt = '';
+        this.update({ EdtItm });
+      },
 
-      for (let i = 0; i < ByrNds.length; i += 2) {
-        NwInfo.Byrs.push({ Nm: ByrNds[i].value, Prc: parseInt(ByrNds[i + 1].value, 10) });
+      KeyAction (Evt) {
+        if (Evt.keyCode === 27) { return this.opts.cancel(Evt); }
+
+        if (Evt.keyCode !== 13) { return; }
+
+        this.Done(Evt);
+      },
+
+      ItemSuggest (Evt) {
+        if (Evt.target.value.trim().length === 0) {
+          this.Sgstns = [];
+
+          return;
+        }
+
+        const Pymnts = this.StoreGet('PAYMENTS');
+        let Sgstns = []; // suggestions.
+
+        for (let i = 0; i < Pymnts.length; i++) {
+          const Pymnt = Pymnts[i].Itm;
+
+          if (Pymnt.indexOf(Evt.target.value) < 0 || Sgstns.indexOf(Pymnt) > -1) { continue; }
+
+          Sgstns.push(Pymnt);
+        }
+
+        this.Sgstns = Sgstns;
+      },
+
+      SuggestionHide (Evt) {
+        setTimeout(() => {
+          this.Sgstns = [];
+          this.update();
+        },
+        100); // slow down 'onblur' event so that 'SuggestionPick' can do first.
+      },
+
+      SuggestionPick (Evt) {
+        this.refs.Itm.value = Evt.target.innerText;
+        this.Sgstns = [];
+      },
+
+      Delete (Evt) {
+        this.StoreSet(
+          'PAYMENTS',
+          (Pymnts) => {
+            let Idx = Pymnts.indexOf(this.opts.info);
+
+            Pymnts.splice(Idx, 1);
+
+            return Pymnts;
+          });
+
+        this.opts.done(Evt);
+      },
+
+      Done (Evt) {
+        let NwInfo = {
+              Dt: this.refs.Dt.value,
+              Itm: this.refs.Itm.value,
+              Byrs: [],
+              Cmt: this.refs.Cmt.value
+            }, // new info.
+            ByrNds = this.refs.Byrs.Find('select,input[type=number]'), // buyer nodes.
+            Hnt = '';
+
+        for (let i = 0; i < ByrNds.length; i += 2) {
+          NwInfo.Byrs.push({ Nm: ByrNds[i].value, Prc: parseInt(ByrNds[i + 1].value, 10) });
+        }
+
+        if (!NwInfo.Dt) { Hnt += 'no date.\n'; }
+
+        if (!NwInfo.Itm) { Hnt += 'no item name.\n'; }
+
+        if (NwInfo.Byrs.length === 0) { Hnt += 'no buyers.\n'; }
+
+        if (Hnt) { return alert('please notice:\n' + Hnt); }
+
+        this.StoreSet(
+          'PAYMENTS',
+          (Pymnts) => {
+            let Idx = Pymnts.indexOf(this.opts.info);
+
+            if (Idx < 0) { Pymnts.push(NwInfo); } // add.
+            else { Pymnts.splice(Idx, 1, NwInfo); } // edit / replace.
+
+            return Pymnts;
+          });
+
+        this.opts.done(Evt);
       }
-
-      if (!NwInfo.Dt) { Hnt += 'no date.\n'; }
-
-      if (!NwInfo.Itm) { Hnt += 'no item name.\n'; }
-
-      if (NwInfo.Byrs.length === 0) { Hnt += 'no buyers.\n'; }
-
-      if (Hnt) { return alert('please notice:\n' + Hnt); }
-
-      this.StoreSet(
-        'PAYMENTS',
-        (Pymnts) => {
-          let Idx = Pymnts.indexOf(this.opts.info);
-
-          if (Idx < 0) { Pymnts.push(NwInfo); } // add.
-          else { Pymnts.splice(Idx, 1, NwInfo); } // edit / replace.
-
-          return Pymnts;
-        });
-
-      this.opts.done(Evt);
     }
   </script>
 </item-editor>

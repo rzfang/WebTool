@@ -75,8 +75,8 @@
         let EDS = ''; // 'EDS' = Encode Decode String.
 
         if (Flg > 0) {
-          for (var i in Txt) {
-            var Cd = Txt.charCodeAt(i);
+          for (let i in Txt) {
+            let Cd = Txt.charCodeAt(i);
 
             switch (Cd) {
               case 34: EDS += '&quot;'; break;
@@ -93,7 +93,7 @@
         else {
           let StrA = Txt.split('&#'); // 'StrA' = String Array.
 
-          for (var i = 0; i < StrA.length; i++) {
+          for (let i = 0; i < StrA.length; i++) {
             StrA[i] = StrA[i].replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&apos;/g, '\'')
                              .replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
@@ -124,7 +124,7 @@
         if (Flg == 1) {
           Txt = Txt.replace(/\\/g, '\\\\').replace(/\n/g, '\\n');
 
-          for (var i in Txt) {
+          for (let i in Txt) {
             const Cd = Txt.charCodeAt(i);
 
             EDS += (Cd < 32 || Cd > 126) ? ('\\u' + Cd.toString(16)) : Txt.charAt(i);
@@ -133,7 +133,7 @@
         else {
           const L = Txt.length;
 
-          for (var i  = 0; i < L; i++) {
+          for (let i  = 0; i < L; i++) {
             const CSA = [ // 'CSA' = Checked String Array.
               Txt.charAt(i),
               Txt.charAt(i + 1),
@@ -177,7 +177,7 @@
                 continue;
               }
 
-              var ChrCd = parseInt((CSA[2] + CSA[3] + CSA[4] + CSA[5]), 16);
+              let ChrCd = parseInt((CSA[2] + CSA[3] + CSA[4] + CSA[5]), 16);
 
               EDS += String.fromCharCode(ChrCd);
               i += 5;
@@ -199,7 +199,7 @@
 
         let Md = 0;
 
-        for (var i in Ipt) {
+        for (let i in Ipt) {
           if (Ipt[i].checked) {
             Md = parseInt(Ipt[i].value, 10);
 
@@ -243,7 +243,7 @@
             { return Str; }
           }
 
-          var PN = Lth - Str.length, // 'PN' = Padding Number.
+          let PN = Lth - Str.length, // 'PN' = Padding Number.
               PS = ''; // 'PS' = Padding String.
 
           for (PS = ''; PS.length < PN; PS += Chr);
@@ -259,23 +259,23 @@
           Return: encode string, or empty string as error.
           Need: CharPad(); */
         function Base64Encode (Str, UTF8) {
-          var KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', // 'KM' = Key Map.
+          let KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', // 'KM' = Key Map.
               BS = '', // 'BS' = Binary String.
               PS = '', // 'PS' = Pad String.
               B64S = ''; // 'B64S' = Base64 String.
 
           if (typeof UTF8 !== 'boolean') { UTF8 = false; }
 
-          for (var i in Str) {
-            var TN = Str.charCodeAt(i); // 'TN' = Temp unicode Number.
+          for (let i in Str) {
+            let TN = Str.charCodeAt(i); // 'TN' = Temp unicode Number.
 
             BS += (UTF8 ? Uni2UTF8(TN) : CharPad(TN.toString(2), 16, '0', 'l'));
           }
 
-          var PN = BS.length % 6; // 'PN' = Pad Number.
+          let PN = BS.length % 6; // 'PN' = Pad Number.
 
           if (PN > 0) {
-            var TPS = '';
+            let TPS = '';
 
             PN = (6 - PN) / 2;
 
@@ -287,10 +287,10 @@
             BS += TPS;
           }
 
-          var C = BS.length;
+          let C = BS.length;
 
-          for (var i = 0; i < C; i += 6) {
-            var TS = BS.substr(i, 6), // 'TS' = Translate String.
+          for (let i = 0; i < C; i += 6) {
+            let TS = BS.substr(i, 6), // 'TS' = Translate String.
                 DN = 0, // 'DN' = Decimal Number.
                 DS = ''; // 'DS' = Decimal String.
 
@@ -319,7 +319,7 @@
           function Uni2UTF8 (UN) {
             if (typeof UN !== 'number') { return ''; }
 
-            var BS = UN.toString(2),
+            let BS = UN.toString(2),
                 TS = '';
 
             if (UN < 128) { BS = CharPad(BS, 8, '0', 'l'); }
@@ -345,17 +345,17 @@
           Return: encode string, or empty string as error.
           Need: CharPad(); */
         function Base64Decode (Str, UTF8) {
-          var KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', // 'KM' = Key Map.
+          let KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', // 'KM' = Key Map.
               BS = ''; // 'BS' = Binary String.
 
           if (typeof UTF8 !== 'boolean') { UTF8 = false; }
 
           Str = Str.replace(/=+$/, '');
 
-          var C = Str.length; // 'C' = Count.
+          let C = Str.length; // 'C' = Count.
 
-          for (var i = 0; i < C; i++) {
-            var TBS = CharPad(KM.indexOf(Str.substr(i, 1)).toString(2), 8, '0', 'l');
+          for (let i = 0; i < C; i++) {
+            let TBS = CharPad(KM.indexOf(Str.substr(i, 1)).toString(2), 8, '0', 'l');
 
             BS += TBS.substr(2, 6);
           }
@@ -363,23 +363,23 @@
           return UTF8 ? Bin2TxtUTF8(BS) : Bin2Txt(BS);
 
           function Bin2Txt (BinStr) {
-            var RT = '', // 'RT' = Result Text.
+            let RT = '', // 'RT' = Result Text.
                 L = BinStr.length; // 'L' = Length.
 
-            for (var i = 0; i < L; i += 16) { RT += String.fromCharCode(parseInt(BinStr.substr(i, 16), 2)); }
+            for (let i = 0; i < L; i += 16) { RT += String.fromCharCode(parseInt(BinStr.substr(i, 16), 2)); }
 
             return RT;
           }
 
           function Bin2TxtUTF8 (BinStr) {
-            var RT = '', // 'RT' = Result Text.
+            let RT = '', // 'RT' = Result Text.
                 L = BinStr.length; // 'L' = Length.
 
-            for (var i = 0; i < L; i += 8) {
-              var TBS = BinStr.substr(i, 8); // 'TBS' = Temp Binary String.
+            for (let i = 0; i < L; i += 8) {
+              let TBS = BinStr.substr(i, 8); // 'TBS' = Temp Binary String.
 
               if (TBS.substr(0, 1) === '0') {
-                var TN = parseInt(TBS, 2); // 'TN' = Text Number.
+                let TN = parseInt(TBS, 2); // 'TN' = Text Number.
 
                 if (TN > 0)
                 { RT += String.fromCharCode(TN); }

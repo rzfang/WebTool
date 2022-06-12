@@ -34,43 +34,42 @@
         Return: array of match, [] as error. */
       REMatch (Ptn, Str, ExtOpt) {
         if ((typeof Ptn != 'function' && //for chrome, a RegExp is a function.
-            typeof Ptn != 'object' && typeof Ptn != 'string') || typeof Str != 'string')
-        { return []; }
+            typeof Ptn != 'object' && typeof Ptn != 'string') || typeof Str != 'string') {
+          return [];
+        }
 
-        if (typeof ExtOpt !== 'string')
-        { ExtOpt = ''; }
+        if (typeof ExtOpt !== 'string') { ExtOpt = ''; }
 
-        var RE = new RegExp(Ptn, ExtOpt),
+        let RE = new RegExp(Ptn, ExtOpt),
             Mch = Str.match(RE),
             Rst = [];
 
-        if (typeof Mch !== 'object' || Mch === null)
-        { return []; }
+        if (typeof Mch !== 'object' || Mch === null) { return []; }
 
-        if (typeof Mch[1] === 'string')
-        { Rst = Mch; }
-        else
-        { Rst.push(Mch[0]); }
+        if (typeof Mch[1] === 'string') { Rst = Mch; }
+        else { Rst.push(Mch[0]); }
 
         return Rst;
       },
 
       RETest () {
-        var Ptn = document.getElementById('Pattern').value,
+        let Ptn = document.getElementById('Pattern').value,
             Ext = document.getElementById('ExtraOption').value,
             Str = document.getElementById('TestString').value,
             Rpt = document.getElementById('Report'),
             Mch = document.getElementById('MatchList'),
             MchLst = this.REMatch(Ptn, Str, Ext);
 
-        if (MchLst.length === 0)
-        {
+        if (MchLst.length === 0) {
           Rpt.innerText ? (Rpt.innerText = 'false') : (Rpt.textContent = 'false'); // for both IE & FireFox compatible.
+
           Mch = '';
+
           return;
         }
 
         Rpt.innerText ? (Rpt.innerText = 'true') : (Rpt.textContent = 'true');
+
         Mch.value = MchLst.join("\n");
       }
     }

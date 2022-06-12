@@ -5,6 +5,7 @@
   so far
     - put root component in the end of file.
   ideal
+    - no pattern for component border.
     - auto detect root component.
 
 * 20170522

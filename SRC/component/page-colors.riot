@@ -51,26 +51,24 @@
         'Sd' = Side. 'l'|'L': left padding, 'r'|'R': right padding.
         Return: string after handle. */
       CharPad (Str, Chr, Lth, Sd) {
-        if (typeof Str !== 'string')
-        { Str = Str.toString(); }
+        if (typeof Str !== 'string') { Str = Str.toString(); }
 
-        if (typeof Chr !== 'string' || typeof Lth !== 'number' || Lth < 2 || typeof Sd !== 'string' || Str.length >= Lth)
-        { return Str; }
+        if (typeof Chr !== 'string' || typeof Lth !== 'number' || typeof Sd !== 'string' ||
+            Lth < 2 || Str.length >= Lth) {
+          return Str;
+        }
 
         Sd = Sd.toLowerCase();
-        if (Sd !== 'l' && Sd !== 'r')
-        { return Str; }
 
-        var PN = Lth - Str.length, // 'PN' = Padding Number.
+        if (Sd !== 'l' && Sd !== 'r') { return Str; }
+
+        let PN = Lth - Str.length, // 'PN' = Padding Number.
             PS = ''; // 'PS' = Padding String.
 
-        for (var i = 0; i < PN; i++)
-        { PS += Chr; }
+        for (let i = 0; i < PN; i++) { PS += Chr; }
 
-        if (Sd === 'l')
-        { Str = PS + Str; }
-        else
-        { Str += PS; }
+        if (Sd === 'l') { Str = PS + Str; }
+        else { Str += PS; }
 
         return Str;
       },
@@ -79,23 +77,21 @@
         'Str' = color string in hex format.
         Return: CSS color code with RGBA format. */
       Color16ToRGBA (Str) {
-        if (Str.charAt(0) === '#')
-        { Str = Str.substr(0); }
+        if (Str.charAt(0) === '#') { Str = Str.substr(0); }
 
-        var Clr = 'rgba(255, 255, 255, 1.0)';
+        let Clr = 'rgba(255, 255, 255, 1.0)';
 
-        if (Str.length < 6)
-        {
-          var R = parseInt(Str.charAt(0) + '0', 16).toString(),
+        if (Str.length < 6) {
+          let R = parseInt(Str.charAt(0) + '0', 16).toString(),
               G = parseInt(Str.charAt(1) + '0', 16).toString(),
               B = parseInt(Str.charAt(2) + '0', 16).toString();
         }
-        else
-        {
-          var R = parseInt(Str.substr(0, 2), 16).toString(),
+        else {
+          let R = parseInt(Str.substr(0, 2), 16).toString(),
               G = parseInt(Str.substr(2, 2), 16).toString(),
               B = parseInt(Str.substr(4, 2), 16).toString();
         }
+
         Clr = 'rgba(' + R + ', ' + G + ', ' + B + ', 1)';
 
         return Clr;
@@ -108,6 +104,7 @@
         R = this.CharPad(parseInt(R, 10).toString(16), '0', 2, 'l');
         G = this.CharPad(parseInt(G, 10).toString(16), '0', 2, 'l');
         B = this.CharPad(parseInt(B, 10).toString(16), '0', 2, 'l');
+
         return '#' + R + G + B;
       },
 
@@ -118,9 +115,8 @@
         let Clr = '',
             Clr16 = '#ffffff';
 
-
         if (Fmt === 1) {
-          var R = this.$('#R').value,
+          let R = this.$('#R').value,
               G = this.$('#G').value,
               B = this.$('#B').value,
               A = this.$('#A').value;
@@ -150,8 +146,7 @@
       },
 
       KeyboardTrigger (Evt) {
-        if (Evt.keyCode !== 13)
-        { return 0; }
+        if (Evt.keyCode !== 13) { return 0; }
 
         this.ColorTagAdd(Evt);
       }

@@ -60,7 +60,7 @@
       onMounted () {
         if (this.OnNode()) { return; }
 
-        var FctnBx = this.$('#FctnBx'),
+        let FctnBx = this.$('#FctnBx'),
             Btns = this.$$('#IptBx > div > button'),
             RtNd = this.$('#Rt');
 
@@ -108,7 +108,7 @@
       },
 
       JSONRender (string) {
-        var JO = null,
+        let JO = null,
             Rt = this.$('#Rt'),
             Is5 = this.$('#FctnBx input[type=checkbox]').checked; // 'Is5' = Is using JSON5.
 
@@ -148,7 +148,7 @@
           'Obj' = Object to render.
           'Tp' = Type of object. optional, 'object'|'array', default 'object'. */
         function QuoteMarkRender (Rt, Obj, Tp) {
-          var FstNd = document.createElement('span'),
+          let FstNd = document.createElement('span'),
               LstNd = document.createElement('span');
 
           FstNd.className = 'TglNd';
@@ -175,15 +175,15 @@
         }
 
         function ObjectRender (Obj) {
-          var Rt = document.createElement('ul'),
+          let Rt = document.createElement('ul'),
               IsA = false;
 
           if (!Is.Object(Obj) || Obj === null) { return document.createElement('span'); }
 
           if (Is.Number(Obj.length)) { IsA = true; }
 
-          for (var i in Obj) {
-            var NdStt = IsA ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : '),
+          for (let i in Obj) {
+            let NdStt = IsA ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : '),
                 Nd;
 
             switch (typeof Obj[i]) {
@@ -232,7 +232,7 @@
       },
 
       DataEdit (Evt) {
-        var Nd = Evt.Element(),
+        let Nd = Evt.Element(),
             IptBx = Z.DOM.Find('#IptBx')[0],
             IptNd = IptBx.Children('textarea')[0];
 
@@ -252,7 +252,7 @@
       },
 
       TreeToggle (Evt) {
-        var Nd = Evt.Element(),
+        let Nd = Evt.Element(),
             TrNd;
 
         if (Nd.className.indexOf('TglNd') < 0) { return -1; }
@@ -272,7 +272,7 @@
       },
 
       DataReplace (Evt) {
-        var IptStr = '',
+        let IptStr = '',
             TgtNd = null,
             IptBx = Evt
               .Element()
@@ -300,7 +300,7 @@
       },
 
       JSONToString (Evt) {
-        var RtNd = this.$('#Rt'),
+        let RtNd = this.$('#Rt'),
             Obj = RtNd.className === 'array' ? [] : {},
             Nds = RtNd.querySelectorAll(':scope>ul>li');
 
@@ -316,7 +316,7 @@
         function NodesLoop (Nds, Obj) {
           if (!Is.Object(Nds) || !Is.Number(Nds.length)) { return -1; }
 
-          for (var i = 0; i < Nds.length; i++) {
+          for (let i = 0; i < Nds.length; i++) {
             if (Nds[i].nodeType !== 1 || Nds[i].nodeName !== 'LI') { return -2; }
 
             DataFetch(Nds[i], Obj);
@@ -328,10 +328,10 @@
         /*
           'RtNd' = Root Node.
           'Obj' = Object to collect JSON data. */
-        function DataFetch(RtNd, Obj) {
+        function DataFetch (RtNd, Obj) {
           if (!Is.Object(RtNd) || !Is.String(RtNd.nodeName) || !Is.Object(Obj)) { return -1; }
 
-          var Nds = RtNd.querySelectorAll(':scope>*');
+          let Nds = RtNd.querySelectorAll(':scope>*');
 
           if (Nds.length === 0) { return -2; }
 

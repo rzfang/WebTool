@@ -43,7 +43,7 @@
       },
 
       Start () {
-        var Hr = parseInt(this.Inpts[0].value || 0, 10) || 0, // hour.
+        let Hr = parseInt(this.Inpts[0].value || 0, 10) || 0, // hour.
             Mnt = parseInt(this.Inpts[1].value || 0, 10) || 0, // minute.
             Scnd = parseInt(this.Inpts[2].value || 0, 10) || 0, // second.
             Mlscnd; // millisecond.
@@ -89,7 +89,7 @@
 
       TimesUp () {
         if (this.CnNtf) {
-          var Wrds = this.$('#FctnBx>input[type=text]').value || 'Countdown Notify';
+          let Wrds = this.$('#FctnBx>input[type=text]').value || 'Countdown Notify';
 
           new Notification(Wrds + '\n - WebTool');
         }
@@ -104,7 +104,7 @@
       /*
         DOMHghRsTmStmp = DOMHighResTimeStamp. */
       Countdown (DOMHghRsTmStmp) {
-        var Now = Math.floor((this.Dt - (new Date())) / 1000),
+        let Now = Math.floor((this.Dt - (new Date())) / 1000),
             Hr = parseInt(Math.floor(Now / 3600), 10).toString(),
             Mnt,
             Scnd;
