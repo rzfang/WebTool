@@ -39,6 +39,7 @@
         background-color: #ffffff;
       }
     }
+
     h2 { margin: 0; font-size: 32px; font-style: italic; }
     h3 { flex: 1; margin: 0; font-weight: normal; }
     button { flex: 50px; max-width: 50px; }
@@ -59,7 +60,7 @@
   <script>
     export default {
       state: {
-        IsNavOn: false
+        IsNavOn: false // is navigation list turning on.
       },
 
       Itms: [
@@ -76,11 +77,11 @@
         { Ttl: 'JSON Edit',               URL: 'json' },
         { Ttl: 'URL Compare',             URL: 'url' },
         { Ttl: '----',                    URL: '' },
-        { Ttl: 'Payment Note',            URL: 'payment' },
+        // { Ttl: 'Payment Note',            URL: 'payment' },
         { Ttl: 'Feed Read',               URL: 'read' },
         { Ttl: 'Countdown Notify',        URL: 'countdown' },
-        { Ttl: 'Moment Chat',             URL: 'chat' },
-        { Ttl: 'Test',                    URL: 'test' }
+        // { Ttl: 'Moment Chat',             URL: 'chat' },
+        { Ttl: '----',                    URL: '' }
       ],
       TgtItm: null, // target item.
 
@@ -113,7 +114,7 @@
 
 <page-footer id='footer'>
   <a href='/'> Web Tool - ZII</a>
-  <span>© 2011-2019 RZ Fang</span>
+  <span>© 2011-2022 RZ Fang</span>
   <button onclick={ScrollToTop}>^Top</button>
   <style type='scss'>
     :host {
@@ -164,8 +165,18 @@
   <page-header/>
   <slot/>
   <page-footer/>
-  <style>
-    :host { display: block; margin: 0 auto; max-width: 1000px; }
+  <style type='scss'>
+    :host {
+      display: block; margin: 0 auto; max-width: 1000px;
+
+      >*:first-child {
+        margin-bottom: 30px;
+      }
+
+      >*:last-child {
+        margin-top: 30px;
+      }
+    }
   </style>
   <script>
     export default {
