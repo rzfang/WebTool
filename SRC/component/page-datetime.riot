@@ -49,37 +49,6 @@
         }
       },
 
-      /* Pad Characters into a string.
-        @ string.
-        @ length. minimum length of string should be padding to.
-        @ character. optional, default '0';
-        @ side. optional, default 'l'. 'l'|'L': left padding, 'r'|'R': right padding.
-        < a string after handle. */
-      CharPad (Str, Lth, Chr, Sd) {
-        if (typeof Str !== 'string') { Str = Str.toString(); }
-
-        if (typeof Lth !== 'number' || Lth < 2 || Str.length >= Lth) { return Str; }
-
-        if (typeof Chr !== 'string' || Chr.length === 0) { Chr = '0'; }
-
-        if (typeof Sd !== 'string') { Sd = 'l'; }
-        else {
-          Sd = Sd.toLowerCase();
-
-          if (Sd !== 'l' && Sd !== 'r') { return Str; }
-        }
-
-        let PN = Lth - Str.length, // 'PN' = Padding Number.
-            PS = ''; // 'PS' = Padding String.
-
-        for (PS = ''; PS.length < PN; PS += Chr);
-
-        if (Sd === 'l') { Str = PS + Str; }
-        else { Str += PS; }
-
-        return Str;
-      },
-
       DateUpdate (Evt) {
         let Mlscd = 0;
 
@@ -94,21 +63,30 @@
         Scd = Scd.substr(0, Scd.length - 3) + '.' + Scd.substr(Scd.length - 3);
         this.$('#NowDateScd').innerHTML = ': ' + Scd;
 
-        TZOH = (TZOH > 0 ? '-' : '+') + this.CharPad(Math.abs(TZOH), 2);
+        TZOH = (TZOH > 0 ? '-' : '+') + Math.abs(TZOH).toString().padStart(2, '0');
 
         let DtStr = '';
 
-        DtStr = Dt.getFullYear() + '-' + this.CharPad((Dt.getMonth() + 1), 2) + '-' +
-                this.CharPad(Dt.getDate(), 2) + ' ' + this.CharPad(Dt.getHours(), 2) + ':' +
-                this.CharPad(Dt.getMinutes(), 2) + ':' + this.CharPad(Dt.getSeconds(), 2) + '.' +
-                this.CharPad(Dt.getMilliseconds(), 3) + ' (' + Dt.getDay() + ') ' + TZOH;
+        DtStr = Dt.getFullYear() + '-' +
+                (Dt.getMonth() + 1).toString().padStart(2, '0') + '-' +
+                Dt.getDate().toString().padStart(2, '0') + ' ' +
+                Dt.getHours().toString().padStart(2, '0') + ':' +
+                Dt.getMinutes().toString().padStart(2, '0') + ':' +
+                Dt.getSeconds().toString().padStart(2, '0') + '.' +
+                Dt.getMilliseconds().toString().padStart(3, '0') +
+                ' (' + Dt.getDay() + ') ' +
+                TZOH;
 
         this.$('#NowDate').innerHTML = ': ' + DtStr;
 
-        DtStr = Dt.getUTCFullYear() + '-' + this.CharPad((Dt.getUTCMonth() + 1), 2) + '-' +
-                this.CharPad(Dt.getUTCDate(), 2) + ' ' + this.CharPad(Dt.getUTCHours(), 2) + ':' +
-                this.CharPad(Dt.getUTCMinutes(), 2) + ':' + this.CharPad(Dt.getUTCSeconds(), 2) + '.' +
-                this.CharPad(Dt.getUTCMilliseconds(), 3) + ' (' + Dt.getUTCDay() + ')';
+        DtStr = Dt.getUTCFullYear() + '-' +
+                (Dt.getUTCMonth() + 1).toString().padStart(2, '0') + '-' +
+                Dt.getUTCDate().toString().padStart(2, '0') + ' ' +
+                Dt.getUTCHours().toString().padStart(2, '0') + ':' +
+                Dt.getUTCMinutes().toString().padStart(2, '0') + ':' +
+                Dt.getUTCSeconds().toString().padStart(2, '0') + '.' +
+                Dt.getUTCMilliseconds().toString().padStart(3, '0') +
+                ' (' + Dt.getUTCDay() + ')';
 
         this.$('#UTCDate').innerHTML = ': ' + DtStr;
 

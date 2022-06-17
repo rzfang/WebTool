@@ -1,7 +1,7 @@
 ==== To Do =============================================================================================================
 
 * 20220618
-  take off CharPad function.
+  precompile.js JsCompress does not work.
 
 * 20220615
   SCSS_CSS 整進 rzjs。

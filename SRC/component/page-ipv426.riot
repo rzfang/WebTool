@@ -43,31 +43,6 @@
         return RE.test(Str);
       },
 
-      CharPad (Str, Lth, Chr, Sd) {
-        if (typeof Str !== 'string') { Str = Str.toString(); }
-
-        if (typeof Lth !== 'number' || Lth < 2 || Str.length >= Lth) { return Str; }
-
-        if (typeof Chr !== 'string' || Chr.length === 0) { Chr = '0'; }
-
-        if (typeof Sd !== 'string') { Sd = 'l'; }
-        else {
-          Sd = Sd.toLowerCase();
-
-          if (Sd !== 'l' && Sd !== 'r') { return Str; }
-        }
-
-        let PN = Lth - Str.length, // 'PN' = Padding Number.
-            PS = ''; // 'PS' = Padding String.
-
-        for (PS = ''; PS.length < PN; PS += Chr);
-
-        if (Sd === 'l') { Str = PS + Str; }
-        else { Str += PS; }
-
-        return Str;
-      },
-
       Convert () {
         let V4 = this.$('#V4Str').value,
             V6 = '0000:0000:0000:0000:0000:0000:';
@@ -88,10 +63,10 @@
           }
         }
 
-        V6 += this.CharPad(parseInt(V4SA[0], 10).toString(16), 2) +
-              this.CharPad(parseInt(V4SA[1], 10).toString(16), 2) + ':' +
-              this.CharPad(parseInt(V4SA[2], 10).toString(16), 2) +
-              this.CharPad(parseInt(V4SA[3], 10).toString(16), 2);
+        V6 += parseInt(V4SA[0], 10).toString(16).padStart(2, '0') +
+              parseInt(V4SA[1], 10).toString(16).padStart(2, '0') + ':' +
+              parseInt(V4SA[2], 10).toString(16).padStart(2, '0') +
+              parseInt(V4SA[3], 10).toString(16).padStart(2, '0');
 
         let HstA = this.$$('#Hst > div'),
             RS = V4 + '  ->  ' + V6 + '  ->  ';

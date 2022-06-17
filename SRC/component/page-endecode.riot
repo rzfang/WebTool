@@ -35,18 +35,18 @@
       </div>
     </div>
     <div>
-      <textarea id='IptTxt' cols='70' rows='5'></textarea><br/>
-      <textarea id='OptTxt' cols='70' rows='5' readonly='true' wrap='off'></textarea><br/>
+      <textarea id='IptTxt' rows='5'></textarea><br/>
+      <textarea id='OptTxt' rows='5' readonly='true' wrap='off'></textarea><br/>
       <hr/>
       This is for some string temp putting.<br/>
-      <textarea cols='70' rows='5'></textarea>
+      <textarea rows='5'></textarea>
     </div>
   </page-layout>
   <style type='scss'>
     :host {
       body { font-size: 16px; font-family: monospace; color: #404040; }
       input { font-size: 16px; max-width: 70px; }
-      textarea { margin: 5px 0px; }
+      textarea { margin: 5px 0px; width: 100%; }
       .Title { display: inline-block; min-width: 50px;}
       .Block { display: inline-block; margin-bottom: 10px; padding: 5px; vertical-align: top; white-space: nowrap; }
 
@@ -222,42 +222,9 @@
 
         return 0;
 
-        /* Pad Characters into a string.
-          'Str' = String.
-          'Lth' = Length. minimum length of string should be padding to.
-          'Chr' = Character. optional, default '0';
-          'Sd' = Side. optional, default 'l'. 'l'|'L': left padding, 'r'|'R': right padding.
-          Return: string after handle. */
-        function CharPad (Str, Lth, Chr, Sd) {
-          if (typeof Str !== 'string') { Str = Str.toString(); }
-
-          if (typeof Lth !== 'number' || Lth < 2 || Str.length >= Lth) { return Str; }
-
-          if (typeof Chr !== 'string' || Chr.length === 0) { Chr = '0'; }
-
-          if (typeof Sd !== 'string') { Sd = 'l'; }
-          else {
-            Sd = Sd.toLowerCase();
-
-            if (Sd !== 'l' && Sd !== 'r')
-            { return Str; }
-          }
-
-          let PN = Lth - Str.length, // 'PN' = Padding Number.
-              PS = ''; // 'PS' = Padding String.
-
-          for (PS = ''; PS.length < PN; PS += Chr);
-
-          if (Sd === 'l') { Str = PS + Str; }
-          else { Str += PS; }
-
-          return Str;
-        }
-
         /* Base64 Encode.
-          'UTF8' = UTF8 boolean flag. optional.
-          Return: encode string, or empty string as error.
-          Need: CharPad(); */
+          @ UTF8 boolean flag. optional.
+          < encode string, or empty string as error. */
         function Base64Encode (Str, UTF8) {
           let KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', // 'KM' = Key Map.
               BS = '', // 'BS' = Binary String.
@@ -269,7 +236,7 @@
           for (let i in Str) {
             let TN = Str.charCodeAt(i); // 'TN' = Temp unicode Number.
 
-            BS += (UTF8 ? Uni2UTF8(TN) : CharPad(TN.toString(2), 16, '0', 'l'));
+            BS += (UTF8 ? Uni2UTF8(TN) : TN.toString(2).padStart(16, '0'));
           }
 
           let PN = BS.length % 6; // 'PN' = Pad Number.
@@ -314,25 +281,25 @@
           return B64S;
 
           /* convert Unicode number to be UTF-8 number in binary string.
-            'UN' = Unicode Number.
-            Return: binary string. */
+            @ Unicode Number.
+            < binary string. */
           function Uni2UTF8 (UN) {
             if (typeof UN !== 'number') { return ''; }
 
             let BS = UN.toString(2),
                 TS = '';
 
-            if (UN < 128) { BS = CharPad(BS, 8, '0', 'l'); }
+            if (UN < 128) { BS = BS.padStart(8, '0'); }
             else if (UN >= 128 && UN <= 2047) {
-              TS = CharPad(BS, 11, '0', 'l');
+              TS = BS.padStart(11, '0');
               BS = '110' + TS.substr(0, 5) + '10' + TS.substr(5);
             }
             else if ((UN >= 2048 && UN <= 55295) || (UN >= 57344 && UN <= 65535)) {
-              TS = CharPad(BS, 16, '0', 'l');
+              TS = BS.padStart(16, '0');
               BS = '1110' + TS.substr(0, 4) + '10' + TS.substr(4, 6) + '10' + TS.substr(10, 6);
             }
             else if (UN >= 65536 && UN <= 1114111) {
-              TS = CharPad(BS, 21, '0', 'l');
+              TS = BS.padStart(21, '0');
               BS = '11110' + TS.substr(0, 3) + '10' + TS.substr(3, 6) + '10' + TS.substr(9, 6) + '10' + TS.substr(15, 6);
             }
 
@@ -341,9 +308,8 @@
         }
 
         /* Base64 Decode.
-          'UTF8' = UTF8 boolean flag. optional.
-          Return: encode string, or empty string as error.
-          Need: CharPad(); */
+          @ UTF8 boolean flag. optional.
+          < encode string, or empty string as error. */
         function Base64Decode (Str, UTF8) {
           let KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', // 'KM' = Key Map.
               BS = ''; // 'BS' = Binary String.
@@ -355,7 +321,7 @@
           let C = Str.length; // 'C' = Count.
 
           for (let i = 0; i < C; i++) {
-            let TBS = CharPad(KM.indexOf(Str.substr(i, 1)).toString(2), 8, '0', 'l');
+            let TBS = KM.indexOf(Str.substr(i, 1)).toString(2).padStart(8, '0');
 
             BS += TBS.substr(2, 6);
           }
