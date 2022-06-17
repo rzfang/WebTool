@@ -1,10 +1,10 @@
 ==== To Do =============================================================================================================
 
+* 20220618
+  take off CharPad function.
+
 * 20220615
   SCSS_CSS 整進 rzjs。
-
-* 20220612
-  page Color Conside, Color Add button 按了不正常。
 
 * 20191124
   make my ideal riot.js
