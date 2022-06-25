@@ -192,8 +192,9 @@
       },
 
       Done (Evt) {
-        let NwNm = this.Trim(this.refs.Nm.value), // new name.
-            ByrNms, // buyer names.
+        const NwNm = this.Trim(this.refs.Nm.value); // new name.
+
+        let ByrNms, // buyer names.
             Idx; // index.
 
         if (!NwNm) { return alert('empty name ?'); }
@@ -326,8 +327,9 @@
       },
 
       BuyerDelete (Evt) {
-        let EdtItm = this.EdtItm,
-            Idx = Evt.Element().Above().Index();
+        const Idx = Evt.Element().Above().Index();
+
+        let EdtItm = this.EdtItm;
 
         EdtItm.Byrs.splice(Idx, 1);
 
@@ -350,6 +352,7 @@
         }
 
         const Pymnts = this.StoreGet('PAYMENTS');
+
         let Sgstns = []; // suggestions.
 
         for (let i = 0; i < Pymnts.length; i++) {
@@ -380,7 +383,7 @@
         this.StoreSet(
           'PAYMENTS',
           (Pymnts) => {
-            let Idx = Pymnts.indexOf(this.opts.info);
+            const Idx = Pymnts.indexOf(this.opts.info);
 
             Pymnts.splice(Idx, 1);
 
@@ -391,13 +394,14 @@
       },
 
       Done (Evt) {
+        const ByrNds = this.refs.Byrs.Find('select,input[type=number]'); // buyer nodes.
+
         let NwInfo = {
               Dt: this.refs.Dt.value,
               Itm: this.refs.Itm.value,
               Byrs: [],
               Cmt: this.refs.Cmt.value
             }, // new info.
-            ByrNds = this.refs.Byrs.Find('select,input[type=number]'), // buyer nodes.
             Hnt = '';
 
         for (let i = 0; i < ByrNds.length; i += 2) {
@@ -415,7 +419,7 @@
         this.StoreSet(
           'PAYMENTS',
           (Pymnts) => {
-            let Idx = Pymnts.indexOf(this.opts.info);
+            const Idx = Pymnts.indexOf(this.opts.info);
 
             if (Idx < 0) { Pymnts.push(NwInfo); } // add.
             else { Pymnts.splice(Idx, 1, NwInfo); } // edit / replace.
@@ -513,8 +517,7 @@
       },
 
       onMounted (props, state) {
-        let LclStrgKy = 'PaymentData', // localStorage key.
-            AtSvClck = 0; // auto save clock.
+        const LclStrgKy = 'PaymentData'; // localStorage key.
 
         this.DataFromJSON(window.localStorage.getItem(LclStrgKy));
 
@@ -555,8 +558,8 @@
         if (!Z.Is.Array(Pymnts) && Pymnts.Itms && Z.Is.Array(Pymnts.Itms)) { Pymnts = Pymnts.Itms; }
 
         for (let i = 0; i < Pymnts.length; i++) {
-          let Byr = Pymnts[i].Byr || {},
-              Prc = Pymnts[i].Prc || 0;
+          const Byr = Pymnts[i].Byr || {},
+                Prc = Pymnts[i].Prc || 0;
 
           if (!Pymnts[i].Byrs || !Z.Is.Array(Pymnts[i].Byrs)) { Pymnts[i].Byrs = []; }
 
@@ -622,7 +625,7 @@
 
         AtSvClck = setTimeout(
           () => {
-            let Data = JSON.stringify({ Itms: this.Itms });
+            const Data = JSON.stringify({ Itms: this.Itms });
 
             window.localStorage.setItem(LclStrgKy, Data);
             this.update({ IsSvdHnt: true });

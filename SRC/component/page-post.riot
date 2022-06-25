@@ -25,10 +25,11 @@
       },
 
       RowAdd () {
-        let Nm = Z.DOM.Find('#Nm')[0].value,
-            Bx = document.createElement('div');
+        const Nm = Z.DOM.Find('#Nm')[0].value;
 
         if (Nm.length === 0) { return 0; }
+
+        let Bx = document.createElement('div');
 
         Bx.innerHTML = '<span class="Title">' + Nm + '</span>' +
                        '<input type="text" name="' + Nm + '" id="' + Nm + '"/>' +
@@ -50,8 +51,9 @@
       },
 
       PostData () {
-        let URL = this.Trim(Z.DOM.Find('#URL')[0].value),
-            Frm = Z.DOM.Find('#PstDataBx')[0];
+        const URL = this.Trim(Z.DOM.Find('#URL')[0].value);
+
+        let Frm = Z.DOM.Find('#PstDataBx')[0];
 
         Frm.action = URL;
         Frm.submit();

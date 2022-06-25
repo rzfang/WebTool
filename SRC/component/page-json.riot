@@ -60,9 +60,9 @@
       onMounted () {
         if (this.OnNode()) { return; }
 
-        let FctnBx = this.$('#FctnBx'),
-            Btns = this.$$('#IptBx > div > button'),
-            RtNd = this.$('#Rt');
+        const RtNd = this.$('#Rt');
+
+        let Btns = this.$$('#IptBx > div > button');
 
         RtNd.AddEvent('click', this.TreeToggle);
         RtNd.AddEvent('click', this.DataEdit);
@@ -80,7 +80,7 @@
       },
 
       JSONLoad (Evt) {
-        let Fl = Evt.target.files[0];
+        const Fl = Evt.target.files[0];
 
         if (!Fl) {
           alert('please select a JSON file.');
@@ -102,15 +102,15 @@
       },
 
       JSONRead (Evt) {
-        let Txt = Evt.target.previousSibling.value.replace(/\n/g, '');
+        const Txt = Evt.target.previousSibling.value.replace(/\n/g, '');
 
         this.JSONRender(Txt);
       },
 
       JSONRender (string) {
+        const Is5 = this.$('#FctnBx input[type=checkbox]').checked; // 'Is5' = Is using JSON5.
         let JO = null,
-            Rt = this.$('#Rt'),
-            Is5 = this.$('#FctnBx input[type=checkbox]').checked; // 'Is5' = Is using JSON5.
+            Rt = this.$('#Rt');
 
         try { JO = Is5 ? JSON5.parse(string) : JSON.parse(string); }
         catch (Ecpt) {
@@ -183,8 +183,9 @@
           if (Is.Number(Obj.length)) { IsA = true; }
 
           for (let i in Obj) {
-            let NdStt = IsA ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : '),
-                Nd;
+            const NdStt = IsA ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : ');
+
+            let Nd;
 
             switch (typeof Obj[i]) {
               case 'string':
@@ -232,8 +233,9 @@
       },
 
       DataEdit (Evt) {
-        let Nd = Evt.Element(),
-            IptBx = Z.DOM.Find('#IptBx')[0],
+        const Nd = Evt.Element();
+
+        let IptBx = Z.DOM.Find('#IptBx')[0],
             IptNd = IptBx.Children('textarea')[0];
 
         if (Nd.className.indexOf('EdtNd') < 0) { return -1; }
@@ -272,8 +274,9 @@
       },
 
       DataReplace (Evt) {
-        let IptStr = '',
-            TgtNd = null,
+        const IptStr = '';
+
+        let TgtNd = null,
             IptBx = Evt
               .Element()
               .Above()
@@ -300,8 +303,9 @@
       },
 
       JSONToString (Evt) {
-        let RtNd = this.$('#Rt'),
-            Obj = RtNd.className === 'array' ? [] : {},
+        const RtNd = this.$('#Rt');
+
+        let Obj = RtNd.className === 'array' ? [] : {},
             Nds = RtNd.querySelectorAll(':scope>ul>li');
 
         NodesLoop(Nds, Obj);

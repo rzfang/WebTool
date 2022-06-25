@@ -9,7 +9,7 @@
         <tr><td>Mime Type:</td><td></td></tr>
       </tbody>
     </table><br/>
-    <textarea rows='10' cols='50'>
+    <textarea rows='10'>
     </textarea>
   </page-layout>
   <style type='scss'>
@@ -17,6 +17,7 @@
       table { display: inline-block; }
       table tr > td { text-align: left; }
       table tr > td:first-child { text-align: right; }
+      textarea { width: 100%; }
     }
   </style>
   <script>
@@ -26,8 +27,8 @@
       components: { pageLayout },
 
       Convert () {
-        let FlsBx = this.$('input[type=file]'), // file box.
-            Fls = FlsBx.files; // files.
+        const FlsBx = this.$('input[type=file]'); // file box.
+        const Fls = FlsBx.files; // files.
 
         if (Fls.length === 0) {
           alert('尚未選擇檔案。');
@@ -35,8 +36,9 @@
           return -1;
         }
 
-        let Fl = Fls[0], // file.
-            Flds = this.$$('table > tbody > tr > td:nth-child(2)'), // fields.
+        const Fl = Fls[0]; // file.
+
+        let Flds = this.$$('table > tbody > tr > td:nth-child(2)'), // fields.
             FR = new FileReader(),
             Txtara = this.$('textarea');
 

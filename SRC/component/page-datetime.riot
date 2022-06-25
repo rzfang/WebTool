@@ -56,8 +56,9 @@
           Mlscd = parseInt(this.$(Evt.target.value).value, 10);
         }
 
-        let Dt = Mlscd ? new Date(Mlscd) : new Date(),
-            Scd = Dt.getTime().toString(), // 'Scd' = Second.
+        const Dt = Mlscd ? new Date(Mlscd) : new Date();
+
+        let Scd = Dt.getTime().toString(), // 'Scd' = Second.
             TZOH = Dt.getTimezoneOffset() / 60; // 'TZOH' = Time Zone Offset Hour.
 
         Scd = Scd.substr(0, Scd.length - 3) + '.' + Scd.substr(Scd.length - 3);
@@ -105,8 +106,8 @@
       },
 
       DateToSecond () {
-        let DtA = this.$$('#DtStrBx>*');
-        let Dt = new Date(
+        const DtA = this.$$('#DtStrBx>*');
+        const Dt = new Date(
           DtA[0].value,
           (DtA[1].value - 1),
           DtA[2].value,

@@ -89,7 +89,7 @@
 
       TimesUp () {
         if (this.CnNtf) {
-          let Wrds = this.$('#FctnBx>input[type=text]').value || 'Countdown Notify';
+          const Wrds = this.$('#FctnBx>input[type=text]').value || 'Countdown Notify';
 
           new Notification(Wrds + '\n - WebTool');
         }
@@ -104,20 +104,16 @@
       /*
         DOMHghRsTmStmp = DOMHighResTimeStamp. */
       Countdown (DOMHghRsTmStmp) {
-        let Now = Math.floor((this.Dt - (new Date())) / 1000),
-            Hr = parseInt(Math.floor(Now / 3600), 10).toString(),
-            Mnt,
+        let Now = Math.floor((this.Dt - (new Date())) / 1000);
+
+        const Hr = parseInt(Math.floor(Now / 3600), 10).toString().padStart(2, '0');
+
+        let Mnt,
             Scnd;
 
         Now %= 3600;
-        Mnt = parseInt(Math.floor(Now / 60), 10).toString();
-        Scnd = (Now % 60).toString();
-
-        if (Hr.length < 2) { Hr = '0' + Hr; }
-
-        if (Mnt.length < 2) { Mnt = '0' + Mnt; }
-
-        if (Scnd.length < 2) { Scnd = '0' + Scnd; }
+        Mnt = parseInt(Math.floor(Now / 60), 10).toString().padStart(2, '0');
+        Scnd = (Now % 60).toString().padStart(2, '0');
 
         this.$('div>h1').innerHTML = Hr + ':' + Mnt + ':' + Scnd;
       }

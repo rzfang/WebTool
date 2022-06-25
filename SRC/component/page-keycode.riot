@@ -54,9 +54,10 @@
 
         /*==== history log process. ====*/
 
-        let ChkIDMpO = {'KeyDown': 'LgDwnChk', 'KeyPress': 'LgPrsChk', 'KeyUp': 'LgUpChk'},
-            ChkElt = Z.DOM.Find('#' + ChkIDMpO[ID])[0],
-            HstElt,
+        const ChkIDMpO = { 'KeyDown': 'LgDwnChk', 'KeyPress': 'LgPrsChk', 'KeyUp': 'LgUpChk' };
+        const ChkElt = Z.DOM.Find('#' + ChkIDMpO[ID])[0];
+
+        let HstElt,
             LgElt; // 'LgElt' = Log Element.
 
 

@@ -148,8 +148,8 @@
       },
 
       OneFeedAdd (Evt) {
-        let FdUrls = window.localStorage.FdURLs,
-            Url = this.$('input[type=text]').value;
+        const FdUrls = window.localStorage.FdURLs,
+              Url = this.$('input[type=text]').value;
 
         if (!Is.URL(Url)) { return alert('this is not a standard Url.'); }
 

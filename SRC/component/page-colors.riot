@@ -69,8 +69,7 @@
       Color16ToRGBA (Str) {
         if (Str.charAt(0) === '#') { Str = Str.substr(0); }
 
-        let A = '1',
-            B = '255',
+        let B = '255',
             G = '255',
             R = '255';
 
@@ -85,7 +84,7 @@
           B = parseInt(Str.substr(4, 2), 16).toString();
         }
 
-        return `rgba(${R}, ${G}, ${B}, ${A})`;
+        return `rgba(${R}, ${G}, ${B}, 1)`;
       },
 
       /* convert CSS Color code from RGB to hex format.

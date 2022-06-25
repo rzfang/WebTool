@@ -76,7 +76,7 @@
 
         if (Flg > 0) {
           for (let i in Txt) {
-            let Cd = Txt.charCodeAt(i);
+            const Cd = Txt.charCodeAt(i);
 
             switch (Cd) {
               case 34: EDS += '&quot;'; break;
@@ -85,7 +85,7 @@
               case 60: EDS += '&lt;';   break;
               case 62: EDS += '&gt;';   break;
               default: EDS += (Cd < 32 || Cd > 126) ?
-                              (Flg === 1 ? ('&#' + Cd + ';') : ('&#x' + Cd.toString(16) + ';')) :
+                              (Flg === 1 ? `&#${Cd};` : ('&#x' + Cd.toString(16) + ';')) :
                               Txt.charAt(i);
             }
           }
@@ -177,7 +177,7 @@
                 continue;
               }
 
-              let ChrCd = parseInt((CSA[2] + CSA[3] + CSA[4] + CSA[5]), 16);
+              const ChrCd = parseInt((CSA[2] + CSA[3] + CSA[4] + CSA[5]), 16);
 
               EDS += String.fromCharCode(ChrCd);
               i += 5;
@@ -226,15 +226,16 @@
           @ UTF8 boolean flag. optional.
           < encode string, or empty string as error. */
         function Base64Encode (Str, UTF8) {
-          let KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', // 'KM' = Key Map.
-              BS = '', // 'BS' = Binary String.
+          const KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='; // 'KM' = Key Map.
+
+          let BS = '', // 'BS' = Binary String.
               PS = '', // 'PS' = Pad String.
               B64S = ''; // 'B64S' = Base64 String.
 
           if (typeof UTF8 !== 'boolean') { UTF8 = false; }
 
           for (let i in Str) {
-            let TN = Str.charCodeAt(i); // 'TN' = Temp unicode Number.
+            const TN = Str.charCodeAt(i); // 'TN' = Temp unicode Number.
 
             BS += (UTF8 ? Uni2UTF8(TN) : TN.toString(2).padStart(16, '0'));
           }
@@ -254,12 +255,12 @@
             BS += TPS;
           }
 
-          let C = BS.length;
+          const C = BS.length;
 
           for (let i = 0; i < C; i += 6) {
-            let TS = BS.substr(i, 6), // 'TS' = Translate String.
-                DN = 0, // 'DN' = Decimal Number.
-                DS = ''; // 'DS' = Decimal String.
+            const TS = BS.substr(i, 6); // 'TS' = Translate String.
+
+            let DN = 0; // 'DN' = Decimal Number.
 
             if (TS.substr(0, 1) === '1') { DN += 32; }
 
@@ -311,17 +312,18 @@
           @ UTF8 boolean flag. optional.
           < encode string, or empty string as error. */
         function Base64Decode (Str, UTF8) {
-          let KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', // 'KM' = Key Map.
-              BS = ''; // 'BS' = Binary String.
+          const KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='; // 'KM' = Key Map.
+
+          let BS = ''; // 'BS' = Binary String.
 
           if (typeof UTF8 !== 'boolean') { UTF8 = false; }
 
           Str = Str.replace(/=+$/, '');
 
-          let C = Str.length; // 'C' = Count.
+          const C = Str.length; // 'C' = Count.
 
           for (let i = 0; i < C; i++) {
-            let TBS = KM.indexOf(Str.substr(i, 1)).toString(2).padStart(8, '0');
+            const TBS = KM.indexOf(Str.substr(i, 1)).toString(2).padStart(8, '0');
 
             BS += TBS.substr(2, 6);
           }
@@ -338,14 +340,15 @@
           }
 
           function Bin2TxtUTF8 (BinStr) {
-            let RT = '', // 'RT' = Result Text.
-                L = BinStr.length; // 'L' = Length.
+            const L = BinStr.length; // 'L' = Length.
+
+            let RT = ''; // 'RT' = Result Text.
 
             for (let i = 0; i < L; i += 8) {
               let TBS = BinStr.substr(i, 8); // 'TBS' = Temp Binary String.
 
               if (TBS.substr(0, 1) === '0') {
-                let TN = parseInt(TBS, 2); // 'TN' = Text Number.
+                const TN = parseInt(TBS, 2); // 'TN' = Text Number.
 
                 if (TN > 0)
                 { RT += String.fromCharCode(TN); }

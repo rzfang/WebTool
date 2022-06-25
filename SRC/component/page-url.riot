@@ -62,9 +62,10 @@
       },
 
       UrlsParseAndCompare (Evt) {
+        const Urls = this.$$('input[type=text]').map(DOM => DOM.value ? new URL(DOM.value) : '');
+
         let RsltUrls = [ {}, {} ],
-            SrchPrmKys = [],
-            Urls = this.$$('input[type=text]').map(DOM => DOM.value ? new URL(DOM.value) : '');
+            SrchPrmKys = [];
 
         Urls.forEach((Url, Idx) => {
           if (!Url) { return; }
