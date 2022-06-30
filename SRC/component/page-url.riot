@@ -1,22 +1,29 @@
 <page-url>
   <page-layout>
+    <div class='input-box'>
+      <label>
+        <input type='checkbox' onchange={EqualToggle}/>
+        hide equal rows
+      </label>
+      <ul>
+        <li>
+          <input type='text' oninput={UrlsParseAndCompare}/>
+        </li>
+        <li>
+          <input type='text' oninput={UrlsParseAndCompare}/>
+        </li>
+      </ul>
+    </div>
     <table class='output-box'>
-      <thead>
-        <tr>
-            <td></td>
-            <td><input type='text' oninput={UrlsParseAndCompare}/></td>
-            <td><input type='text' oninput={UrlsParseAndCompare}/></td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr each={Ky in PrprtyKys}>
+      <tbody class={state.HdEql && 'hide-equal'}>
+        <tr each={Ky in PrprtyKys} class={state.EqlKys.includes(Ky) && 'is-equal'}>
             <td>{Ky}</td>
             <td each={Url in state.Urls}>{Url[Ky]}</td>
         </tr>
         <tr>
           <td colspan='3'>parsed searchParams</td>
         </tr>
-        <tr each={Ky in state.SrchPrmKys}>
+        <tr each={Ky in state.SrchPrmKys} class={state.EqlKys.includes(Ky) && 'is-equal'}>
           <td>{Ky}</td>
           <td each={Url in state.Urls}>{Url && Url.SrchPrmsObjct && Url.SrchPrmsObjct[Ky] || ''}</td>
         </tr>
@@ -25,13 +32,33 @@
   </page-layout>
   <style type='scss'>
     :host {
-      .output-box>tbody>tr {
-        &:hover {
-          background-color: #f0f0f0;
-        }
+      .input-box {
+        >label { cursor: pointer; }
 
-        >td[colspan='3'] {
-          text-align: center;
+        >ul {
+          margin: 0; padding: 0; list-style: none;
+
+          input[type=text] { width: 100%; }
+        }
+      }
+
+      .output-box {
+        width: 100%;
+
+        >tbody {
+          >tr {
+            &:hover { background-color: #f8f8f8; }
+
+            &.is-equal { color: #808080; }
+
+            >td {
+              word-break: break-all;
+
+              &[colspan='3'] { text-align: center; font-size: 1.5rem; }
+            }
+          }
+
+          &.hide-equal tr.is-equal { display: none; }
         }
       }
     }
@@ -43,7 +70,6 @@
       components: { pageLayout },
 
       PrprtyKys: [
-        'href',
         'origin',
         'username',
         'password',
@@ -52,13 +78,33 @@
         'hostname',
         'port',
         'pathname',
-        'search',
         'hash'
       ], // property keys.
 
       state: {
-        SrchPrmKys: [],
-        Urls: []
+        EqlKys: [], // equal keys.
+        HdEql: false, // hide equal.
+        SrchPrmKys: [], // search param keys.
+        Urls: [],
+      },
+
+      EqualToggle (Evt) {
+        this.update({ HdEql: Evt.target.checked });
+      },
+
+      // reference - https://developer.mozilla.org/en-US/docs/Web/API/URL_API#examples
+      SearchParamsToObject (SrchPrms) {
+        SrchPrms.sort();
+
+        const Kys = SrchPrms.keys();
+
+        let Rslt = {};
+
+        for (let Ky of Kys) {
+          Rslt[Ky] = SrchPrms.get(Ky);
+        }
+
+        return Rslt;
       },
 
       UrlsParseAndCompare (Evt) {
@@ -78,22 +124,35 @@
 
         SrchPrmKys = SrchPrmKys.filter((Vl, Idx, Arr) => Arr.indexOf(Vl) == Idx);
 
-        this.update({ SrchPrmKys, Urls: RsltUrls });
-      },
+        let EqlKys = []; // equal keys.
 
-      // reference - https://developer.mozilla.org/en-US/docs/Web/API/URL_API#examples
-      SearchParamsToObject (SrchPrms) {
-        SrchPrms.sort();
+        this.PrprtyKys.forEach(Ky => {
+          let IsEql = true;
 
-        const Kys = SrchPrms.keys();
+          for (let i = 1; i < RsltUrls.length; i++) {
+            IsEql &= (RsltUrls[i][Ky] === RsltUrls[i - 1][Ky]);
+          }
 
-        let Rslt = {};
+          if (IsEql) { EqlKys.push(Ky); }
+        });
 
-        for (let Ky of Kys) {
-          Rslt[Ky] = SrchPrms.get(Ky);
-        }
+        SrchPrmKys.forEach(Ky => {
+          let IsEql = true;
 
-        return Rslt;
+          for (let i = 1; i < RsltUrls.length; i++) {
+            if (!RsltUrls[i].SrchPrmsObjct || !RsltUrls[i - 1].SrchPrmsObjct) {
+              IsEql = false;
+
+              break;
+            }
+
+            IsEql &= (RsltUrls[i].SrchPrmsObjct[Ky] === RsltUrls[i - 1].SrchPrmsObjct[Ky]);
+          }
+
+          if (IsEql) { EqlKys.push(Ky); }
+        })
+
+        this.update({ EqlKys, SrchPrmKys, Urls: RsltUrls });
       }
     }
   </script>
