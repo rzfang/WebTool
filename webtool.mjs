@@ -19,8 +19,8 @@ const DftPgRt = { // here should handle 404.
   keywords: '網頁, 工具, Web, Tool',
   author: 'RZ Fang',
   favicon: '',
-  css: [],
-  js: [ '/include.js' ],
+  css: [ './SRC/css.scss' ],
+  js: [],
   body: { type: 'riot', component: './SRC/component/page-keycode.riot' }
 };
 
@@ -37,43 +37,36 @@ const RHC = {
       ...DftPgRt,
       title: 'Color Conside - Web Tool',
       keywords: '顏色, 色票, 樣式, color, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [],
       body: { type: 'riot', component: './SRC/component/page-colors.riot' }},
     '/convert': {
       ...DftPgRt,
       title: 'Convert Table - Web Tool',
       keywords: '轉換, 換算, 查表, convert, list, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [],
       body: { type: 'riot', component: './SRC/component/page-convert.riot' }},
     '/countdown': {
       ...DftPgRt,
       title: 'Countdown Notify - Web Tool',
       keywords: '倒數計時, 計時, countdown, 網頁, 工具, Tool',
-      js: [],
       body: { type: 'riot', component: './SRC/component/page-countdown.riot' }},
     '/datauri': {
       ...DftPgRt,
       title: 'File to Data URI - Web Tool',
       keywords: '資料, 轉換, datauri, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [],
       body: { type: 'riot', component: './SRC/component/page-datauri.riot' }},
     '/datetime': {
       ...DftPgRt,
       title: 'Datetime Transform - Web Tool',
       keywords: '時間格式轉換, datetime transform, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [],
       body: { type: 'riot', component: './SRC/component/page-datetime.riot' }},
     '/endecode': {
       ...DftPgRt,
       title: 'String Encode/Decode - Web Tool',
       keywords: '編碼, 解碼, encoding, decoding, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [],
       body: { type: 'riot', component: './SRC/component/page-endecode.riot' }},
     '/ipv426': {
       ...DftPgRt,
       title: 'IPv4 to v6 convert - Web Tool',
       keywords: 'ipv6, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [],
       body: { type: 'riot', component: './SRC/component/page-ipv426.riot' }},
     '/json': {
       ...DftPgRt,
@@ -113,26 +106,23 @@ const RHC = {
       ...DftPgRt,
       title: 'Regula Expression - Web Tool',
       keywords: '正規表示式, RegExp, regular expression, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [],
       body: { type: 'riot', component: './SRC/component/page-re.riot' }},
     '/read': {
       ...DftPgRt,
       title: 'Feed Read - Web Tool',
       keywords: '閱讀器, RSS, Atom, 網頁, 工具, Web, Tool',
-      js: [],
       body: { type: 'riot', component: './SRC/component/page-read.riot', initialize: read }},
     '/url': {
       ...DftPgRt,
       title: 'URL Compare - Web Tool',
       keywords: '網址比對, url, compare, 網頁, 工具, Web, Tool',
-      js: [],
       body: { type: 'riot', component: './SRC/component/page-url.riot' }},
     '/window': {
       ...DftPgRt,
       title: 'Window Open Script - Web Tool',
       keywords: '開新視窗, window.open, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'include.js', 'hydrate.js' ],
-      body: { type: 'html', component: path.resolve(__dirname, './SRC/component/window.part.html') }},
+      js: [ 'RZ-Js-DOM.js' ],
+      body: { type: 'riot', component: './SRC/component/page-window.riot' }},
     '/': DftPgRt
   },
   service: {
@@ -166,8 +156,8 @@ const RHC = {
       type: 'resource',
       location: './SRC'
     },
-    { // resource: Js, CSS.
-      path: /\.(css|js)$/,
+    { // resource: Js.
+      path: /\.js$/,
       type: 'resource',
       location: STTC_PTH
     },
