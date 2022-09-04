@@ -32,7 +32,5 @@ SCSS_CSS('SRC/css.scss', 'WEB/css.css');
 JsCompress(
   [ 'SRC/RZ-Js-DOM.js',
     'SRC/RZ-Js-Is.js',
-    'SRC/RZ-Js-Obj.js',
-    'SRC/RZ-Js-RiotMixin.js',
-    'SRC/RZ-Js.js' ],
+    'SRC/RZ-Js-Obj.js' ],
   'WEB/include.js');
