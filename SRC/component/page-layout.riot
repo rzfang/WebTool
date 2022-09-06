@@ -3,10 +3,7 @@
     <h2>Web Tool</h2>
     <div>
       <h3>{TgtItm.Ttl}</h3>
-      <label>
-        Dark Mode
-        <input type='checkbox' onchange={DarkModeToggle}/>
-      </label>
+      <button onclick={DarkModeToggle}>{state.IsDkMd ? 'Dark' : 'Light'}</button>
       <button onclick={NavToggle}>Menu</button>
     </div>
   </div>
@@ -47,7 +44,7 @@
         border-width: 1px;
         padding: 5px;
         box-shadow: -1px 1px 3px;
-        background-color: #ffffff;
+        background-color: var(--color-background);
       }
     }
 
@@ -75,6 +72,7 @@
   <script>
     export default {
       state: {
+        IsDkMd: false, // is dark mode.
         IsNavOn: false // is navigation list turning on.
       },
 
@@ -106,7 +104,15 @@
         let PthNm = ''
 
         this.OnNode(Rqst => { PthNm = Rqst.url; });
-        this.OnBrowser(() => { PthNm = location.pathname; });
+        this.OnBrowser(() => {
+          PthNm = location.pathname;
+
+          this.state.IsDkMd = window.localStorage.getItem('darkMode') === 'true';
+
+          if (this.state.IsDkMd) {
+            document.querySelector('body').className += ' dark-mode';
+          }
+        });
 
         for (let i = 0; i < this.Itms.length; i++) {
           if (this.Itms[i].URL === PthNm.substr(1)) {
@@ -120,11 +126,22 @@
         }
       },
 
-      DarkModeToggle () {
-        const Bd = document.querySelector('body');
+      DarkModeToggle (Evt) {
+        const Bd = document.querySelector('body'),
+              IsDkMd = !this.state.IsDkMd;
 
-        if (Bd.className.indexOf('dark-mode') > -1) { Bd.className = Bd.className.replace(/ ?dark-mode ?/, ''); }
-        else { Bd.className += ' dark-mode'; }
+        this.update({ IsDkMd });
+
+        if (IsDkMd) {
+          Bd.className += ' dark-mode';
+
+          window.localStorage.setItem('darkMode', 'true');
+        }
+        else {
+          Bd.className = Bd.className.replace(/ ?dark-mode ?/g, '');
+
+          window.localStorage.setItem('darkMode', '');
+        }
       },
 
       NavToggle () {

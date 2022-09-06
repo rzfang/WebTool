@@ -4,15 +4,15 @@
   "description": "web tool",
   "main": "server.js",
   "dependencies": {
-    "@riotjs/compiler": "^6.0.4",
-    "@riotjs/hydrate": "^6.0.0",
-    "@riotjs/ssr": "^8.0.1",
+    "@riotjs/compiler": "^6.3.2",
+    "@riotjs/hydrate": "^6.0.1",
+    "@riotjs/ssr": "^8.1.2",
     "async": "^3.2.2",
     "busboy": "^1.6.0",
     "feedparser": "^2.2.9",
     "request": "^2.88.2",
     "require-from-string": "^2.0.2",
-    "riot": "^6.0.4",
+    "riot": "^7.0.5",
     "rzjs": "github:rzfang/Js"
   },
   "devDependencies": {

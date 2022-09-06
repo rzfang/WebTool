@@ -4,11 +4,16 @@
   --color-background: #ffffff;
   --color-border: #808080;
   --color-font: #202020;
+  --color-link: #0000ff;
+  --color-link-hover: #4000ff;
 }
 
 .dark-mode {
-  --color-background: #000000;
+  --color-background: #101010;
+  --color-border: #404040;
   --color-font: #d0d0d0;
+  --color-link: #40c040;
+  --color-link-hover: #8000ff;
 }
 
 // ==== Normal Element =================================================================================================
@@ -45,9 +50,11 @@ a, input, option, button {
 
 a {
   text-decoration: none;
+  color: var(--color-link);
 
   &:hover {
     text-decoration: underline;
+    color: var(--color-link-hover);
   }
 }
 
