@@ -1,14 +1,12 @@
 {
   "name": "web_tool",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "web tool",
-  "main": "server.js",
+  "main": "webtool.mjs",
   "dependencies": {
     "@riotjs/compiler": "^6.3.2",
     "@riotjs/hydrate": "^6.0.1",
     "@riotjs/ssr": "^8.1.2",
-    "async": "^3.2.2",
-    "busboy": "^1.6.0",
     "feedparser": "^2.2.9",
     "request": "^2.88.2",
     "riot": "^7.1.0",

@@ -13,7 +13,7 @@ function SCSS_CSS (FrmPth, ToPth) {
   fs.writeFileSync(ToPth, CSS);
 }
 
-function JsCompress (FrmPthA, ToPth) {
+async function JsCompress (FrmPthA, ToPth) {
   let Srcs = [], // sources.
       Rst;
 
@@ -21,7 +21,7 @@ function JsCompress (FrmPthA, ToPth) {
     Srcs.push(fs.readFileSync(FrmPthA[i], 'utf8'));
   }
 
-  Rst = terser.minify(Srcs, {});
+  Rst = await terser.minify(Srcs, {});
 
   if (Rst.error) { return console.log(Rst.error); }
 
