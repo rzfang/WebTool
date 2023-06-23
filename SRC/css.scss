@@ -2,6 +2,7 @@
 
 :root {
   --color-background: #ffffff;
+  --color-background-alpha: #ffffffe0;
   --color-border: #808080;
   --color-font: #202020;
   --color-link: #0000ff;
@@ -11,6 +12,7 @@
 
 .dark-mode {
   --color-background: #101010;
+  --color-background-alpha: #101010e0;
   --color-border: #404040;
   --color-font: #d0d0d0;
   --color-link: #40ff40;
