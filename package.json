@@ -1,6 +1,6 @@
 {
   "name": "web_tool",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "web tool",
   "main": "server.js",
   "dependencies": {
@@ -11,13 +11,14 @@
     "busboy": "^1.6.0",
     "feedparser": "^2.2.9",
     "request": "^2.88.2",
-    "riot": "^7.0.5",
+    "riot": "^7.1.0",
+    "riot-4-fun": "^0.0.2",
     "rzjs": "github:rzfang/Js"
   },
   "devDependencies": {
     "eslint": "^8.16.0",
     "eslint-plugin-json": "^3.1.0",
-    "node-sass": "^7.0.1",
+    "node-sass": "^8.0.0",
     "nodemon": "^2.0.16",
     "pre-commit": "^1.2.2",
     "terser": "^5.14.0"
