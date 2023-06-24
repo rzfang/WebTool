@@ -298,3 +298,7 @@
     DOM.Initialize();
   }
 })();
+
+const DOM = {};
+
+export default DOM;

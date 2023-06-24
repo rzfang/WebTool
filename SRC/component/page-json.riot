@@ -38,7 +38,9 @@
       #FctnBx .Grid > .Cell { padding: 5px; }
       #FctnBx .Grid > .Cell:first-child { border-right: 1px solid; }
       #FctnBx .Grid > .Cell > * { vertical-align: top; }
-      #IptBx { display: none; position: absolute; top: 0px; left: 0px; background-color: rgba(255, 255, 255, 0.9); }
+      #IptBx {
+        display: none; position: absolute; top: 0px; left: 0px; background-color: var(--color-background-alpha);
+      }
       #IptBx > div { display: inline-block; vertical-align: top; }
       #Rt { display: inline-block; }
       #Rt * { line-height: 1.5em; }
@@ -51,6 +53,7 @@
     }
   </style>
   <script>
+    import DOM from '../RZ-Js-DOM.mjs';
     import pageLayout from './page-layout.riot';
     import { Is } from '../../node_modules/rzjs/Is.js';
 

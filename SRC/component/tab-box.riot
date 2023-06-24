@@ -1,0 +1,52 @@
+<tab-box>
+  <ul class='TbBx'>
+    <li each={Tb in state.Tbs} class='{Tb.Pckd ? 'Pckd' : ''}' onclick={!Tb.Pckd && Switch}>{Tb.Nm}</li>
+  </ul>
+  <div class='Cntx'>
+    <div if={state.Idx === 0}><slot name='tab0'/></div>
+    <div if={state.Idx === 1}><slot name='tab1'/></div>
+    <div if={state.Idx === 2}><slot name='tab2'/></div>
+    <div if={state.Idx === 3}><slot name='tab3'/></div>
+    <div if={state.Idx === 4}><slot name='tab4'/></div>
+    <div if={state.Idx === 5}><slot name='tab5'/></div>
+    <div if={state.Idx === 6}><slot name='tab6'/></div>
+    <div if={state.Idx === 7}><slot name='tab7'/></div>
+    <div if={state.Idx === 8}><slot name='tab8'/></div>
+    <div if={state.Idx === 9}><slot name='tab9'/></div>
+  </div>
+  <style>
+    :host>ul { margin: 0; padding: 0; }
+    :host>ul>li { display: inline-block; margin: 3px; border: 1px solid #d0d0ff; border-radius: 3px 3px 0 0; padding: 3px; color: #c0c0c0; cursor: pointer; }
+    :host>ul>li.Pckd { border-bottom: 1px solid #000000; color: #000000; cursor: default; }
+  </style>
+  <script>
+    export default {
+      state: {
+        Idx: 0,
+        Tbs: []
+      },
+
+      onBeforeMount (props, state) {
+        if (props.tabs.length > 10) { alert('tab-box can not handle >10 tabs.'); } // to do.
+
+        const Idx = props.index || 0; // index, fallback idx.
+
+        let Tbs = props.tabs.map(tab => { return { Nm: tab, Pckd: false }; });
+
+        Tbs[Idx].Pckd = true;
+        this.state.Idx = Idx;
+        this.state.Tbs = Tbs;
+      },
+
+      Switch (Evt) {
+        let { Idx, Tbs } = this.state;
+
+        Tbs[Idx].Pckd = false;
+        Idx = Array.from(this.$$('ul.TbBx>li')).indexOf(Evt.target);
+        Tbs[Idx].Pckd = true;
+
+        this.update({ Idx, Tbs });
+      }
+    }
+  </script>
+</tab-box>

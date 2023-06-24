@@ -6,15 +6,18 @@
     <form id='PstDataBx' method='POST' target='_blank' action="#">
       <div id='ValueBox'>?</div>
     </form><br/>
-    <span class='Title'>URL</span> <input type='text' id='URL' style='width: 300px;'/>
+    <span class='Title'>URL</span>
+    <input type='text' id='URL'/>
     <input type='submit' value='Send Out' onclick={PostData}/>
   </page-layout>
   <style type='scss'>
     :host {
       .Title { display: inline-block; width: 100px; }
+      .URL { width: 300px; }
     }
   </style>
   <script>
+    import DOM from '../RZ-Js-DOM.mjs';
     import pageLayout from './page-layout.riot';
 
     export default {

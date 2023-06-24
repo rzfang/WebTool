@@ -7,10 +7,10 @@
     <span class='Title'>Key Up:</span><span id='KeyUp'>?</span>
     <hr/>
     History:<br/>
-    <table style='display: inline-block;'>
+    <table>
       <tbody id='Hst'></tbody>
     </table>
-    <div style='display: inline-block; padding: 5px; border: 1px solid; border-radius: 5px; vertical-align: top;'>
+    <div class='log-panel'>
       Log with:<br/>
       <label><input type='checkbox' id='LgDwnChk' checked='true'/> KeyDown</label><br/>
       <label><input type='checkbox' id='LgPrsChk' checked='true'/> KeyPress</label><br/>
@@ -21,9 +21,14 @@
   <style type='scss'>
     :host {
       .Title { display: inline-block; width: 100px; }
+
+      table { display: inline-block; }
+
+      .log-panel { display: inline-block; padding: 5px; border: 1px solid; border-radius: 5px; vertical-align: top; }
     }
   </style>
   <script>
+    import DOM from '../RZ-Js-DOM.mjs';
     import pageLayout from './page-layout.riot';
 
     export default {

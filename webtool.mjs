@@ -21,7 +21,6 @@ const DftPgRt = { // here should handle 404.
   favicon: '',
   css: [ './SRC/css.scss' ],
   js: [],
-  body: { type: 'riot', component: './SRC/component/page-keycode.riot' }
 };
 
 const RHC = {
@@ -72,13 +71,12 @@ const RHC = {
       ...DftPgRt,
       title: 'JSON Edit - Web Tool',
       keywords: 'JSON, edit, 編輯, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'https://unpkg.com/json5@^2.0.0/dist/index.min.js', 'RZ-Js-DOM.js' ],
+      js: [ 'https://unpkg.com/json5@^2.0.0/dist/index.min.js' ],
       body: { type: 'riot', component: './SRC/component/page-json.riot' }},
     '/keycode': {
       ...DftPgRt,
       title: 'Key Code Detect - Web Tool',
       keywords: '鍵盤代碼, keyboard, keyCode, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'RZ-Js-DOM.js' ],
       body: { type: 'riot', component: './SRC/component/page-keycode.riot' }},
     // '/payment': { // v3
     //   ...DftPgRt,
@@ -100,7 +98,6 @@ const RHC = {
       ...DftPgRt,
       title: 'Form Post - Web Tool',
       keywords: '送出資料, form, post, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'RZ-Js-DOM.js' ],
       body: { type: 'riot', component: './SRC/component/page-post.riot' }},
     '/re': {
       ...DftPgRt,
@@ -121,9 +118,11 @@ const RHC = {
       ...DftPgRt,
       title: 'Window Open Script - Web Tool',
       keywords: '開新視窗, window.open, 網頁, 工具, 程式, 開發, Web, Tool, Program, Develop',
-      js: [ 'RZ-Js-DOM.js' ],
       body: { type: 'riot', component: './SRC/component/page-window.riot' }},
-    '/': DftPgRt
+    '/': { // as keycode
+      ...DftPgRt,
+      body: { type: 'riot', component: './SRC/component/page-keycode.riot' },
+    },
   },
   service: {
     case: {
@@ -152,7 +151,7 @@ const RHC = {
       location: STTC_PTH
     },
     {
-      path: /RZ-Js-DOM\.js$/,
+      path: /RZ-Js-DOM\.mjs$/,
       type: 'resource',
       location: './SRC'
     },

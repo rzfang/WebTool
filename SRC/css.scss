@@ -68,11 +68,10 @@ a {
 
 button, input[type=button], input[type=submit] {
   border-width: 1px;
-  background-color: transparent;
   cursor: pointer;
 }
 
-button, input[type=button], input[type=text], input[type=number], textarea {
+button, input[type=button], input[type=submit], input[type=text], input[type=number], select, textarea {
   color: var(--color-font);
   background-color: var(--color-background);
 }
