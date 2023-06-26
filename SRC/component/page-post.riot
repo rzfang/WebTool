@@ -17,7 +17,7 @@
     }
   </style>
   <script>
-    import DOM from '../RZ-Js-DOM.mjs';
+    import DOM from '../../node_modules/rzjs/browser/DOM.js';
     import pageLayout from './page-layout.riot';
 
     export default {
@@ -28,7 +28,7 @@
       },
 
       RowAdd () {
-        const Nm = Z.DOM.Find('#Nm')[0].value;
+        const Nm = DOM.Find('#Nm')[0].value;
 
         if (Nm.length === 0) { return 0; }
 
@@ -38,7 +38,7 @@
                        '<input type="text" name="' + Nm + '" id="' + Nm + '"/>' +
                        '<input type="button" value="Delete">';
 
-        Z.DOM.Find('#PstDataBx')[0].Append(Bx);
+        DOM.Find('#PstDataBx')[0].Append(Bx);
         Bx.LastChild().onclick = function (Evt) { console.log(Bx.Children()); Bx.Remove(); };
 
         let Txt = Bx.Children()[1];
@@ -54,9 +54,9 @@
       },
 
       PostData () {
-        const URL = this.Trim(Z.DOM.Find('#URL')[0].value);
+        const URL = this.Trim(DOM.Find('#URL')[0].value);
 
-        let Frm = Z.DOM.Find('#PstDataBx')[0];
+        let Frm = DOM.Find('#PstDataBx')[0];
 
         Frm.action = URL;
         Frm.submit();

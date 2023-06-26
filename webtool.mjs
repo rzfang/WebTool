@@ -142,18 +142,19 @@ const RHC = {
       path: /Is\.js$/,
       type: 'resource',
       location: './node_modules/rzjs',
-      nameOnly: true
+      nameOnly: true,
+    },
+    {
+      path: /DOM\.js$/,
+      type: 'resource',
+      location: './node_modules/rzjs/browser',
+      nameOnly: true,
     },
 
     { // SEO files.
       path: /\/(favicon\.ico|robots\.txt|sitemap\.xml)/,
       type: 'resource',
       location: STTC_PTH
-    },
-    {
-      path: /RZ-Js-DOM\.mjs$/,
-      type: 'resource',
-      location: './SRC'
     },
     { // resource: Js.
       path: /\.js$/,

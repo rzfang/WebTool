@@ -28,7 +28,7 @@
     }
   </style>
   <script>
-    import DOM from '../RZ-Js-DOM.mjs';
+    import DOM from '../../node_modules/rzjs/browser/DOM.js';
     import pageLayout from './page-layout.riot';
 
     export default {
@@ -49,7 +49,7 @@
       KeyCodeGet (Evt, ID) {
         /*==== current state show. ====*/
 
-        let Elt = Z.DOM.Find('#' + ID)[0], // 'Elt' = Element.
+        let Elt = DOM.Find('#' + ID)[0], // 'Elt' = Element.
             KyStr = 'keyCode: ' + Evt.keyCode + ' (0x' + Evt.keyCode.toString(16) + ')'; // 'KyStr' = Key String.
 
         if (Evt.keyCode === 0)
@@ -60,7 +60,7 @@
         /*==== history log process. ====*/
 
         const ChkIDMpO = { 'KeyDown': 'LgDwnChk', 'KeyPress': 'LgPrsChk', 'KeyUp': 'LgUpChk' };
-        const ChkElt = Z.DOM.Find('#' + ChkIDMpO[ID])[0];
+        const ChkElt = DOM.Find('#' + ChkIDMpO[ID])[0];
 
         let HstElt,
             LgElt; // 'LgElt' = Log Element.
@@ -68,8 +68,8 @@
 
         if (!ChkElt.checked) { return -1; }
 
-        HstElt = Z.DOM.Find('#Hst')[0],
-        LgElt = Z.DOM.NewNode('tr'),
+        HstElt = DOM.Find('#Hst')[0],
+        LgElt = DOM.NewNode('tr'),
         LgElt.innerHTML = '<td>' + ID + '</td><td>' + KyStr + '</td>';
 
         HstElt.Prepend(LgElt);
@@ -80,7 +80,7 @@
       },
 
       HistoryClear () {
-        Z.DOM.Find('#Hst')[0].innerHTML = '';
+        DOM.Find('#Hst')[0].innerHTML = '';
       }
     }
   </script>

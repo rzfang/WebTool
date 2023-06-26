@@ -53,9 +53,9 @@
     }
   </style>
   <script>
-    import DOM from '../RZ-Js-DOM.mjs';
+    import DOM from '../../node_modules/rzjs/browser/DOM.js';
+    import Is from '../../node_modules/rzjs/Is.js';
     import pageLayout from './page-layout.riot';
-    import { Is } from '../../node_modules/rzjs/Is.js';
 
     export default {
       components: { pageLayout },
@@ -238,7 +238,7 @@
       DataEdit (Evt) {
         const Nd = Evt.Element();
 
-        let IptBx = Z.DOM.Find('#IptBx')[0],
+        let IptBx = DOM.Find('#IptBx')[0],
             IptNd = IptBx.Children('textarea')[0];
 
         if (Nd.className.indexOf('EdtNd') < 0) { return -1; }
@@ -277,7 +277,7 @@
       },
 
       DataReplace (Evt) {
-        const IptStr = '';
+        let IptStr = '';
 
         let TgtNd = null,
             IptBx = Evt

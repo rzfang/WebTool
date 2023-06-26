@@ -120,7 +120,7 @@
     }
   </style>
   <script>
-    import DOM from '../RZ-Js-DOM.mjs';
+    import DOM from '../../node_modules/rzjs/browser/DOM.js';
     import pageLayout from './page-layout.riot';
 
     export default {
@@ -129,7 +129,7 @@
       /* Parse each Option to string.
         Return: string of option. */
       OptionParse () {
-        let TRA = Z.DOM.Find('tr'),
+        let TRA = DOM.Find('tr'),
             Info = '';
 
         TRA = TRA.slice(1);
@@ -160,16 +160,16 @@
 
       ScriptMake () {
         const Info = this.OptionParse(),
-              URL = Z.DOM.Find('#URL')[0].value,
-              Nm = Z.DOM.Find('#Nm')[0].value;
+              URL = DOM.Find('#URL')[0].value,
+              Nm = DOM.Find('#Nm')[0].value;
 
-        Z.DOM.Find('#ScptBx')[0].innerHTML = 'window.open(\'' + URL + '\', \'' + Nm + '\', \'' + Info + '\');';
+        DOM.Find('#ScptBx')[0].innerHTML = 'window.open(\'' + URL + '\', \'' + Nm + '\', \'' + Info + '\');';
       },
 
       Test (Evt) {
         const Info = this.OptionParse(),
-              URL = Z.DOM.Find('#URL')[0].value,
-              Nm = Z.DOM.Find('#Nm')[0].value;
+              URL = DOM.Find('#URL')[0].value,
+              Nm = DOM.Find('#Nm')[0].value;
 
         window.open(URL, Nm, Info);
       }
