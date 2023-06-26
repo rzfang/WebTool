@@ -1,7 +1,7 @@
-const net = require('net'),
-      crypto = require('crypto'),
-      Is = require('./RZ-Js-Is'),
-      Log = require('./RZ-Js-Log');
+import crypto from 'crypto';
+import Is from 'rzjs/Is.js';
+import Log from 'rzjs/Log.js';
+import net from 'net';
 
 let Svr, // socket Server.
     SckA = []; // socket
@@ -165,7 +165,7 @@ function Disconnect (Sck) {
   return 0;
 }
 
-module.exports = {
+const Wbsckt = {
   Initialize: Port => {
     if (!Port || !Is.Number(Port)) {
       Log('socket server can not work with such values.');
@@ -259,4 +259,6 @@ module.exports = {
     }
   }};
 
-module.exports.Initialize(9002);
+Wbsckt.Initialize(9002);
+
+export default Wbsckt;

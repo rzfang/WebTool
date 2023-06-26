@@ -23,7 +23,7 @@
   },
   "scripts": {
     "dev": "nodemon --experimental-json-modules -d 3 -e js,scss,html,riot -w SRC/ ./webtool.mjs",
-    "ws": "nodemon -d 3 -e js -w SRC/websocket.js SRC/websocket.js",
+    "ws": "nodemon -d 3 -e js -w SRC/websocket.mjs SRC/websocket.mjs",
     "lint": "eslint --ext .js,.json,.mjs --ignore-pattern *.riot.*.mjs *.*js SRC",
     "test": "test",
     "start": "node --experimental-json-modules webtool.mjs",
