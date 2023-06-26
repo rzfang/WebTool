@@ -1,7 +1,8 @@
-const crypto = require('crypto'),
-      Is = require('../RZ-Js-Is'),
-      Cch = require('../RZ-Nd-Cache'),
-      CdMp = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQq0Rr1Ss2Tt3Uu4Vv5Ww6Xx7Yy8Zz9'; // code map string.
+import Cch from 'rzjs/node/Cache.js';
+import crypto from 'crypto';
+import Is from 'rzjs/Is.js';
+
+const CdMp = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQq0Rr1Ss2Tt3Uu4Vv5Ww6Xx7Yy8Zz9'; // code map string.
 
 /*
   @ seed.
@@ -23,7 +24,7 @@ function KeyGenerate (Sd) {
 /*
   @ request info object. format as { Bd: { Ctn: '...' }}.
   @ callback function. */
-module.exports = (Rqst, Rspns, RqstInfo, Clbck) => {
+export default function Transfer (Rqst, Rspns, RqstInfo, Clbck) {
   if (!RqstInfo.Bd || !RqstInfo.Bd.Ctn || !Is.String(RqstInfo.Bd.Ctn)) {
     return Clbck(-1, null);
   }
@@ -38,4 +39,4 @@ module.exports = (Rqst, Rspns, RqstInfo, Clbck) => {
   Cch.Set(Ky, RqstInfo.Bd.Ctn, 600);
 
   return Clbck(0, Ky);
-};
+}

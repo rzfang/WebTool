@@ -1,7 +1,7 @@
-const Cch = require('../RZ-Nd-Cache');
+import Cch from 'rzjs/node/Cache.js';
 
-module.exports = function (Rqst, URLInfo, Clbck) {
-  let Rst = [];
+export default function Payment (Rqst, URLInfo, Clbck) {
+  let Rst = { TrnsfrData: '' };
 
   if (!URLInfo || !URLInfo.query || URLInfo.query.indexOf('t=') < 0) {
     return Clbck(1, Rst);
@@ -19,8 +19,7 @@ module.exports = function (Rqst, URLInfo, Clbck) {
     return Clbck(3, Rst);
   }
 
-  Rst = Cch.Get(TrnsfrKy).split('_|_').map(Url => { return { FdUrl: Url, HsBnLdd: false }; });
+  Rst.TrnsfrData = Cch.Get(TrnsfrKy);
 
-  Rqst.RMI.StoreSet('FEEDS', () => Rst);
   Clbck(0, Rst);
-};
+}

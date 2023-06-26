@@ -1,12 +1,12 @@
-const request = require('request'),
-      feedparser = require('feedparser'),
-      Is = require('../RZ-Js-Is'),
-      Cch = require('../RZ-Nd-Cache');
+import Cch from 'rzjs/node/Cache.js';
+import feedparser from 'feedparser';
+import Is from 'rzjs/Is.js';
+import request from 'request';
 
 /*
   @ request info object.
   @ callback function. */
-module.exports = (Rqst, Rspns, RqstInfo, Clbck) => {
+export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
   if (!RqstInfo.Bd || !RqstInfo.Bd || !RqstInfo.Bd.URL || !Is.String(RqstInfo.Bd.URL)) {
     return Clbck(-1, null);
   }
@@ -82,4 +82,4 @@ module.exports = (Rqst, Rspns, RqstInfo, Clbck) => {
       Clbck(0, FdInfo);
       Cch.Set(RqstInfo.Bd.URL, FdInfo, 1800);
     });
-};
+}

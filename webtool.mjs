@@ -2,10 +2,10 @@ import Http from 'riot-4-fun/SRC/Http.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import feed from './SRC/service/feed.js';
-import payment from './SRC/component/payment.js';
-import read from './SRC/component/read.js';
-import transfer from './SRC/service/transfer.js';
+import feed from './SRC/service/feed.mjs';
+import payment from './SRC/component/payment.mjs';
+import read from './SRC/component/read.mjs';
+import transfer from './SRC/service/transfer.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
