@@ -1,50 +1,68 @@
 <page-post>
   <page-layout>
-    Name: <input type="text" id='Nm' onkeypress={Key2RowAdd}/>
+    Name: <input type="text" id='name' onkeypress={Key2RowAdd}/>
     <button onclick={RowAdd}>Add Row</button><br/>
     <br/><hr/><br/>
-    <form id='PstDataBx' method='POST' target='_blank' action="#">
-      <div id='ValueBox'>?</div>
+    <form id='param-form' method='POST' target='_blank' action="#">
+      <div>Paramaters:</div>
+      <ul>
+        <li each={(Prm, i) in state.Prms}>
+          <span class="title">{Prm.Ky}</span>
+          <input type="text" name={Prm.Ky} id={Prm.Ky} value={Prm.Vl} onchange={RowUpdate} data-index={i}/>
+          <input type="button" value="Delete" onclick={RowDelete} data-index={i}>
+        </li>
+      </ul>
     </form><br/>
-    <span class='Title'>URL</span>
-    <input type='text' id='URL'/>
+    <span class='title'>URL</span>
+    <input type='text' id='url'/>
     <input type='submit' value='Send Out' onclick={PostData}/>
   </page-layout>
   <style type='scss'>
     :host {
-      .Title { display: inline-block; width: 100px; }
-      .URL { width: 300px; }
+      .title { display: inline-block; width: 100px; }
+      #url { width: 300px; }
+      #param-form>ul { list-style: none; margin: 0; padding: 0; }
     }
   </style>
   <script>
-    import DOM from '../../node_modules/rzjs/browser/DOM.js';
     import pageLayout from './page-layout.riot';
 
     export default {
       components: { pageLayout },
 
-      Trim (Str) {
-        return Str.replace(/^\s+|\s+$/g, '');
+      state: {
+        Prms: [],
+      },
+
+      RowUpdate (Evt) {
+        const Idx = parseInt(Evt.currentTarget.dataset.index, 10);
+
+        this.state.Prms[Idx].Vl = Evt.currentTarget.value;
+      },
+
+      RowDelete (Evt) {
+        const Idx = parseInt(Evt.currentTarget.dataset.index, 10);
+
+        this.state.Prms.splice(Idx, 1);
+        this.update();
       },
 
       RowAdd () {
-        const Nm = DOM.Find('#Nm')[0].value;
+        const Nm = this.$('#name');
+        const Ky = Nm.value;
 
-        if (Nm.length === 0) { return 0; }
+        if (Ky.length === 0) { return 0; }
 
-        let Bx = document.createElement('div');
+        this.state.Prms.push({ Ky, Vl: '' });
+        this.update();
 
-        Bx.innerHTML = '<span class="Title">' + Nm + '</span>' +
-                       '<input type="text" name="' + Nm + '" id="' + Nm + '"/>' +
-                       '<input type="button" value="Delete">';
-
-        DOM.Find('#PstDataBx')[0].Append(Bx);
-        Bx.LastChild().onclick = function (Evt) { console.log(Bx.Children()); Bx.Remove(); };
-
-        let Txt = Bx.Children()[1];
-
-        Txt.onkeypress = function(Evt){ if (Evt.keyCode === 13){ return false; } };
-        Txt.focus();
+        setTimeout(
+          () => {
+            Nm.value = '';
+            this.$('#param-form>ul>li:last-child>input[type=text]').focus();
+          },
+          50
+        );
       },
 
       Key2RowAdd (Evt) {
@@ -54,11 +72,11 @@
       },
 
       PostData () {
-        const URL = this.Trim(DOM.Find('#URL')[0].value);
+        const Url = this.Trim(this.$('#url').value);
 
-        let Frm = DOM.Find('#PstDataBx')[0];
+        let Frm = this.$('#param-form');
 
-        Frm.action = URL;
+        Frm.action = Url;
         Frm.submit();
       }
     }
