@@ -3,15 +3,16 @@
     <div class='input-panel'>
       <div>Color Tag</div>:
       <div>
-        &nbsp;#<input type="text" id="Clr" style='width: 100px;' value='0080ff' maxlength=6 onkeypress={KeyboardTrigger} data-format='0'/> >
-        <span>{state.CrntRGBA}</span> or<br/>
+        &nbsp;#<input type="text" id="Clr" style='width: 100px;' value='0080ff80' maxlength=8 onkeypress={KeyboardTrigger} data-format='0'/> >
+        <span>{state.CrntRGBA}</span><br/>
+        or<br/>
         R:<input id="R" type="number" min='0' max='255' value='255' onkeypress={KeyboardTrigger} data-format='1'/>,
         G:<input id="G" type="number" min='0' max='255' value='128' onkeypress={KeyboardTrigger} data-format='1'/>,
         B:<input id="B" type="number" min='0' max='255' value='0'   onkeypress={KeyboardTrigger} data-format='1'/>,
         A:<input id="A" type="number" min="0" max="1"   value='1'   onkeypress={KeyboardTrigger} data-format='1'/>
       </div>
       <div>
-        <button onclick={ColorTagAdd} data-format='0'>Add</button><br/>
+        <button onclick={ColorTagAdd} data-format='0'>Add</button><br/><br/>
         <button onclick={ColorTagAdd} data-format='1'>Add</button>
       </div>
       <button onclick={ColorTagsClear}>Clear</button>
@@ -32,6 +33,7 @@
     :host {
       .input-panel {
         display: flex;
+        gap: 20px;
 
         input { width: 70px; }
       }
@@ -47,6 +49,8 @@
 
           >span {
             display: inline-block; margin: 5px; border: 2px solid; padding: 1px; min-width: 100px; text-align: center;
+
+            &:first-child { width: 200px; }
           }
         }
       }
@@ -72,30 +76,34 @@
         let B = '255',
             G = '255',
             R = '255';
+            A = '1';
 
         if (Str.length < 6) {
-          R = parseInt(Str.charAt(0) + '0', 16).toString(),
-          G = parseInt(Str.charAt(1) + '0', 16).toString(),
+          R = parseInt(Str.charAt(0) + '0', 16).toString();
+          G = parseInt(Str.charAt(1) + '0', 16).toString();
           B = parseInt(Str.charAt(2) + '0', 16).toString();
+          A = '1';
         }
         else {
-          R = parseInt(Str.substr(0, 2), 16).toString(),
-          G = parseInt(Str.substr(2, 2), 16).toString(),
+          R = parseInt(Str.substr(0, 2), 16).toString();
+          G = parseInt(Str.substr(2, 2), 16).toString();
           B = parseInt(Str.substr(4, 2), 16).toString();
+          A = (parseInt(Str.substr(6, 2), 16) / 256).toString() || '255';
         }
 
-        return `rgba(${R}, ${G}, ${B}, 1)`;
+        return `rgba(${R}, ${G}, ${B}, ${A})`;
       },
 
       /* convert CSS Color code from RGB to hex format.
         'R' = Red color value.
         Return: CSS color code with hex format. */
-      ColorRGBTo16 (R, G, B) {
+      ColorRGBATo16 (R, G, B, A) {
         R = parseInt(R, 10).toString(16).padStart(2, '0');
         G = parseInt(G, 10).toString(16).padStart(2, '0');
         B = parseInt(B, 10).toString(16).padStart(2, '0');
+        A = Math.round(parseFloat(A) * 255).toString(16).padStart(2, '0');
 
-        return `#${R}${G}${B}`;
+        return `#${R}${G}${B}${A}`;
       },
 
       ColorTagAdd (Evt) {
@@ -103,7 +111,7 @@
               Fmt = parseInt(Evt.target.dataset.format, 10);
 
         let Clr = '',
-            Clr16 = '#ffffff',
+            Clr16 = '#ffffffff',
             CrntRGBA = this.state.CrntRGBA;
 
         if (Fmt === 1) {
@@ -113,7 +121,7 @@
               A = this.$('#A').value;
 
           Clr = `rgba(${R}, ${G}, ${B}, ${A})`;
-          Clr16 = this.ColorRGBTo16(R, G, B);
+          Clr16 = this.ColorRGBATo16(R, G, B, A);
         }
         else {
           Clr16 = this.$('#Clr').value.toLowerCase();
