@@ -6,14 +6,14 @@
 -->
 <page-datetime>
   <page-layout>
-    <div>
-      <div class='Block' style='border: 1px solid; border-radius: 5px;'>
+    <div class="action-panel">
+      <div>
         encodeURI | decodeURI <br/>
         <label>Component : <input id='Cpn' type='checkbox' value='Test' checked='true'/></label><br/>
         <button onclick={URIEnDeCode} data-flag='1'>Encode</button>
         <button onclick={URIEnDeCode} data-flag='0'>Decode</button><br/>
       </div>
-      <div class='Block' style='border: 1px solid; border-radius: 5px;'>
+      <div>
         Unicode Encode | Decode<br/>
         <label><input type='radio' name='Md' value={'0'} checked='true'/>XML (&amp;#????;)</label> <!-- reference: http://coderstoolbox.net/string/ -->
         <label><input type='radio' name='Md' value={'1'}/>JSON (\u????)</label><br/>
@@ -21,14 +21,14 @@
         <button style='max-width: 120px;' onclick={UnicodeEnDeCode} data-flag='2'>Encode - HEX</button>
         <button onclick={UnicodeEnDeCode} data-flag='0'>Decode</button><br/>
       </div>
-      <div class='Block' style='border: 1px solid; border-radius: 5px;'>
+      <div>
         Base64 Encode | Decode<br/>
         <label>UTF-8 : <input id='UTF8' type='checkbox' value='UTF-8' checked='true'/></label><br/> <!-- reference: Wikipedia: UTF-8, Base64 & http://5566.appspot.com/base64 -->
         <button onclick={Base64EnDeCodeEx} data-flag='1'>Encode</button>
         <button onclick={Base64EnDeCodeEx} data-flag='0'>Decode</button>
         (Beta)<br/>
       </div>
-      <div class='Block' style='border: 1px solid; border-radius: 5px;'>
+      <div>
         HTML Special Chars Encode | Decode<br/>
         <button onclick={HTMLSpecialCharsEnDeCode} data-flag='1'>Encode</button>
         <button onclick={HTMLSpecialCharsEnDeCode} data-flag='0'>Decode</button>
@@ -44,13 +44,17 @@
   </page-layout>
   <style type='scss'>
     :host {
-      body { font-size: 16px; font-family: monospace; color: #404040; }
-      input { font-size: 16px; max-width: 70px; }
       textarea { margin: 5px 0px; width: 100%; }
-      .Title { display: inline-block; min-width: 50px;}
-      .Block { display: inline-block; margin-bottom: 10px; padding: 5px; vertical-align: top; white-space: nowrap; }
-
-      body > div:first-child > div.Block { margin: 5px; }
+      .action-panel>div {
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        border: 1px solid var(--color-border);
+        border-radius: 5px;
+        padding: 5px;
+        vertical-align: top;
+        white-space: nowrap;
+      }
     }
   </style>
   <script>

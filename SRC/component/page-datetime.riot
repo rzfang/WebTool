@@ -34,7 +34,11 @@
   <style type='scss'>
     :host {
       table { border-spacing: 0; }
-      #DtStrBx > input { max-width: 50px; }
+      #DtStrBx > input {
+        max-width: 50px;
+
+        &:first-child { max-width: 70px; }
+      }
     }
   </style>
   <script>
