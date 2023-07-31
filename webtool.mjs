@@ -137,19 +137,13 @@ const RHC = {
   route: [
     // ==== resource ====
 
-    // node_modules
-    {
-      path: /Is\.js$/,
-      type: 'resource',
-      location: './node_modules/rzjs',
-      nameOnly: true,
-    },
-    {
-      path: /DOM\.js$/,
-      type: 'resource',
-      location: './node_modules/rzjs/browser',
-      nameOnly: true,
-    },
+    // // node_modules
+    // {
+    //   path: /Is\.js$/,
+    //   type: 'resource',
+    //   location: './node_modules/rzjs',
+    //   nameOnly: true,
+    // },
 
     { // SEO files.
       path: /\/(favicon\.ico|robots\.txt|sitemap\.xml)/,
