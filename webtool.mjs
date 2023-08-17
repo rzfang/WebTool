@@ -125,13 +125,11 @@ const RHC = {
     },
   },
   service: {
-    case: {
-      '/service/feed': {
-        post: feed
-      },
-      '/service/transfer': {
-        post: transfer
-      }
+    '/service/feed': {
+      post: feed
+    },
+    '/service/transfer': {
+      post: transfer
     }
   },
   route: [
