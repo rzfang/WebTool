@@ -1,0 +1,12 @@
+:root { --color-background: #ffffff; --color-background-alpha: #ffffffe0; --color-border: #808080; --color-font: #202020; --color-link: #0000ff; --color-link-hover: #400080; --color-link-visited: #400080; }
+.dark-mode { --color-background: #101010; --color-background-alpha: #101010e0; --color-border: #404040; --color-font: #d0d0d0; --color-link: #40ff40; --color-link-hover: #208020; --color-link-visited: #208020; }
+body { margin: 0px; padding: 0px; font-size: 16px; font-family: monospace; color: var(--color-font); background-color: var(--color-background); }
+div, nav, ul, li, td, button, input[type=button], input[type=submit], input[type=text], input[type=number], textarea { border-color: var(--color-border); border-style: solid; }
+div, nav, ul, li, td, button, input[type=button], input[type=submit], input[type=text], input[type=number], textarea { border-radius: 3px; }
+div, ul, li, td { border-width: 0; }
+input[type=text], input[type=number], textarea { border-width: 1px; }
+a, input, option, button { font-size: 16px; }
+a { text-decoration: none; color: var(--color-link); } a:hover { text-decoration: underline; color: var(--color-link-hover); } a:visited { color: var(--color-link-visited); }
+button, input[type=button], input[type=submit] { border-width: 1px; cursor: pointer; }
+button, input[type=button], input[type=submit], input[type=text], input[type=number], select, textarea { color: var(--color-font); background-color: var(--color-background); }
+#footer { position: relative; border-top-width: 1px; text-align: center; } #footer > button { display: none; position: fixed; right: 15px; bottom: 25px; padding: 0 3px; }

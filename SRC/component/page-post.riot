@@ -72,7 +72,7 @@
       },
 
       PostData () {
-        const Url = this.Trim(this.$('#url').value);
+        const Url = this.$('#url').value?.trim();
 
         let Frm = this.$('#param-form');
 

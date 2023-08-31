@@ -422,7 +422,7 @@
     }
 
     Done (Evt) {
-      let NwNm = this.Trim(this.refs.Nm.value), // new name.
+      let NwNm = this.refs.Nm.value?.trim(), // new name.
           ByrNms, // buyer names.
           Idx; // index.
 

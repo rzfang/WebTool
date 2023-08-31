@@ -80,7 +80,7 @@
 
       let Nm = this.refs.Nm;
 
-      if (!Nm || !Nm.value || !this.Trim(Nm.value)) { return alert('you need a name to start.'); }
+      if (!Nm || !Nm.value || !Nm.value?.trim()) { return alert('you need a name to start.'); }
 
       this.Nm = Nm.value;
 
@@ -108,7 +108,7 @@
       }
 
       let Msg = this.refs.Msg,
-          MsgTxt = Msg && Msg.value && this.Trim(Msg.value) || '';
+          MsgTxt = Msg && Msg.value && Msg.value?.trim() || '';
 
       if (!MsgTxt) { return alert('say nothing ?!'); }
 
