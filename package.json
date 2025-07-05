@@ -10,7 +10,7 @@
     "feedparser": "^2.2.9",
     "request": "^2.88.2",
     "riot": "^7.1.0",
-    "riot-4-fun": "^0.2.0",
+    "riot-4-fun": "0.2.0",
     "rzjs": "github:rzfang/Js"
   },
   "devDependencies": {
