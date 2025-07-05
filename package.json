@@ -4,30 +4,28 @@
   "description": "web tool",
   "main": "webtool.mjs",
   "dependencies": {
-    "@riotjs/compiler": "^6.3.2",
-    "@riotjs/hydrate": "^6.0.1",
-    "@riotjs/ssr": "^8.1.2",
     "feedparser": "^2.2.9",
     "request": "^2.88.2",
     "riot": "^7.1.0",
-    "riot-4-fun": "0.2.0",
+    "riot-4-fun": "^0.2.7",
     "rzjs": "github:rzfang/Js"
   },
   "devDependencies": {
     "eslint": "^8.16.0",
     "eslint-plugin-json": "^3.1.0",
-    "node-sass": "^8.0.0",
     "nodemon": "^2.0.16",
     "pre-commit": "^1.2.2",
     "terser": "^5.14.0"
   },
   "scripts": {
-    "dev": "nodemon --experimental-json-modules -d 3 -e js,scss,html,riot -w SRC/ ./webtool.mjs",
-    "ws": "nodemon -d 3 -e js -w SRC/websocket.mjs SRC/websocket.mjs",
+    "dev": "nodemon --experimental-json-modules -d 3 -e js,html,mjs,scss,riot -w SRC/ ./webtool.mjs",
+    "ws": "nodemon -d 3 -w SRC/websocket.mjs SRC/websocket.mjs",
     "lint": "eslint --ext .js,.json,.mjs --ignore-pattern *.riot.*.mjs *.*js SRC",
     "test": "test",
     "start": "node --experimental-json-modules webtool.mjs",
-    "start:pm2": "pm2 start --name webtool npm -- run start"
+    "start:ws": "node SRC/websocket.mjs",
+    "start:pm2": "pm2 start --name webtool npm -- run start",
+    "start:ws:pm2": "pm2 start --name websocket npm -- run start:ws"
   },
   "repository": {
     "type": "git",
