@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import feed from './SRC/service/feed.mjs';
-import payment from './SRC/component/payment.mjs';
+// import payment from './SRC/component/payment.mjs';
 import read from './SRC/component/read.mjs';
 import transfer from './SRC/service/transfer.mjs';
 
