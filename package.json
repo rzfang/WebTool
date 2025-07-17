@@ -1,6 +1,6 @@
 {
   "name": "web_tool",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "web tool",
   "main": "webtool.mjs",
   "dependencies": {
@@ -10,15 +10,20 @@
     "rzjs": "github:rzfang/Js"
   },
   "devDependencies": {
-    "eslint": "^8.16.0",
-    "eslint-plugin-json": "^3.1.0",
+    "@eslint/css": "^0.10.0",
+    "@eslint/js": "^9.31.0",
+    "@eslint/json": "^0.13.0",
+    "@eslint/markdown": "^7.0.0",
+    "@stylistic/eslint-plugin": "^5.1.0",
+    "eslint": "^9.31.0",
+    "globals": "^16.3.0",
     "nodemon": "^2.0.16",
     "pre-commit": "^1.2.2"
   },
   "scripts": {
     "dev": "nodemon --experimental-json-modules -d 3 -e js,html,mjs,scss,riot -w SRC/ ./webtool.mjs",
     "ws": "nodemon -d 3 -w SRC/websocket.mjs SRC/websocket.mjs",
-    "lint": "eslint --ext .js,.json,.mjs --ignore-pattern *.riot.*.mjs *.*js SRC",
+    "lint": "eslint",
     "test": "test",
     "start": "node --experimental-json-modules webtool.mjs",
     "start:ws": "node SRC/websocket.mjs",
@@ -41,54 +46,5 @@
   "homepage": "https://github.com/rzfang/WebTool#readme",
   "pre-commit": [
     "lint"
-  ],
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "es6": true,
-      "node": true
-    },
-    "extends": "eslint:recommended",
-    "parserOptions": {
-      "ecmaVersion": 2020,
-      "sourceType": "module"
-    },
-    "plugins": [
-      "json"
-    ],
-    "rules": {
-      "linebreak-style": [
-        "error",
-        "unix"
-      ],
-      "no-cond-assign": "off",
-      "no-console": [
-        "warn",
-        {
-          "allow": [
-            "warn",
-            "error"
-          ]
-        }
-      ],
-      "no-redeclare": [
-        "warn",
-        {
-          "builtinGlobals": true
-        }
-      ],
-      "no-unused-vars": [
-        "warn",
-        {
-          "vars": "all",
-          "args": "after-used",
-          "ignoreRestSiblings": false
-        }
-      ],
-      "semi": [
-        "error",
-        "always"
-      ]
-    }
-  }
+  ]
 }

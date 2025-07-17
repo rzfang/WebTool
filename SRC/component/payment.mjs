@@ -1,7 +1,7 @@
 import Cch from 'rzjs/node/Cache.js';
 
 export default function Payment (Rqst, URLInfo, Clbck) {
-  let Rst = { TrnsfrData: '' };
+  const Rst = { TrnsfrData: '' };
 
   if (!URLInfo || !URLInfo.query || URLInfo.query.indexOf('t=') < 0) {
     return Clbck(1, Rst);

@@ -3,8 +3,9 @@ import Is from 'rzjs/Is.js';
 import Log from 'rzjs/Log.js';
 import net from 'net';
 
-let Svr, // socket Server.
-    SckA = []; // socket
+const SckA = []; // socket
+
+let Svr; // socket Server.
 
 //==== functions. ======================================================================================================
 
@@ -28,27 +29,26 @@ function IsHandShake (Sck, DataStr) {
 function HandShakeResponse (Sck, DataStr) {
   if (!Sck || !Is.Object(Sck) || !DataStr || !Is.String(DataStr)) { return -1; }
 
-  let SHA1 = crypto.createHash('sha1'), // SHA1 algorithm crypted object.
-      T = {
-        Key: DataStr.match(/Sec-WebSocket-Key: (.+)/),
-        Prtcl: DataStr.match(/Sec-WebSocket-Protocol: (.+)/) }, // protocol.
-      Key,
-      Prtcl; // orotocol of websocket.
+  const SHA1 = crypto.createHash('sha1'); // SHA1 algorithm crypted object.
+  const T = {
+    Key: DataStr.match(/Sec-WebSocket-Key: (.+)/),
+    Prtcl: DataStr.match(/Sec-WebSocket-Protocol: (.+)/),
+  }; // protocol.
 
   if (!T.Key || T.Key.length < 2) { return -2; }
 
   SHA1.update(T.Key[1] + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11');
 
-  Key = SHA1.digest('base64');
-  Prtcl = (!T.Prtcl || T.Prtcl.length < 2) ? '' : T.Prtcl[1];
+  const Key = SHA1.digest('base64');
+  const Prtcl = (!T.Prtcl || T.Prtcl.length < 2) ? '' : T.Prtcl[1]; // porotocol of websocket.
 
   Sck.write(
-    "HTTP/1.1 101 Switching Protocols\r\n" +
-    "Upgrade: websocket\r\n" +
-    "Connection: Upgrade\r\n" +
-    'Sec-WebSocket-Accept: ' + Key + "\r\n" +
+    'HTTP/1.1 101 Switching Protocols\r\n' +
+    'Upgrade: websocket\r\n' +
+    'Connection: Upgrade\r\n' +
+    'Sec-WebSocket-Accept: ' + Key + '\r\n' +
     (Prtcl ? ('Sec-WebSocket-Protocol: ' + Prtcl) : 'chat') +
-    "\r\n\r\n");
+    '\r\n\r\n');
 
   Sck.IsShkd = true;
 
@@ -58,9 +58,8 @@ function HandShakeResponse (Sck, DataStr) {
 function DataFetch (Data) {
   if (!Data || !(Data instanceof Buffer)) { return ''; }
 
-  let MskKy, // mask key.
-      MskData, // mask data.
-      RlData; // roll data.
+  let MskData; // mask data.
+  let MskKy; // mask key.
 
   switch (Data[1] & 127) {
     case 126:
@@ -80,7 +79,7 @@ function DataFetch (Data) {
       MskData = Data.slice(6);
   }
 
-  RlData = new Buffer(MskData.length);
+  const RlData = new Buffer(MskData.length);
 
   for (let i = 0; i < RlData.length; i++) { RlData[i] = MskKy[i % 4] ^ MskData[i]; }
 
@@ -116,13 +115,13 @@ function DataPack (Data) {
 
   PrxBfr[0] = 0x81;
 
-  return Buffer.concat([PrxBfr, Data]);
+  return Buffer.concat([ PrxBfr, Data ]);
 }
 
 function SystemPost (Str) {
   if (!Str || !Is.String(Str)) { return -1; }
 
-  let Data = DataPack(new Buffer(Str));
+  const Data = DataPack(new Buffer(Str));
 
   for (let i = 0; i < SckA.length; i++) { SckA[i].write(Data); }
 
@@ -137,7 +136,7 @@ function TextTransmit (Sck) {
 
   // Log(Sck.Data.toString(), 3);
 
-  let Data = DataPack(Sck.Data);
+  const Data = DataPack(Sck.Data);
 
   for (let i = 0; i < SckA.length; i++) { SckA[i].write(Data); }
 
@@ -203,7 +202,7 @@ const Wbsckt = {
         'data',
         Data => {
           if (!this.IsShkd) {
-            let DataStr = Data.toString();
+            const DataStr = Data.toString();
 
             if (IsHandShake(this, DataStr)) {
               HandShakeResponse(this, DataStr);
@@ -212,7 +211,7 @@ const Wbsckt = {
             }
           }
 
-          this.Data = Buffer.concat([this.Data, DataFetch(Data)]);
+          this.Data = Buffer.concat([ this.Data, DataFetch(Data) ]);
 
           // check if data transmission is finished.
           if (Data[0] & 128 === 0) { return 2; }

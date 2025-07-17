@@ -1,6 +1,4 @@
 (function Z_Obj_API () {
-  let Obj;
-
   /* Combine the seconde object into first object.
     @ Base Object.
     @ Extend Object.
@@ -15,11 +13,11 @@
     if (!Md) {
       RstObj = {};
 
-      for (let i in BsObj) { RstObj[i] = BsObj[i]; }
+      for (const i in BsObj) { RstObj[i] = BsObj[i]; }
     }
     else { RstObj = BsObj; }
 
-    for (let i in ExtObj) { RstObj[i] = ExtObj[i]; }
+    for (const i in ExtObj) { RstObj[i] = ExtObj[i]; }
 
     return RstObj;
   }
@@ -59,7 +57,7 @@
       return BsObj;
     }
 
-    for (let i in ExtObj) {
+    for (const i in ExtObj) {
       if (!Object.prototype.hasOwnProperty.call(ExtObj, i)) { continue; }
 
       if (!BsObj[i] || typeof BsObj[i] !== 'object') {
@@ -76,11 +74,11 @@
     return Merge(null, Obj);
   }
 
-  Obj = {
+  const Obj = {
     Combine: Combine,
     Dig: Dig,
     Merge: Merge,
-    Clone: Clone
+    Clone: Clone,
   };
 
   if (typeof module !== 'undefined') { module.exports = Obj; }

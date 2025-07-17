@@ -15,15 +15,15 @@
       </ul>
     </div>
     <table class='output-box'>
-      <tbody class={state.HdEql && 'hide-equal'}>
-        <tr each={Ky in PrprtyKys} class={state.EqlKys.includes(Ky) && 'is-equal'}>
+      <tbody class={state.HdEql ? 'hide-equal' : ''}>
+        <tr each={Ky in PrprtyKys} class={state.EqlKys.includes(Ky) ? 'is-equal' : ''}>
             <td>{Ky}</td>
             <td each={Url in state.Urls}>{Url[Ky]}</td>
         </tr>
         <tr>
           <td colspan='3'>parsed searchParams</td>
         </tr>
-        <tr each={Ky in state.SrchPrmKys} class={state.EqlKys.includes(Ky) && 'is-equal'}>
+        <tr each={Ky in state.SrchPrmKys} class={state.EqlKys.includes(Ky) ? 'is-equal' : ''}>
           <td>{Ky}</td>
           <td each={Url in state.Urls}>{Url && Url.SrchPrmsObjct && Url.SrchPrmsObjct[Ky] || ''}</td>
         </tr>

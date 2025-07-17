@@ -15,15 +15,16 @@ export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
 
   if (FdInfo) { return Clbck(1, FdInfo); }
 
-  let SvcRqst = request(encodeURI(RqstInfo.Bd.URL)), // server request.
-      FdPrsr = new feedparser(), // feed parser.
-      IsEnd = false; // is end flag.
+  const FdPrsr = new feedparser(); // feed parser.
+  const SvcRqst = request(encodeURI(RqstInfo.Bd.URL)); // server request.
+
+  let IsEnd = false; // is end flag.
 
   FdInfo = { FdURL: RqstInfo.Bd.URL, Itms: [] }; // default, feed url, items.
 
   SvcRqst.on(
     'error',
-    (Err) => {
+    () => {
       if (IsEnd) { return; }
 
       Clbck(-2, null);
@@ -34,7 +35,7 @@ export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
   SvcRqst.on(
     'response',
     function (Rspns) {
-      let Strm = this; // stream object.
+      const Strm = this; // stream object.
 
       if (Rspns.statusCode !== 200) { this.emit('error', new Error('Bad status code')); }
       else { Strm.pipe(FdPrsr); }
@@ -42,7 +43,7 @@ export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
 
   FdPrsr.on(
     'error',
-    (Err) => {
+    () => {
       if (IsEnd) { return; }
 
       Clbck(-3, null);
@@ -59,16 +60,20 @@ export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
   FdPrsr.on(
     'readable',
     function () {
-      let Strm = this,
-          Itm; // stream object.
+      const Strm = this;
 
-       while (Itm = Strm.read()) {
-        let {
+      let Itm = Strm.read(); // stream object.
+
+      while (Itm) {
+        const {
           title: Ttl = '',
           date: Dt = '',
-          link: Lnk = '' } = Itm;
+          link: Lnk = '',
+        } = Itm;
 
         FdInfo.Itms.push({ Ttl, Dt, Lnk });
+
+        Itm = Strm.read();
       }
     });
 

@@ -10,8 +10,8 @@ import transfer from './SRC/service/transfer.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const STTC_PTH = path.resolve(__dirname, './WEB'),
-      TMP_PTH = path.resolve(__dirname, './DAT/temp');
+const STTC_PTH = path.resolve(__dirname, './WEB');
+const TMP_PTH = path.resolve(__dirname, './DAT/temp');
 
 const DftPgRt = { // here should handle 404.
   title: 'Web Tool',
@@ -126,11 +126,11 @@ const RHC = {
   },
   service: {
     '/service/feed': {
-      post: feed
+      post: feed,
     },
     '/service/transfer': {
-      post: transfer
-    }
+      post: transfer,
+    },
   },
   route: [
     // ==== resource ====
@@ -146,19 +146,19 @@ const RHC = {
     { // SEO files.
       path: /\/(favicon\.ico|robots\.txt|sitemap\.xml)/,
       type: 'resource',
-      location: STTC_PTH
+      location: STTC_PTH,
     },
     { // resource: Js.
       path: /\.js$/,
       type: 'resource',
-      location: STTC_PTH
+      location: STTC_PTH,
     },
     { // riot component js compiled in runtime.
       path: /\.riot$/,
       type: 'riot4js',
-      location: './component'
-    }
-  ]
+      location: './component',
+    },
+  ],
 };
 
 Http.Build(RHC, 'mjs').Initialize(RHC).Run();

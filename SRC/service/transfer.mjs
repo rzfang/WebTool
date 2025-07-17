@@ -8,8 +8,9 @@ const CdMp = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQq0Rr1Ss2Tt3Uu4Vv5Ww6Xx7Yy8Zz9'; /
   @ seed.
   Return: an key string. */
 function KeyGenerate (Sd) {
-  let Hsh = crypto.createHash('md5').update(Sd).digest('base64'), // hash string.
-      Ky = ''; // key.
+  const Hsh = crypto.createHash('md5').update(Sd).digest('base64'); // hash string.
+
+  let Ky = ''; // key.
 
   for (let i = 0; i < Hsh.length; i += 4) {
     let Chr = Hsh.charCodeAt(i) + Hsh.charCodeAt(i + 1) + Hsh.charCodeAt(i + 2) + Hsh.charCodeAt(i + 3);
@@ -29,8 +30,9 @@ export default function Transfer (Rqst, Rspns, RqstInfo, Clbck) {
     return Clbck(-1, null);
   }
 
-  let Dt = new Date(),
-      Ky = KeyGenerate(RqstInfo.Bd.Ctn + Dt.getTime().toString());
+  const Dt = new Date();
+
+  let Ky = KeyGenerate(RqstInfo.Bd.Ctn + Dt.getTime().toString());
 
   while(Cch.Has(Ky)) {
     Ky = KeyGenerate(Ky);

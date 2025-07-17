@@ -20,6 +20,6 @@ A website to provide many developing, daily tools.
 P.S. for security reason, the nginx config file and SSL cert files don't join the git.
 
 ## Run dev server
-```
+```sh
 npm run dev;
 ```
