@@ -1,4 +1,4 @@
-// ==== Gloabal Variable ===============================================================================================
+/* === Gloabal Variable === */
 
 :root {
   --color-background: #ffffff;
@@ -20,7 +20,7 @@
   --color-link-visited: #208020;
 }
 
-// ==== Normal Element =================================================================================================
+/* === Normal Element === */
 
 body {
   margin: 0px;
@@ -31,24 +31,52 @@ body {
   background-color: var(--color-background);
 }
 
-div, nav, ul, li, td, button, input[type=button], input[type=submit], input[type=text], input[type=number], textarea {
+div,
+nav,
+ul,
+li,
+td,
+button,
+input[type=button],
+input[type=submit],
+input[type=text],
+input[type=number],
+textarea {
   border-color: var(--color-border);
   border-style: solid;
 }
 
-div, nav, ul, li, td, button, input[type=button], input[type=submit], input[type=text], input[type=number], textarea {
+div,
+nav,
+ul,
+li,
+td,
+button,
+input[type=button],
+input[type=submit],
+input[type=text],
+input[type=number],
+textarea {
   border-radius: 3px;
 }
 
-div, ul, li, td {
+div,
+ul,
+li,
+td {
   border-width: 0;
 }
 
-input[type=text], input[type=number], textarea {
+input[type=text],
+input[type=number],
+textarea {
   border-width: 1px;
 }
 
-a, input, option, button {
+a,
+input,
+option,
+button {
   font-size: 16px;
 }
 
@@ -66,17 +94,25 @@ a {
   }
 }
 
-button, input[type=button], input[type=submit] {
+button,
+input[type=button],
+input[type=submit] {
   border-width: 1px;
   cursor: pointer;
 }
 
-button, input[type=button], input[type=submit], input[type=text], input[type=number], select, textarea {
+button,
+input[type=button],
+input[type=submit],
+input[type=text],
+input[type=number],
+select,
+textarea {
   color: var(--color-font);
   background-color: var(--color-background);
 }
 
-// ==== Structure ======================================================================================================
+/* === Structure === */
 
 #footer {
   position: relative;
@@ -92,4 +128,4 @@ button, input[type=button], input[type=submit], input[type=text], input[type=num
   }
 }
 
-//======================================================================================================================
+/* === */

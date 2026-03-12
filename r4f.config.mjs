@@ -1,4 +1,3 @@
-import Http from 'riot-4-fun/SRC/Http.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -19,11 +18,11 @@ const DftPgRt = { // here should handle 404.
   keywords: '網頁, 工具, Web, Tool',
   author: 'RZ Fang',
   favicon: '',
-  css: [ './SRC/css.scss' ],
+  css: [ './SRC/css.css' ],
   js: [],
 };
 
-const RHC = {
+const config = {
   port: 9001,
   uploadFilePath: TMP_PTH,
   page: {
@@ -135,31 +134,17 @@ const RHC = {
   route: [
     // ==== resource ====
 
-    // // node_modules
-    // {
-    //   path: /Is\.js$/,
-    //   type: 'resource',
-    //   location: './node_modules/rzjs',
-    //   nameOnly: true,
-    // },
-
     { // SEO files.
       path: /\/(favicon\.ico|robots\.txt|sitemap\.xml)/,
       type: 'resource',
       location: STTC_PTH,
     },
-    { // resource: Js.
-      path: /\.js$/,
-      type: 'resource',
-      location: STTC_PTH,
-    },
-    { // riot component js compiled in runtime.
-      path: /\.riot$/,
-      type: 'riot4js',
-      location: './component',
+    {
+      path: /css\.css$/,
+      location: './SRC',
+      nameOnly: true,
     },
   ],
 };
 
-Http.Build(RHC, 'mjs').Initialize(RHC).Run();
-// Http.Build(RHC, 'mjs');
+export default config;

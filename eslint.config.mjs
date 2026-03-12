@@ -7,7 +7,7 @@ import stylistic from '@stylistic/eslint-plugin'
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  globalIgnores ([ '**/*.riot.*.mjs', 'package-lock.json' ]),
+  globalIgnores ([ '**/*.riot.*.mjs', 'package-lock.json', '.r4f' ]),
   {
     files: [ '**/*.{js,mjs,cjs}' ],
     languageOptions: {
@@ -31,6 +31,9 @@ export default defineConfig([
     files: [ '**/*.css' ],
     language: 'css/css',
     plugins: { css },
+    rules: {
+      'css/use-baseline': [ 'error', { allowSelectors: [ 'nesting' ] } ],
+    },
   },
   {
     extends: [ 'js/recommended' ],
