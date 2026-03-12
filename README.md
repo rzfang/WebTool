@@ -5,9 +5,6 @@ A website to provide many developing, daily tools.
 
 ## This project uses
 * HTML, Js, CSS
-* [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/)
-* [Riot](https://riot.js.org/)
-* [Sass](https://sass-lang.com/)
 * [riot-4-fun](https://www.npmjs.com/package/riot-4-fun)
 
 ## Open community libraries that tools uses:
