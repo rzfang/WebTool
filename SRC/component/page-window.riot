@@ -114,13 +114,14 @@
       <a href='http://weblog.gilbert.tw/public/scripts/js_windowopen.html'>Javascript - window.open() Syntax Generator </a>
     </div>
   </page-layout>
-  <style type='scss'>
+  <style>
     :host {
       table td { max-width: 500px; margin: 0px; padding: 5px; border: 1px solid; }
     }
   </style>
   <script>
-    import DOM from 'rzjs/browser/DOM.js';
+    import dom from 'rzjs/browser/dom.mjs';
+
     import pageLayout from './page-layout.riot';
 
     export default {
@@ -129,7 +130,7 @@
       /* Parse each Option to string.
         Return: string of option. */
       OptionParse () {
-        let TRA = DOM.Find('tr'),
+        let TRA = dom.Find('tr'),
             Info = '';
 
         TRA = TRA.slice(1);
@@ -160,16 +161,16 @@
 
       ScriptMake () {
         const Info = this.OptionParse(),
-              URL = DOM.Find('#URL')[0].value,
-              Nm = DOM.Find('#Nm')[0].value;
+              URL = dom.Find('#URL')[0].value,
+              Nm = dom.Find('#Nm')[0].value;
 
-        DOM.Find('#ScptBx')[0].innerHTML = 'window.open(\'' + URL + '\', \'' + Nm + '\', \'' + Info + '\');';
+        dom.Find('#ScptBx')[0].innerHTML = 'window.open(\'' + URL + '\', \'' + Nm + '\', \'' + Info + '\');';
       },
 
       Test (Evt) {
         const Info = this.OptionParse(),
-              URL = DOM.Find('#URL')[0].value,
-              Nm = DOM.Find('#Nm')[0].value;
+              URL = dom.Find('#URL')[0].value,
+              Nm = dom.Find('#Nm')[0].value;
 
         window.open(URL, Nm, Info);
       }

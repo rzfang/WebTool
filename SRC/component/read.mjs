@@ -1,4 +1,4 @@
-import Cch from 'rzjs/node/Cache.js';
+import cch from 'rzjs/node/cache.mjs';
 
 export default function Read (Rqst, URLInfo, Clbck) {
   let Rst = [];
@@ -15,11 +15,11 @@ export default function Read (Rqst, URLInfo, Clbck) {
 
   const TrnsfrKy = RERst[1]; // transfering key.
 
-  if (!Cch.Has(TrnsfrKy)) {
+  if (!cch.Has(TrnsfrKy)) {
     return Clbck(3, Rst);
   }
 
-  Rst = Cch.Get(TrnsfrKy).split('_|_').map(Url => { return { FdUrl: Url, HsBnLdd: false }; });
+  Rst = cch.Get(TrnsfrKy).split('_|_').map(Url => { return { FdUrl: Url, HsBnLdd: false }; });
 
   Rqst.RMI.StoreSet('FEEDS', () => Rst);
   Clbck(0, Rst);

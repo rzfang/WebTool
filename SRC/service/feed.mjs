@@ -1,17 +1,17 @@
-import Cch from 'rzjs/node/Cache.js';
+import cch from 'rzjs/node/cache.mjs';
 import feedparser from 'feedparser';
-import Is from 'rzjs/Is.js';
+import is from 'rzjs/is.mjs';
 import request from 'request';
 
 /*
   @ request info object.
   @ callback function. */
 export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
-  if (!RqstInfo.Bd || !RqstInfo.Bd || !RqstInfo.Bd.URL || !Is.String(RqstInfo.Bd.URL)) {
+  if (!RqstInfo.Bd || !RqstInfo.Bd || !RqstInfo.Bd.URL || !is.String(RqstInfo.Bd.URL)) {
     return Clbck(-1, null);
   }
 
-  let FdInfo = Cch.Get(RqstInfo.Bd.URL); // feed info object.
+  let FdInfo = cch.Get(RqstInfo.Bd.URL); // feed info object.
 
   if (FdInfo) { return Clbck(1, FdInfo); }
 
@@ -85,6 +85,6 @@ export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
       FdInfo.Itms = FdInfo.Itms.slice(0, 5);
 
       Clbck(0, FdInfo);
-      Cch.Set(RqstInfo.Bd.URL, FdInfo, 1800);
+      cch.Set(RqstInfo.Bd.URL, FdInfo, 1800);
     });
 }

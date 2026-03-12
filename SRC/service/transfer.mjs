@@ -1,6 +1,6 @@
-import Cch from 'rzjs/node/Cache.js';
+import cch from 'rzjs/node/cache.mjs';
 import crypto from 'crypto';
-import Is from 'rzjs/Is.js';
+import is from 'rzjs/is.mjs';
 
 const CdMp = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQq0Rr1Ss2Tt3Uu4Vv5Ww6Xx7Yy8Zz9'; // code map string.
 
@@ -26,7 +26,7 @@ function KeyGenerate (Sd) {
   @ request info object. format as { Bd: { Ctn: '...' }}.
   @ callback function. */
 export default function Transfer (Rqst, Rspns, RqstInfo, Clbck) {
-  if (!RqstInfo.Bd || !RqstInfo.Bd.Ctn || !Is.String(RqstInfo.Bd.Ctn)) {
+  if (!RqstInfo.Bd || !RqstInfo.Bd.Ctn || !is.String(RqstInfo.Bd.Ctn)) {
     return Clbck(-1, null);
   }
 
@@ -34,11 +34,11 @@ export default function Transfer (Rqst, Rspns, RqstInfo, Clbck) {
 
   let Ky = KeyGenerate(RqstInfo.Bd.Ctn + Dt.getTime().toString());
 
-  while(Cch.Has(Ky)) {
+  while(cch.Has(Ky)) {
     Ky = KeyGenerate(Ky);
   }
 
-  Cch.Set(Ky, RqstInfo.Bd.Ctn, 600);
+  cch.Set(Ky, RqstInfo.Bd.Ctn, 600);
 
   return Clbck(0, Ky);
 }

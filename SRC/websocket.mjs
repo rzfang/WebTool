@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import Is from 'rzjs/Is.js';
-import Log from 'rzjs/Log.js';
+import is from 'rzjs/is.js';
+import log from 'rzjs/log.js';
 import net from 'net';
 
 const SckA = []; // socket
@@ -13,7 +13,7 @@ let Svr; // socket Server.
   @ Socket object.
   @ socket transmitted Data String. */
 function IsHandShake (Sck, DataStr) {
-  if (!Sck || !Is.Object(Sck) || !DataStr || !Is.String(DataStr)) { return false; }
+  if (!Sck || !is.Object(Sck) || !DataStr || !is.String(DataStr)) { return false; }
 
   if (DataStr.indexOf('GET') !== 0 || DataStr.indexOf('HTTP') < 1 || DataStr.indexOf('Sec-WebSocket-Version') < 1)
   { Sck.IsShkd = false; }
@@ -27,7 +27,7 @@ function IsHandShake (Sck, DataStr) {
   @ Socket object.
   @ socket transmitted Data String. */
 function HandShakeResponse (Sck, DataStr) {
-  if (!Sck || !Is.Object(Sck) || !DataStr || !Is.String(DataStr)) { return -1; }
+  if (!Sck || !is.Object(Sck) || !DataStr || !is.String(DataStr)) { return -1; }
 
   const SHA1 = crypto.createHash('sha1'); // SHA1 algorithm crypted object.
   const T = {
@@ -119,7 +119,7 @@ function DataPack (Data) {
 }
 
 function SystemPost (Str) {
-  if (!Str || !Is.String(Str)) { return -1; }
+  if (!Str || !is.String(Str)) { return -1; }
 
   const Data = DataPack(new Buffer(Str));
 
@@ -134,7 +134,7 @@ function SystemPost (Str) {
 function TextTransmit (Sck) {
   if (!Sck || !(Sck instanceof net.Socket) || !Sck.Data || !(Sck.Data instanceof Buffer)) { return -1; }
 
-  // Log(Sck.Data.toString(), 3);
+  // log(Sck.Data.toString(), 3);
 
   const Data = DataPack(Sck.Data);
 
@@ -144,7 +144,7 @@ function TextTransmit (Sck) {
 }
 
 function BinaryReceive (Sck) {
-  Log(Sck.Data, 3);
+  log(Sck.Data, 3);
 }
 
 function Disconnect (Sck) {
@@ -166,21 +166,21 @@ function Disconnect (Sck) {
 
 const Wbsckt = {
   Initialize: Port => {
-    if (!Port || !Is.Number(Port)) {
-      Log('socket server can not work with such values.');
+    if (!Port || !is.Number(Port)) {
+      log('socket server can not work with such values.');
 
       return;
     }
 
     Svr = net.createServer(ServerCreate);
 
-    Svr.listen(Port, () => { Log('socket server starts with port 9002.'); });
+    Svr.listen(Port, () => { log('socket server starts with port 9002.'); });
 
     return;
 
     function ServerCreate (Sck) {
       if (!Sck) {
-        Log('socket comes with error.', 1);
+        log('socket comes with error.', 1);
 
         return -1;
       }
@@ -189,13 +189,13 @@ const Wbsckt = {
       Sck.Data = new Buffer(0);
 
       SckA.push(Sck);
-      Sck.on('end', () => { Log('end', 3); });
+      Sck.on('end', () => { log('end', 3); });
 
       Sck.on(
         'error',
         error => {
-          Log('error', 3);
-          Log(error, 3);
+          log('error', 3);
+          log(error, 3);
         });
 
       Sck.on(
@@ -233,17 +233,17 @@ const Wbsckt = {
               break;
 
             case 9:
-              Log('ping control frame.', 3);
+              log('ping control frame.', 3);
 
               break;
 
             case 10:
-              Log('pong control frame.', 3);
+              log('pong control frame.', 3);
 
               break;
 
             default:
-              Log('strange TCP/IP package.', 1);
+              log('strange TCP/IP package.', 1);
 
               return -1;
           }

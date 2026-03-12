@@ -15,7 +15,7 @@
       </li>
     </ul>
   </nav>
-  <style type='scss'>
+  <style>
     :host {
       display: block;
       position: sticky;
@@ -149,13 +149,14 @@
 
 <page-footer>
   <a href='/'> Web Tool - ZII</a>
-  <span>© 2011-2022 RZ Fang</span>
+  <span> © 2011-2026 RZ Fang</span>
   <button onclick={ScrollToTop}>^Top</button>
-  <style type='scss'>
+  <style>
     :host {
       display: block;
       position: relative;
       border-top: 1px solid var(--color-border);
+      padding: 5px;
       text-align: center;
 
       >button {
@@ -210,7 +211,7 @@
   <page-header/>
   <slot/>
   <page-footer/>
-  <style type='scss'>
+  <style>
     :host {
       display: block; margin: 0 auto; max-width: 1000px;
 

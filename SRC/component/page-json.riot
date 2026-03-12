@@ -29,7 +29,7 @@
       </div>
     </div>
   </page-layout>
-  <style type='scss'>
+  <style>
     :host {
       .Grid { display: table; }
       .Grid > .Cell { display: table-cell; vertical-align: middle; }
@@ -53,8 +53,9 @@
     }
   </style>
   <script>
-    import DOM from 'rzjs/browser/DOM.js';
-    import Is from 'rzjs/Is.js';
+    import dom from 'rzjs/browser/dom.mjs';
+    import is from 'rzjs/is.mjs';
+
     import pageLayout from './page-layout.riot';
 
     export default {
@@ -131,17 +132,17 @@
         Rt.innerHTML = '';
         Rt.className = '';
 
-        if (Is.Number(JO)) {
+        if (is.Number(JO)) {
           Rt.className = 'EdtNd number';
 
           Rt.appendChild(document.createTextNode(JO.toString()));
         }
-        else if (Is.String(JO)) {
+        else if (is.String(JO)) {
           Rt.className = 'EdtNd string';
 
           Rt.appendChild(document.createTextNode('"' + JO + '"'));
         }
-        else if (Is.Number(JO.length)) { QuoteMarkRender(Rt, JO, 'array'); }
+        else if (is.Number(JO.length)) { QuoteMarkRender(Rt, JO, 'array'); }
         else { QuoteMarkRender(Rt, JO, 'object'); }
 
         return 0;
@@ -157,7 +158,7 @@
           FstNd.className = 'TglNd';
           FstNd.dataset.suffix = '-';
 
-          if (!Is.Object(Rt) || !Is.Object(Obj)) { return -1; }
+          if (!is.Object(Rt) || !is.Object(Obj)) { return -1; }
 
           if (Tp === 'array') {
             FstNd.textContent = '[';
@@ -181,9 +182,9 @@
           let Rt = document.createElement('ul'),
               IsA = false;
 
-          if (!Is.Object(Obj) || Obj === null) { return document.createElement('span'); }
+          if (!is.Object(Obj) || Obj === null) { return document.createElement('span'); }
 
-          if (Is.Number(Obj.length)) { IsA = true; }
+          if (is.Number(Obj.length)) { IsA = true; }
 
           for (let i in Obj) {
             const NdStt = IsA ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : ');
@@ -212,7 +213,7 @@
               case 'object':
                 Nd = document.createElement('li');
 
-                if (Is.Array(Obj[i]) && Is.Number(Obj[i].length)) {
+                if (is.Array(Obj[i]) && is.Number(Obj[i].length)) {
                   Nd.innerHTML = NdStt;
 
                   QuoteMarkRender(Nd, Obj[i], 'array');
@@ -238,7 +239,7 @@
       DataEdit (Evt) {
         const Nd = Evt.Element();
 
-        let IptBx = DOM.Find('#IptBx')[0],
+        let IptBx = dom.Find('#IptBx')[0],
             IptNd = IptBx.Children('textarea')[0];
 
         if (Nd.className.indexOf('EdtNd') < 0) { return -1; }
@@ -321,7 +322,7 @@
           'Nds' = Nodes array.
           'Obj' = Object to collect JSON data. */
         function NodesLoop (Nds, Obj) {
-          if (!Is.Object(Nds) || !Is.Number(Nds.length)) { return -1; }
+          if (!is.Object(Nds) || !is.Number(Nds.length)) { return -1; }
 
           for (let i = 0; i < Nds.length; i++) {
             if (Nds[i].nodeType !== 1 || Nds[i].nodeName !== 'LI') { return -2; }
@@ -336,7 +337,7 @@
           'RtNd' = Root Node.
           'Obj' = Object to collect JSON data. */
         function DataFetch (RtNd, Obj) {
-          if (!Is.Object(RtNd) || !Is.String(RtNd.nodeName) || !Is.Object(Obj)) { return -1; }
+          if (!is.Object(RtNd) || !is.String(RtNd.nodeName) || !is.Object(Obj)) { return -1; }
 
           let Nds = RtNd.querySelectorAll(':scope>*');
 

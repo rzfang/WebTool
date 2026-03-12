@@ -1,9 +1,10 @@
-import Cch from 'rzjs/node/Cache.js';
-import Is from 'rzjs/Is.js';
+import cch from 'rzjs/node/cache.mjs';
+import is from 'rzjs/is.js';
+
 import { KeyGenerate } from '../helper.mjs';
 
 export function ConnectionGet (Rqst, URLInfo, Clbck) {
-  if (!Is.String(URLInfo.query) ||  URLInfo.query.indexOf('c=') < 0) {
+  if (!is.String(URLInfo.query) ||  URLInfo.query.indexOf('c=') < 0) {
     return Clbck(1, null);
   }
 
@@ -11,11 +12,11 @@ export function ConnectionGet (Rqst, URLInfo, Clbck) {
   console.log('--- 102 ---');
   console.log(Ky);
 
-  if (!Cch.Has(Ky)) {
+  if (!cch.Has(Ky)) {
     return Clbck(2, null);
   }
 
-  const Ofr = Cch.Get(Ky);
+  const Ofr = cch.Get(Ky);
 
   Rqst.R4FMI.StoreSet('CONNECTION', () => { return { Ky, Ofr }; });
   Clbck(0, { Ky, Ofr });
@@ -31,14 +32,14 @@ export function ConnectionRegister (Rqst, Rspns, RqstInfo, Clbck) {
   const Dt = new Date();
   let Ky = KeyGenerate(Ofr.sdp + Dt.getTime().toString());
 
-  while(Cch.Has(Ky)) {
+  while(cch.Has(Ky)) {
     Ky = KeyGenerate(Ky);
   }
 
-  Cch.Set(Ky, Ofr, 600);
+  cch.Set(Ky, Ofr, 600);
 
   console.log('--- 101 ---');
-  console.log(Cch.Get(Ky));
+  console.log(cch.Get(Ky));
 
   return Clbck(0, Ky);
 }

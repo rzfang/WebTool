@@ -104,9 +104,10 @@
     cover-box button { margin: 10px 5px 0 5px; padding: 0 5px; }
   </style>
   <script>
+    import is from 'rzjs/is.mjs';
+
     import coverBox from './cover-box.riot';
     import pageLayout from './page-layout.riot';
-    import { Is } from 'rzjs/Is.js';
 
     export default {
       components: { coverBox, feed, pageLayout },
@@ -142,16 +143,16 @@
       },
 
       UrlsFilter (Urls) {
-        if (!Is.Array(Urls)) { return []; }
+        if (!is.Array(Urls)) { return []; }
 
-        return Urls.filter(Url => { return Is.URL(Url); });
+        return Urls.filter(Url => { return is.URL(Url); });
       },
 
       OneFeedAdd (Evt) {
         const FdUrls = window.localStorage.FdURLs,
               Url = this.$('input[type=text]').value;
 
-        if (!Is.URL(Url)) { return alert('this is not a standard Url.'); }
+        if (!is.URL(Url)) { return alert('this is not a standard Url.'); }
 
         if (FdUrls.indexOf(Url) > -1) { return alert('this url has been added before.'); }
 

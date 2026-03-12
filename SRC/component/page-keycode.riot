@@ -18,7 +18,7 @@
       <button onclick={HistoryClear}>Clear</button>
     </div>
   </page-layout>
-  <style type='scss'>
+  <style>
     :host {
       .Title { display: inline-block; width: 100px; }
 
@@ -28,7 +28,8 @@
     }
   </style>
   <script>
-    import DOM from 'rzjs/browser/DOM.js';
+    import dom from 'rzjs/browser/dom.mjs';
+
     import pageLayout from './page-layout.riot';
 
     export default {
@@ -49,7 +50,7 @@
       KeyCodeGet (Evt, ID) {
         /*==== current state show. ====*/
 
-        let Elt = DOM.Find('#' + ID)[0], // 'Elt' = Element.
+        let Elt = dom.Find('#' + ID)[0], // 'Elt' = Element.
             KyStr = 'keyCode: ' + Evt.keyCode + ' (0x' + Evt.keyCode.toString(16) + ')'; // 'KyStr' = Key String.
 
         if (Evt.keyCode === 0)
@@ -63,15 +64,15 @@
         /*==== history log process. ====*/
 
         const ChkIDMpO = { 'KeyDown': 'LgDwnChk', 'KeyPress': 'LgPrsChk', 'KeyUp': 'LgUpChk' };
-        const ChkElt = DOM.Find('#' + ChkIDMpO[ID])[0];
+        const ChkElt = dom.Find('#' + ChkIDMpO[ID])[0];
 
         let HstElt, // history element.
             LgElt; // log element.
 
         if (!ChkElt.checked) { return -1; }
 
-        HstElt = DOM.Find('#Hst')[0];
-        LgElt = DOM.NewNode('tr');
+        HstElt = dom.Find('#Hst')[0];
+        LgElt = dom.NewNode('tr');
 
         LgElt.innerHTML = '<td>' + ID + '</td><td>' + KyStr + '</td>';
 
@@ -83,7 +84,7 @@
       },
 
       HistoryClear () {
-        DOM.Find('#Hst')[0].innerHTML = '';
+        dom.Find('#Hst')[0].innerHTML = '';
       }
     }
   </script>

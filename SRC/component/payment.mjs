@@ -1,4 +1,4 @@
-import Cch from 'rzjs/node/Cache.js';
+import cch from 'rzjs/node/cache.mjs';
 
 export default function Payment (Rqst, URLInfo, Clbck) {
   const Rst = { TrnsfrData: '' };
@@ -15,11 +15,11 @@ export default function Payment (Rqst, URLInfo, Clbck) {
 
   const TrnsfrKy = RERst[1]; // transfering key.
 
-  if (!Cch.Has(TrnsfrKy)) {
+  if (!cch.Has(TrnsfrKy)) {
     return Clbck(3, Rst);
   }
 
-  Rst.TrnsfrData = Cch.Get(TrnsfrKy);
+  Rst.TrnsfrData = cch.Get(TrnsfrKy);
 
   Clbck(0, Rst);
 }
