@@ -22,13 +22,6 @@
 * 20220618
   innerHTML update > Riot.js update
 
-* 20191124
-  make my ideal riot.js
-  so far
-    - put root component in the end of file.
-  ideal
-    - auto detect root component.
-
 * 20170522
   sitemap.xml can provide by server.js itself, by passing the page.json.
 
@@ -41,28 +34,5 @@
 
 * 20140501
   時間工具可加上時區。
-
-## Work Log
-
-* 20141026
-  SASS 導入完成。
-  datetime.html 加入手動更新時間按鈕。
-  統整 url.
-
-* 20141014
-  SASS 開發環境建置。
-  開始整合 CSS file.
-
-* 20140716
-  安裝路徑更換。
-  1.0.2 release.
-
-* 20140606
-  json.html 修復功能。
-  1.0.1 release.
-
-* 20140605
-  ZPack 控管。
-  1.0.0 release.
 
 ========================================================================================================================
