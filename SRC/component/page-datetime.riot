@@ -8,12 +8,28 @@
       </div><br/>
       <b>Basic Format</b>
       <table>
-        <tr><td>Second</td><td id='NowDateScd'></td></tr>
-        <tr><td>Local</td><td id='NowDate'></td></tr>
-        <tr><td>UTC</td><td id='UTCDate'></td></tr>
+        <tr><td>Seconds</td><td id='NowDateScd'>{DateToSecondString(state.date)}</td></tr>
+        <tr><td>Local</td><td id='NowDate'>{DateToNowString(state.date)}</td></tr>
+        <tr><td>UTC</td><td id='UTCDate'>{DateToUtcString(state.date)}</td></tr>
       </table><br/>
       <b>Date Object Function Result</b>
       <table id='DftFmt'></table>
+
+      <table>
+        <tbody>
+          <tr><td>toString</td><td>: {state.date.toString()}</td></tr>
+          <tr><td>toDateString</td><td>: {state.date.toDateString()}</td></tr>
+          <tr><td>toTimeString</td><td>: {state.date.toTimeString()}</td></tr>
+
+          <tr><td>toLocaleString</td><td>: {state.date.toLocaleString()}</td></tr>
+          <tr><td>toLocaleDateString</td><td>: {state.date.toLocaleDateString()}</td></tr>
+          <tr><td>toLocaleTimeString</td><td>: {state.date.toLocaleTimeString()}</td></tr>
+
+          <tr><td>toGMTString</td><td>: {state.date.toGMTString()}</td></tr>
+          <tr><td>toISOString</td><td>: {state.date.toISOString()}</td></tr>
+          <tr><td>toUTCString</td><td>: {state.date.toUTCString()}</td></tr>
+        </tbody>
+      </table>
     </div>
     <br/><hr/><br/>
     <div>
@@ -42,15 +58,66 @@
     }
   </style>
   <script>
+    import is from 'rzjs/is.mjs';
     import pageLayout from './page-layout.riot';
 
     export default {
       components: { pageLayout },
 
+      state: {
+        date: new Date(),
+        seconds: '',
+      },
+
       onMounted () {
         if (this.OnBrowser()) {
           setTimeout(this.DateUpdate, 999);
         }
+      },
+
+      DateToNowString (Dt) {
+        if (!Dt || !is.Date(Dt)) {
+          return '';
+        }
+
+        let TZOH = Dt.getTimezoneOffset() / 60; // 'TZOH' = Time Zone Offset Hour.
+
+        TZOH = (TZOH > 0 ? '-' : '+') + Math.abs(TZOH).toString().padStart(2, '0');
+
+        return Dt.getFullYear() + '-' +
+          (Dt.getMonth() + 1).toString().padStart(2, '0') + '-' +
+          Dt.getDate().toString().padStart(2, '0') + ' ' +
+          Dt.getHours().toString().padStart(2, '0') + ':' +
+          Dt.getMinutes().toString().padStart(2, '0') + ':' +
+          Dt.getSeconds().toString().padStart(2, '0') + '.' +
+          Dt.getMilliseconds().toString().padStart(3, '0') +
+          ' (' + Dt.getDay() + ') ' +
+          TZOH;
+      },
+
+      DateToUtcString (Dt) {
+        if (!Dt || !is.Date(Dt)) {
+          return '';
+        }
+
+        return  Dt.getUTCFullYear() + '-' +
+          (Dt.getUTCMonth() + 1).toString().padStart(2, '0') + '-' +
+          Dt.getUTCDate().toString().padStart(2, '0') + ' ' +
+          Dt.getUTCHours().toString().padStart(2, '0') + ':' +
+          Dt.getUTCMinutes().toString().padStart(2, '0') + ':' +
+          Dt.getUTCSeconds().toString().padStart(2, '0') + '.' +
+          Dt.getUTCMilliseconds().toString().padStart(3, '0') +
+          ' (' + Dt.getUTCDay() + ')';
+      },
+
+      DateToSecondString (Dt) {
+        if (!Dt || !is.Date(Dt)) {
+          return '';
+        }
+
+        let Scds = Dt.getTime().toString(); // 'Scds' = Seconds.
+
+        return Scds.substr(0, Scds.length - 3) + '.' + Scds.substr(Scds.length - 3);
       },
 
       DateUpdate (Evt) {
@@ -62,51 +129,7 @@
 
         const Dt = Mlscd ? new Date(Mlscd) : new Date();
 
-        let Scd = Dt.getTime().toString(), // 'Scd' = Second.
-            TZOH = Dt.getTimezoneOffset() / 60; // 'TZOH' = Time Zone Offset Hour.
-
-        Scd = Scd.substr(0, Scd.length - 3) + '.' + Scd.substr(Scd.length - 3);
-        this.$('#NowDateScd').innerHTML = ': ' + Scd;
-
-        TZOH = (TZOH > 0 ? '-' : '+') + Math.abs(TZOH).toString().padStart(2, '0');
-
-        let DtStr = '';
-
-        DtStr = Dt.getFullYear() + '-' +
-                (Dt.getMonth() + 1).toString().padStart(2, '0') + '-' +
-                Dt.getDate().toString().padStart(2, '0') + ' ' +
-                Dt.getHours().toString().padStart(2, '0') + ':' +
-                Dt.getMinutes().toString().padStart(2, '0') + ':' +
-                Dt.getSeconds().toString().padStart(2, '0') + '.' +
-                Dt.getMilliseconds().toString().padStart(3, '0') +
-                ' (' + Dt.getDay() + ') ' +
-                TZOH;
-
-        this.$('#NowDate').innerHTML = ': ' + DtStr;
-
-        DtStr = Dt.getUTCFullYear() + '-' +
-                (Dt.getUTCMonth() + 1).toString().padStart(2, '0') + '-' +
-                Dt.getUTCDate().toString().padStart(2, '0') + ' ' +
-                Dt.getUTCHours().toString().padStart(2, '0') + ':' +
-                Dt.getUTCMinutes().toString().padStart(2, '0') + ':' +
-                Dt.getUTCSeconds().toString().padStart(2, '0') + '.' +
-                Dt.getUTCMilliseconds().toString().padStart(3, '0') +
-                ' (' + Dt.getUTCDay() + ')';
-
-        this.$('#UTCDate').innerHTML = ': ' + DtStr;
-
-        this.$('#DftFmt').innerHTML =
-          '<tr><td>toString</td><td>: ' + Dt.toString() + '</td></tr>' +
-          '<tr><td>toDateString</td><td>: ' + Dt.toDateString() + '</td></tr>' +
-          '<tr><td>toTimeString</td><td>: ' + Dt.toTimeString() + '</td></tr>' +
-
-          '<tr><td>toLocaleString</td><td>: ' + Dt.toLocaleString() + '</td></tr>' +
-          '<tr><td>toLocaleDateString</td><td>: ' + Dt.toLocaleDateString() + '</td></tr>' +
-          '<tr><td>toLocaleTimeString</td><td>: ' + Dt.toLocaleTimeString() + '</td></tr>' +
-
-          '<tr><td>toGMTString</td><td>: ' + Dt.toGMTString() + '</td></tr>' +
-          '<tr><td>toISOString</td><td>: ' + Dt.toISOString() + '</td></tr>' +
-          '<tr><td>toUTCString</td><td>: ' + Dt.toUTCString() + '</td></tr>';
+        this.update({ date: Dt });
       },
 
       DateToSecond () {
