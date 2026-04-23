@@ -41,6 +41,7 @@ input[type=button],
 input[type=submit],
 input[type=text],
 input[type=number],
+select,
 textarea {
   border-color: var(--color-border);
   border-style: solid;
@@ -56,6 +57,7 @@ input[type=button],
 input[type=submit],
 input[type=text],
 input[type=number],
+select,
 textarea {
   border-radius: 3px;
 }
@@ -96,7 +98,8 @@ a {
 
 button,
 input[type=button],
-input[type=submit] {
+input[type=submit],
+select {
   border-width: 1px;
   cursor: pointer;
 }

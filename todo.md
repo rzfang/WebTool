@@ -1,4 +1,4 @@
-## To Do
+# To Do
 
 * 20230921
   websocket.mjs 還沒實作全部已制定的 interface.
@@ -35,4 +35,8 @@
 * 20140501
   時間工具可加上時區。
 
-========================================================================================================================
+* 20260423
+  helper > helper.client
+  cover-box.riot by 'dialog'.
+  autocomplete by 'datalist'.
+  lint aligns to r4f.
