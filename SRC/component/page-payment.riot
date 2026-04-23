@@ -1,3 +1,9 @@
+<module>
+  <script>
+    import { arrayUnique } from '../helper.common.mjs';
+  </script>
+</module>
+
 <month-picker>
   <span>Month </span>
   <select onchange={monthPick}>
@@ -9,7 +15,7 @@
     }
   </style>
   <script>
-    import { arrayUnique, dateToString } from '../helper.common.mjs';
+    import { dateToString } from '../helper.common.mjs';
 
     export default {
       state: {
@@ -103,7 +109,7 @@
       <tr>
         <td>Item</td>
         <td>
-          <input type="text" value={props.info?.name || ''} />
+          <input type="text" value={props.info?.name || ''} list='item-options' />
         </td>
       </tr>
       <tr>
@@ -116,6 +122,9 @@
       </tr>
     </tbody>
   </table>
+  <datalist id='item-options'>
+    <option each={one in state.itemOptions} value={one}>{one}</option>
+  </datalist>
   <div>
     <button onclick={props.cancel}>Cancel</button>
     <button if={props.info} onclick={remove}>Remove</button>
@@ -171,8 +180,18 @@
   </style>
   <script>
     export default {
+      state: {
+        itemOptions: [],
+      },
+
       onMounted (props) {
         if (this.OnBrowser()) {
+          this.StoreListen('PAYMENT', items => {
+            const itemOptions = arrayUnique(items.map(one => one.name));
+
+            this.update({ itemOptions });
+          });
+
           setTimeout(
             () => {
               const element = Array.from(this.$$('table input'))[props.editingColumn] || 1;

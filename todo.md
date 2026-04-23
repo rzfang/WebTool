@@ -38,5 +38,4 @@
 * 20260423
   helper > helper.client
   cover-box.riot by 'dialog'.
-  autocomplete by 'datalist'.
   lint aligns to r4f.
