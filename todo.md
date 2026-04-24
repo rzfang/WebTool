@@ -39,3 +39,6 @@
   helper > helper.client
   cover-box.riot by 'dialog'.
   lint aligns to r4f.
+
+* 20260424
+  npm install no dev dependencies.

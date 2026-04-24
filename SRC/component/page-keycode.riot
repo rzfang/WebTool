@@ -50,7 +50,7 @@
       KeyCodeGet (Evt, ID) {
         /*==== current state show. ====*/
 
-        let Elt = dom.Find('#' + ID)[0], // 'Elt' = Element.
+        let Elt = dom.find('#' + ID)[0], // 'Elt' = Element.
             KyStr = 'keyCode: ' + Evt.keyCode + ' (0x' + Evt.keyCode.toString(16) + ')'; // 'KyStr' = Key String.
 
         if (Evt.keyCode === 0)
@@ -64,27 +64,27 @@
         /*==== history log process. ====*/
 
         const ChkIDMpO = { 'KeyDown': 'LgDwnChk', 'KeyPress': 'LgPrsChk', 'KeyUp': 'LgUpChk' };
-        const ChkElt = dom.Find('#' + ChkIDMpO[ID])[0];
+        const ChkElt = dom.find('#' + ChkIDMpO[ID])[0];
 
         let HstElt, // history element.
             LgElt; // log element.
 
         if (!ChkElt.checked) { return -1; }
 
-        HstElt = dom.Find('#Hst')[0];
-        LgElt = dom.NewNode('tr');
+        HstElt = dom.find('#Hst')[0];
+        LgElt = dom.newNode('tr');
 
         LgElt.innerHTML = '<td>' + ID + '</td><td>' + KyStr + '</td>';
 
-        HstElt.Prepend(LgElt);
+        HstElt.prepend(LgElt);
 
-        HstElt.Children()
-              .Some(function (Elt, Idx) { return (Idx > (20 - 1)); })
-              .Each(function (Elt, Idx) { Elt.Remove(); });
+        HstElt.getChildren()
+              .filter(function (Elt, Idx) { return (Idx > (20 - 1)); })
+              .forEach(function (Elt, Idx) { Elt.remove(); });
       },
 
       HistoryClear () {
-        dom.Find('#Hst')[0].innerHTML = '';
+        dom.find('#Hst')[0].innerHTML = '';
       }
     }
   </script>

@@ -130,17 +130,17 @@
       /* Parse each Option to string.
         Return: string of option. */
       OptionParse () {
-        let TRA = dom.Find('tr'),
+        let TRA = dom.find('tr'),
             Info = '';
 
         TRA = TRA.slice(1);
 
         for (let i = 0; i < TRA.length; i++) {
-          const TDA = TRA[i].Children();
+          const TDA = TRA[i].getChildren();
 
-          if (!TDA[0].Children()[0].checked) { continue; }
+          if (!TDA[0].getChildren()[0].checked) { continue; }
 
-          const TA = TDA[2].Children();
+          const TA = TDA[2].getChildren();
           const Tp = TA[0].getAttribute('type');
 
           if (Tp === 'radio') {
@@ -161,16 +161,16 @@
 
       ScriptMake () {
         const Info = this.OptionParse(),
-              URL = dom.Find('#URL')[0].value,
-              Nm = dom.Find('#Nm')[0].value;
+              URL = dom.find('#URL')[0].value,
+              Nm = dom.find('#Nm')[0].value;
 
-        dom.Find('#ScptBx')[0].innerHTML = 'window.open(\'' + URL + '\', \'' + Nm + '\', \'' + Info + '\');';
+        dom.find('#ScptBx')[0].innerHTML = 'window.open(\'' + URL + '\', \'' + Nm + '\', \'' + Info + '\');';
       },
 
       Test (Evt) {
         const Info = this.OptionParse(),
-              URL = dom.Find('#URL')[0].value,
-              Nm = dom.Find('#Nm')[0].value;
+              URL = dom.find('#URL')[0].value,
+              Nm = dom.find('#Nm')[0].value;
 
         window.open(URL, Nm, Info);
       }

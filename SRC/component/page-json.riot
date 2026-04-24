@@ -68,16 +68,16 @@
 
         let Btns = this.$$('#IptBx > div > button');
 
-        RtNd.AddEvent('click', this.TreeToggle);
-        RtNd.AddEvent('click', this.DataEdit);
+        RtNd.addEvent('click', this.TreeToggle);
+        RtNd.addEvent('click', this.DataEdit);
 
         Btns[0].onclick = this.DataReplace;
-        Btns[1].onclick = function (Evt) { Evt.Element().Above(2).style.display = 'none'; };
+        Btns[1].onclick = function (Evt) { Evt.target.above(2).style.display = 'none'; };
 
         // this.$('#IptBx > textarea').onkeyup = function (Evt) {
         //   switch (Evt.keyCode) {
         //     case 27:
-        //       this.Above().style.display = 'none';
+        //       this.above().style.display = 'none';
         //       break;
         //   }
         // };
@@ -237,10 +237,10 @@
       },
 
       DataEdit (Evt) {
-        const Nd = Evt.Element();
+        const Nd = Evt.target;
 
-        let IptBx = dom.Find('#IptBx')[0],
-            IptNd = IptBx.Children('textarea')[0];
+        let IptBx = dom.find('#IptBx')[0],
+            IptNd = IptBx.getChildren('textarea')[0];
 
         if (Nd.className.indexOf('EdtNd') < 0) { return -1; }
 
@@ -258,12 +258,12 @@
       },
 
       TreeToggle (Evt) {
-        let Nd = Evt.Element(),
+        let Nd = Evt.target,
             TrNd;
 
         if (Nd.className.indexOf('TglNd') < 0) { return -1; }
 
-        TrNd = Nd.Above().Children('ul')[0];
+        TrNd = Nd.above().getChildren('ul')[0];
 
         if (TrNd.style.display === 'none') {
           Nd.dataset.suffix = '-';
@@ -282,11 +282,11 @@
 
         let TgtNd = null,
             IptBx = Evt
-              .Element()
-              .Above()
-              .Process(function (Self) { IptStr = Self.Prev().value; })
-              .Above()
-              .Process(function (Self) { TgtNd = Self.target; });
+              .target
+              .above()
+              .process(function (Self) { IptStr = Self.prev().value; })
+              .above()
+              .process(function (Self) { TgtNd = Self.target; });
 
         if (!TgtNd) {
           alert('there\'s no target you point.');
