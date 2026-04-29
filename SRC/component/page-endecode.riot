@@ -1,10 +1,10 @@
-<!--
-  20111224 by RZ.
-  'wrap' attribute in element 'textarea' is not in W3C standard until HTML5 with value 'hard' & 'soft',
-  but not all browser support.
-  'on' / 'off' is fine for now.
--->
 <page-datetime>
+  <!--
+    20111224 by RZ.
+    'wrap' attribute in element 'textarea' is not in W3C standard until HTML5 with value 'hard' & 'soft',
+    but not all browser support.
+    'on' / 'off' is fine for now.
+  -->
   <page-layout>
     <div class="action-panel">
       <div>
@@ -36,7 +36,7 @@
     </div>
     <div>
       <textarea id='IptTxt' rows='5'></textarea><br/>
-      <textarea id='OptTxt' rows='5' readonly='true' wrap='off'></textarea><br/>
+      <textarea id='OptTxt' rows='5' readonly wrap='off'></textarea><br/>
       <hr/>
       This is for some string temp putting.<br/>
       <textarea rows='5'></textarea>
@@ -58,103 +58,109 @@
     }
   </style>
   <script>
+    import is from 'rzjs/is.mjs';
+
     import pageLayout from './page-layout.riot';
 
     export default {
       components: { pageLayout },
 
-      URIEnDeCode (Evt) {
-        const Cpn = this.$('#Cpn').checked,
-              Flg = parseInt(Evt.target.dataset.flag, 10);
+      URIEnDeCode (event) {
+        const flag = parseInt(event.target.dataset.flag, 10);
+        const withComponent = this.$('#Cpn').checked;
 
-        let Txt = this.$('#IptTxt').value;
+        let text = this.$('#IptTxt').value;
 
-        if (Flg === 1) { Txt = Cpn ? encodeURIComponent(Txt) : encodeURI(Txt); }
-        else { Txt = Cpn ? decodeURIComponent(Txt) : decodeURI(Txt); }
+        if (flag === 1) { text = withComponent ? encodeURIComponent(text) : encodeURI(text); }
+        else { text = withComponent ? decodeURIComponent(text) : decodeURI(text); }
 
-        this.$('#OptTxt').value = Txt;
+        this.$('#OptTxt').value = text;
       },
 
-      XMLEnDeCode (Flg, Txt) {
-        let EDS = ''; // 'EDS' = Encode Decode String.
+      XMLEnDeCode (flag, text) {
+        let edString = ''; // Encode Decode String.
 
-        if (Flg > 0) {
-          for (let i in Txt) {
-            const Cd = Txt.charCodeAt(i);
+        if (flag > 0) {
+          for (const i in text) {
+            const code = text.charCodeAt(i);
 
-            switch (Cd) {
-              case 34: EDS += '&quot;'; break;
-              case 38: EDS += '&amp;';  break;
-              case 39: EDS += '&apos;'; break;
-              case 60: EDS += '&lt;';   break;
-              case 62: EDS += '&gt;';   break;
-              default: EDS += (Cd < 32 || Cd > 126) ?
-                              (Flg === 1 ? `&#${Cd};` : ('&#x' + Cd.toString(16) + ';')) :
-                              Txt.charAt(i);
+            switch (code) {
+              case 34: edString += '&quot;'; break;
+              case 38: edString += '&amp;';  break;
+              case 39: edString += '&apos;'; break;
+              case 60: edString += '&lt;';   break;
+              case 62: edString += '&gt;';   break;
+              default: edString += (code < 32 || code > 126) ?
+                (flag === 1 ? `&#${code};` : ('&#x' + code.toString(16) + ';')) :
+                text.charAt(i);
             }
           }
         }
         else {
-          let StrA = Txt.split('&#'); // 'StrA' = String Array.
+          const strings = text.split('&#');
 
-          for (let i = 0; i < StrA.length; i++) {
-            StrA[i] = StrA[i].replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&apos;/g, '\'')
-                             .replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+          for (let i = 0; i < strings.length; i++) {
+            strings[i] = strings[i]
+              .replace(/&quot;/g, '"')
+              .replace(/&amp;/g, '&')
+              .replace(/&apos;/g, '\'')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>');
 
-            const EndLtr = StrA[i].indexOf(';'); // 'EndLtr' = End Letter.
+            const endLetter = strings[i].indexOf(';');
 
-            if (EndLtr === -1 || StrA[i].substr(0, EndLtr).match(/^x?\d+/) === null) {
-              EDS += StrA[i];
+            if (endLetter === -1 || strings[i].substr(0, endLetter).match(/^x?\d+/) === null) {
+              edString += strings[i];
 
               continue;
             }
 
-            const Otr = StrA[i].substr(EndLtr + 1); // 'Otr' = Other string.
+            const otherString = strings[i].substr(endLetter + 1);
 
-            const ChrCd = (StrA[i].charAt(0).toLowerCase() === 'x') ?
-                        parseInt(StrA[i].substr(1, EndLtr), 16) :
-                        parseInt(StrA[i].substr(0, EndLtr), 10);
+            const charCode = (strings[i].charAt(0).toLowerCase() === 'x') ?
+              parseInt(strings[i].substr(1, endLetter), 16) :
+              parseInt(strings[i].substr(0, endLetter), 10);
 
-            EDS += String.fromCharCode(ChrCd) + Otr;
+            edString += String.fromCharCode(charCode) + otherString;
           }
         }
 
-        return EDS;
+        return edString;
       },
 
-      JSONEnDeCode (Flg, Txt) {
-        let EDS = ''; // 'EDS' = Encode Decode String.
+      JSONEnDeCode (flag, text) {
+        let edString = ''; // Encode Decode String.
 
-        if (Flg == 1) {
-          Txt = Txt.replace(/\\/g, '\\\\').replace(/\n/g, '\\n');
+        if (flag === 1) {
+          text = text.replace(/\\/g, '\\\\').replace(/\n/g, '\\n');
 
-          for (let i in Txt) {
-            const Cd = Txt.charCodeAt(i);
+          for (const i in text) {
+            const code = text.charCodeAt(i);
 
-            EDS += (Cd < 32 || Cd > 126) ? ('\\u' + Cd.toString(16)) : Txt.charAt(i);
+            edString += (code < 32 || code > 126) ? ('\\u' + code.toString(16)) : text.charAt(i);
           }
         }
         else {
-          const L = Txt.length;
+          const L = text.length;
 
           for (let i  = 0; i < L; i++) {
             const CSA = [ // 'CSA' = Checked String Array.
-              Txt.charAt(i),
-              Txt.charAt(i + 1),
-              Txt.charAt(i + 2),
-              Txt.charAt(i + 3),
-              Txt.charAt(i + 4),
-              Txt.charAt(i + 5) ];
+              text.charAt(i),
+              text.charAt(i + 1),
+              text.charAt(i + 2),
+              text.charAt(i + 3),
+              text.charAt(i + 4),
+              text.charAt(i + 5) ];
 
             if (CSA[0] === '\\' && CSA[1] === 'n') {
-              EDS += "\n";
+              edString += '\n';
               i += 1;
 
               continue;
             }
 
             if (CSA[0] === '\\' && CSA[1] === '\\') {
-              EDS += '\\';
+              edString += '\\';
               i += 1;
 
               continue;
@@ -175,223 +181,243 @@
                 CSA[5] < ' ' ||
                 CSA[5] > '~' ||
                 CSA[5] === '\\') {
-                EDS += '\\u';
+                edString += '\\u';
                 i += 1;
 
                 continue;
               }
 
-              const ChrCd = parseInt((CSA[2] + CSA[3] + CSA[4] + CSA[5]), 16);
+              const charCode = parseInt((CSA[2] + CSA[3] + CSA[4] + CSA[5]), 16);
 
-              EDS += String.fromCharCode(ChrCd);
+              edString += String.fromCharCode(charCode);
               i += 5;
 
               continue;
             }
 
-            EDS += CSA[0];
+            edString += CSA[0];
           }
         }
 
-        return EDS;
+        return edString;
       },
 
-      UnicodeEnDeCode (Evt) {
-        const Flg = parseInt(Evt.target.dataset.flag, 10),
-              Ipt = this.$$('input[type=radio]'),
-              Txt = this.$('#IptTxt').value;
+      UnicodeEnDeCode (event) {
+        const flag = parseInt(event.target.dataset.flag, 10);
+        const radioElement = this.$$('input[type=radio]');
+        const text = this.$('#IptTxt').value;
+        let mode = 0;
 
-        let Md = 0;
-
-        for (let i in Ipt) {
-          if (Ipt[i].checked) {
-            Md = parseInt(Ipt[i].value, 10);
+        for (const i in radioElement) {
+          if (radioElement[i].checked) {
+            mode = parseInt(radioElement[i].value, 10);
 
             break;
           }
         }
 
-        this.$('#OptTxt').value = (Md === 0) ? this.XMLEnDeCode(Flg, Txt) : this.JSONEnDeCode(Flg, Txt);
+        this.$('#OptTxt').value = (mode === 0) ? this.XMLEnDeCode(flag, text) : this.JSONEnDeCode(flag, text);
       },
 
-      Base64EnDeCodeEx (Evt) {
-        const Flg = parseInt(Evt.target.dataset.flag, 10),
-              UTF8 = this.$('#UTF8').checked;
+      Base64EnDeCodeEx (event) {
+        const flag = parseInt(event.target.dataset.flag, 10);
+        const isUtf8 = this.$('#UTF8').checked;
+        let text = this.$('#IptTxt').value;
 
-        let Txt = this.$('#IptTxt').value;
+        text = flag === 1 ? base64Encode(text, isUtf8) : base64Decode(text, isUtf8);
 
-        Txt = Flg === 1 ? Base64Encode(Txt, UTF8) : Base64Decode(Txt, UTF8);
-
-        this.$('#OptTxt').value = Txt;
+        this.$('#OptTxt').value = text;
 
         return 0;
 
         /* Base64 Encode.
           @ UTF8 boolean flag. optional.
           < encode string, or empty string as error. */
-        function Base64Encode (Str, UTF8) {
-          const KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='; // 'KM' = Key Map.
+        function base64Encode (string, isUtf8) {
+          const keyMap = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
-          let BS = '', // 'BS' = Binary String.
-              PS = '', // 'PS' = Pad String.
-              B64S = ''; // 'B64S' = Base64 String.
+          let binaryString = '';
+          let padString = '';
+          let b64String = ''; // 'b64String' = Base64 String.
 
-          if (typeof UTF8 !== 'boolean') { UTF8 = false; }
+          if (typeof isUtf8 !== 'boolean') { isUtf8 = false; }
 
-          for (let i in Str) {
-            const TN = Str.charCodeAt(i); // 'TN' = Temp unicode Number.
+          for (const i in string) {
+            const tempUnicodeNumber = string.charCodeAt(i);
 
-            BS += (UTF8 ? Uni2UTF8(TN) : TN.toString(2).padStart(16, '0'));
+            binaryString += (isUtf8 ? uni2utf8(tempUnicodeNumber) : tempUnicodeNumber.toString(2).padStart(16, '0'));
           }
 
-          let PN = BS.length % 6; // 'PN' = Pad Number.
+          let padNumber = binaryString.length % 6;
 
-          if (PN > 0) {
-            let TPS = '';
+          if (padNumber > 0) {
+            let tempPadString = '';
 
-            PN = (6 - PN) / 2;
+            padNumber = (6 - padNumber) / 2;
 
-            while (PN-- > 0) {
-              TPS += '00';
-              PS += '=';
+            while (padNumber-- > 0) {
+              tempPadString += '00';
+              padString += '=';
             }
 
-            BS += TPS;
+            binaryString += tempPadString;
           }
 
-          const C = BS.length;
+          const C = binaryString.length;
 
           for (let i = 0; i < C; i += 6) {
-            const TS = BS.substr(i, 6); // 'TS' = Translate String.
+            const TS = binaryString.substr(i, 6); // 'TS' = Translate String.
 
-            let DN = 0; // 'DN' = Decimal Number.
+            let decimalNumber = 0;
 
-            if (TS.substr(0, 1) === '1') { DN += 32; }
+            if (TS.substr(0, 1) === '1') { decimalNumber += 32; }
 
-            if (TS.substr(1, 1) === '1') { DN += 16; }
+            if (TS.substr(1, 1) === '1') { decimalNumber += 16; }
 
-            if (TS.substr(2, 1) === '1') { DN += 8; }
+            if (TS.substr(2, 1) === '1') { decimalNumber += 8; }
 
-            if (TS.substr(3, 1) === '1') { DN += 4; }
+            if (TS.substr(3, 1) === '1') { decimalNumber += 4; }
 
-            if (TS.substr(4, 1) === '1') { DN += 2; }
+            if (TS.substr(4, 1) === '1') { decimalNumber += 2; }
 
-            if (TS.substr(5, 1) === '1') { DN += 1; }
+            if (TS.substr(5, 1) === '1') { decimalNumber += 1; }
 
-            B64S += KM.substr(DN, 1);
+            b64String += keyMap.substr(decimalNumber, 1);
           }
 
-          B64S += PS;
+          b64String += padString;
 
-          return B64S;
+          return b64String;
 
           /* convert Unicode number to be UTF-8 number in binary string.
             @ Unicode Number.
             < binary string. */
-          function Uni2UTF8 (UN) {
-            if (typeof UN !== 'number') { return ''; }
+          function uni2utf8 (unicodeNumber) {
+            if (!is.Number(unicodeNumber)) { return ''; }
 
-            let BS = UN.toString(2),
-                TS = '';
+            let binaryString = unicodeNumber.toString(2);
+            let tempString;
 
-            if (UN < 128) { BS = BS.padStart(8, '0'); }
-            else if (UN >= 128 && UN <= 2047) {
-              TS = BS.padStart(11, '0');
-              BS = '110' + TS.substr(0, 5) + '10' + TS.substr(5);
+            if (unicodeNumber < 128) {
+              binaryString = binaryString.padStart(8, '0');
             }
-            else if ((UN >= 2048 && UN <= 55295) || (UN >= 57344 && UN <= 65535)) {
-              TS = BS.padStart(16, '0');
-              BS = '1110' + TS.substr(0, 4) + '10' + TS.substr(4, 6) + '10' + TS.substr(10, 6);
+            else if (unicodeNumber >= 128 && unicodeNumber <= 2047) {
+              tempString = binaryString.padStart(11, '0');
+
+              binaryString = '110' + tempString.substr(0, 5) + '10' + tempString.substr(5);
             }
-            else if (UN >= 65536 && UN <= 1114111) {
-              TS = BS.padStart(21, '0');
-              BS = '11110' + TS.substr(0, 3) + '10' + TS.substr(3, 6) + '10' + TS.substr(9, 6) + '10' + TS.substr(15, 6);
+            else if (
+              (unicodeNumber >= 2048 && unicodeNumber <= 55295) ||
+              (unicodeNumber >= 57344 && unicodeNumber <= 65535)
+            ) {
+              tempString = binaryString.padStart(16, '0');
+
+              binaryString = '1110' +
+                tempString.substr(0, 4) + '10' +
+                tempString.substr(4, 6) + '10' +
+                tempString.substr(10, 6);
+            }
+            else if (unicodeNumber >= 65536 && unicodeNumber <= 1114111) {
+              tempString = binaryString.padStart(21, '0');
+
+              binaryString = '11110' +
+                tempString.substr(0, 3) + '10' +
+                tempString.substr(3, 6) + '10' +
+                tempString.substr(9, 6) + '10' +
+                tempString.substr(15, 6);
             }
 
-            return BS;
+            return binaryString;
           }
         }
 
         /* Base64 Decode.
           @ UTF8 boolean flag. optional.
           < encode string, or empty string as error. */
-        function Base64Decode (Str, UTF8) {
-          const KM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='; // 'KM' = Key Map.
+        function base64Decode (string, isUtf8) {
+          const keyMap = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
-          let BS = ''; // 'BS' = Binary String.
+          let binaryString = '';
 
-          if (typeof UTF8 !== 'boolean') { UTF8 = false; }
+          if (!is.Boolean(isUtf8)) { isUtf8 = false; }
 
-          Str = Str.replace(/=+$/, '');
+          string = string.replace(/=+$/, '');
 
-          const C = Str.length; // 'C' = Count.
+          const C = string.length; // 'C' = Count.
 
           for (let i = 0; i < C; i++) {
-            const TBS = KM.indexOf(Str.substr(i, 1)).toString(2).padStart(8, '0');
+            const TBS = keyMap.indexOf(string.substr(i, 1)).toString(2).padStart(8, '0');
 
-            BS += TBS.substr(2, 6);
+            binaryString += TBS.substr(2, 6);
           }
 
-          return UTF8 ? Bin2TxtUTF8(BS) : Bin2Txt(BS);
+          return isUtf8 ? bin2TxtUTF8(binaryString) : bin2Txt(binaryString);
 
-          function Bin2Txt (BinStr) {
-            let RT = '', // 'RT' = Result Text.
-                L = BinStr.length; // 'L' = Length.
+          function bin2Txt (binaryString) {
+            const l = binaryString.length;
+            let resultText = '';
 
-            for (let i = 0; i < L; i += 16) { RT += String.fromCharCode(parseInt(BinStr.substr(i, 16), 2)); }
+            for (let i = 0; i < l; i += 16) {
+              resultText += String.fromCharCode(parseInt(binaryString.substr(i, 16), 2));
+            }
 
-            return RT;
+            return resultText;
           }
 
-          function Bin2TxtUTF8 (BinStr) {
-            const L = BinStr.length; // 'L' = Length.
+          function bin2TxtUTF8 (binaryString) {
+            const l = binaryString.length;
 
-            let RT = ''; // 'RT' = Result Text.
+            let resultText = '';
 
-            for (let i = 0; i < L; i += 8) {
-              let TBS = BinStr.substr(i, 8); // 'TBS' = Temp Binary String.
+            for (let i = 0; i < l; i += 8) {
+              let tempBinaryString = binaryString.substr(i, 8);
 
-              if (TBS.substr(0, 1) === '0') {
-                const TN = parseInt(TBS, 2); // 'TN' = Text Number.
+              if (tempBinaryString.substr(0, 1) === '0') {
+                const textNumber = parseInt(tempBinaryString, 2);
 
-                if (TN > 0)
-                { RT += String.fromCharCode(TN); }
+                if (textNumber > 0)
+                { resultText += String.fromCharCode(textNumber); }
               }
-              else if (TBS.substr(0, 5) === '11110') { // 4 byte.
-                TBS = BinStr.substr(i + 5, 3) + BinStr.substr(i + 10, 6) + BinStr.substr(i + 18, 6) + BinStr.substr(i + 26, 6);
-                RT += String.fromCharCode(parseInt(TBS, 2));
+              else if (tempBinaryString.substr(0, 5) === '11110') { // 4 byte.
+                tempBinaryString = binaryString.substr(i + 5, 3) +
+                  binaryString.substr(i + 10, 6) +
+                  binaryString.substr(i + 18, 6) +
+                  binaryString.substr(i + 26, 6);
+                resultText += String.fromCharCode(parseInt(tempBinaryString, 2));
                 i += 24;
               }
-              else if (TBS.substr(0, 4) === '1110') { // 3 byte.
-                TBS = BinStr.substr(i + 4, 4) + BinStr.substr(i + 10, 6) + BinStr.substr(i + 18, 6);
-                RT += String.fromCharCode(parseInt(TBS, 2));
+              else if (tempBinaryString.substr(0, 4) === '1110') { // 3 byte.
+                tempBinaryString = binaryString.substr(i + 4, 4) +
+                  binaryString.substr(i + 10, 6) +
+                  binaryString.substr(i + 18, 6);
+                resultText += String.fromCharCode(parseInt(tempBinaryString, 2));
                 i += 16;
               }
-              else if (TBS.substr(0, 3) === '110') { // 2 byte.
-                TBS = BinStr.substr(i + 3, 5) + BinStr.substr(i + 10, 6);
-                RT += String.fromCharCode(parseInt(TBS, 2));
+              else if (tempBinaryString.substr(0, 3) === '110') { // 2 byte.
+                tempBinaryString = binaryString.substr(i + 3, 5) + binaryString.substr(i + 10, 6);
+                resultText += String.fromCharCode(parseInt(tempBinaryString, 2));
                 i += 8;
               }
             }
 
-            return RT;
+            return resultText;
           }
         }
       },
 
-      HTMLSpecialCharsEnDeCode (Evt) {
-        const Flg = parseInt(Evt.target.dataset.flag, 10);
+      HTMLSpecialCharsEnDeCode (event) {
+        const flag = parseInt(event.target.dataset.flag, 10);
 
-        let Txt = this.$('#IptTxt').value;
+        let text = this.$('#IptTxt').value;
 
-        Txt = Flg === 1 ? HTMLSpecialCharsEncode(Txt) : HTMLSpecialCharsDecode(Txt);
+        text = flag === 1 ? htmlSpecialCharsEncode(text) : htmlSpecialCharsDecode(text);
 
-        this.$('#OptTxt').value = Txt;
+        this.$('#OptTxt').value = text;
 
         return 0;
 
-        function HTMLSpecialCharsEncode (Txt) {
-          return Txt
+        function htmlSpecialCharsEncode (text) {
+          return text
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
@@ -400,8 +426,8 @@
 
         }
 
-        function HTMLSpecialCharsDecode (Txt) {
-          return Txt
+        function htmlSpecialCharsDecode (text) {
+          return text
             .replace(/&amp;/g, '&')
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')

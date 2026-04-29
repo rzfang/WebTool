@@ -43,39 +43,39 @@
       },
 
       Start () {
-        let Hr = parseInt(this.Inpts[0].value || 0, 10) || 0, // hour.
-            Mnt = parseInt(this.Inpts[1].value || 0, 10) || 0, // minute.
-            Scnd = parseInt(this.Inpts[2].value || 0, 10) || 0, // second.
-            Mlscnd; // millisecond.
+        let hour = parseInt(this.Inpts[0].value || 0, 10) || 0;
+        let minute = parseInt(this.Inpts[1].value || 0, 10) || 0;
+        let second = parseInt(this.Inpts[2].value || 0, 10) || 0;
 
         if (window.Notification) {
-          if (Notification.permission !== "granted") {
-            Notification.requestPermission(function (Pmsn) { this.CnNtf = (Pmsn === 'granted'); });
+          if (Notification.permission !== 'granted') {
+            Notification.requestPermission(permission => { this.CnNtf = (permission === 'granted'); });
           }
           else { this.CnNtf = true; }
         }
 
-        if (Scnd > 59) {
-          Mnt += Math.floor(Scnd / 60);
-          Scnd %= 60;
+        if (second > 59) {
+          minute += Math.floor(second / 60);
+          second %= 60;
         }
 
-        if (Mnt > 59) {
-          Hr += Math.floor(Mnt / 60);
-          Mnt %= 60;
+        if (minute > 59) {
+          hour += Math.floor(minute / 60);
+          minute %= 60;
         }
 
         if (this.Cntdn) { clearTimeout(this.Cntdn); }
 
         if (this.Clck) { cancelAnimationFrame(this.Clck); }
 
-        Mlscnd = ((Hr * 60 + Mnt) * 60 + Scnd) * 1000;
-        this.Cntdn = setTimeout(this.TimesUp, Mlscnd);
+        const ms = ((hour * 60 + minute) * 60 + second) * 1000;
+
+        this.Cntdn = setTimeout(this.TimesUp, ms);
         this.Clck = setInterval( () => { requestAnimationFrame(this.Countdown); }, 100);
         this.Dt = new Date();
         this.Btns[0].disabled = true;
 
-        this.Dt.setTime(this.Dt.getTime() + Mlscnd);
+        this.Dt.setTime(this.Dt.getTime() + ms);
       },
 
       Cancel () {
@@ -89,9 +89,9 @@
 
       TimesUp () {
         if (this.CnNtf) {
-          const Wrds = this.$('#FctnBx>input[type=text]').value || 'Countdown Notify';
+          const words = this.$('#FctnBx>input[type=text]').value || 'Countdown Notify';
 
-          new Notification(Wrds + '\n - WebTool');
+          new Notification(words + '\n - WebTool');
         }
 
         if (this.Cntdn) { clearTimeout(this.Cntdn); }
@@ -101,21 +101,17 @@
         this.Btns[0].disabled = false;
       },
 
-      /*
-        DOMHghRsTmStmp = DOMHighResTimeStamp. */
-      Countdown (DOMHghRsTmStmp) {
-        let Now = Math.floor((this.Dt - (new Date())) / 1000);
+      Countdown () {
+        let now = Math.floor((this.Dt - (new Date())) / 1000);
 
-        const Hr = parseInt(Math.floor(Now / 3600), 10).toString().padStart(2, '0');
+        const hour = parseInt(Math.floor(now / 3600), 10).toString().padStart(2, '0');
 
-        let Mnt,
-            Scnd;
+        now %= 3600;
 
-        Now %= 3600;
-        Mnt = parseInt(Math.floor(Now / 60), 10).toString().padStart(2, '0');
-        Scnd = (Now % 60).toString().padStart(2, '0');
+        const minute = parseInt(Math.floor(now / 60), 10).toString().padStart(2, '0');
+        const second = (now % 60).toString().padStart(2, '0');
 
-        this.$('div>h1').innerHTML = Hr + ':' + Mnt + ':' + Scnd;
+        this.$('div>h1').innerHTML = hour + ':' + minute + ':' + second;
       }
     }
   </script>

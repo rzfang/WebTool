@@ -22,7 +22,7 @@
         months: [],
       },
 
-      onBeforeMount (props, state) {
+      onBeforeMount () {
         if (this.OnBrowser()) {
           this.StoreListen(
             'PAYMENT',
@@ -234,11 +234,11 @@
         const hints = [];
 
         const newInfo = {
-            comment: values[3],
-            date: values[0],
-            name: values[1],
-            price: parseInt(values[2], 10),
-          };
+          comment: values[3],
+          date: values[0],
+          name: values[1],
+          price: parseInt(values[2], 10),
+        };
 
         if (!newInfo.date) {
           hints.push('no date.');
@@ -356,7 +356,7 @@
         }
       },
 
-      add (event) {
+      add () {
         this.update({ editingItem: null, editingColumn: 1, isEditing: true });
       },
 
@@ -388,7 +388,7 @@
         });
       },
 
-      editorDoneOrCancel (event) {
+      editorDoneOrCancel () {
         this.update({ editingItem: null, isEditing: false });
       },
     }
@@ -456,13 +456,13 @@
       //   TrnsfrLnk,
       },
 
-      onBeforeMount (props, state) {
+      onBeforeMount () {
         // state.HsTrnsfrCnfrm = props.TrnsfrData ? true : false; // has transfering confirmation.
         // state.IsTrnsfrOt = false; // is transfer out.
         // state.TrnsfrLnk = ''; // transfer link.
       },
 
-      onMounted (props, state) {
+      onMounted () {
         if (this.OnBrowser()) {
           const autoSave = debounce((items = []) => {
             setTimeout(

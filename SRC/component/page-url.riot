@@ -15,17 +15,17 @@
       </ul>
     </div>
     <table class='output-box'>
-      <tbody class={state.HdEql ? 'hide-equal' : ''}>
-        <tr each={Ky in PrprtyKys} class={state.EqlKys.includes(Ky) ? 'is-equal' : ''}>
+      <tbody class={state.hideEqual ? 'hide-equal' : ''}>
+        <tr each={Ky in PrprtyKys} class={state.equalKeys.includes(Ky) ? 'is-equal' : ''}>
             <td>{Ky}</td>
-            <td each={Url in state.Urls}>{Url[Ky]}</td>
+            <td each={Url in state.urls}>{Url[Ky]}</td>
         </tr>
         <tr>
           <td colspan='3'>parsed searchParams</td>
         </tr>
-        <tr each={Ky in state.SrchPrmKys} class={state.EqlKys.includes(Ky) ? 'is-equal' : ''}>
+        <tr each={Ky in state.searchParamKeys} class={state.equalKeys.includes(Ky) ? 'is-equal' : ''}>
           <td>{Ky}</td>
-          <td each={Url in state.Urls}>{Url && Url.SrchPrmsObjct && Url.SrchPrmsObjct[Ky] || ''}</td>
+          <td each={Url in state.urls}>{Url && Url.SrchPrmsObjct && Url.SrchPrmsObjct[Ky] || ''}</td>
         </tr>
       </tbody>
     </table>
@@ -78,81 +78,79 @@
         'hostname',
         'port',
         'pathname',
-        'hash'
+        'hash',
       ], // property keys.
 
       state: {
-        EqlKys: [], // equal keys.
-        HdEql: false, // hide equal.
-        SrchPrmKys: [], // search param keys.
-        Urls: [],
+        equalKeys: [],
+        hideEqual: false,
+        searchParamKeys: [],
+        urls: [],
       },
 
-      EqualToggle (Evt) {
-        this.update({ HdEql: Evt.target.checked });
+      EqualToggle (event) {
+        this.update({ hideEqual: event.target.checked });
       },
 
       // reference - https://developer.mozilla.org/en-US/docs/Web/API/URL_API#examples
-      SearchParamsToObject (SrchPrms) {
-        SrchPrms.sort();
+      SearchParamsToObject (searchParams) {
+        searchParams.sort();
 
-        const Kys = SrchPrms.keys();
+        const keys = searchParams.keys();
+        const result = {};
 
-        let Rslt = {};
-
-        for (let Ky of Kys) {
-          Rslt[Ky] = SrchPrms.get(Ky);
+        for (const key of keys) {
+          result[key] = searchParams.get(key);
         }
 
-        return Rslt;
+        return result;
       },
 
-      UrlsParseAndCompare (Evt) {
-        const Urls = this.$$('input[type=text]').map(DOM => DOM.value ? new URL(DOM.value) : '');
+      UrlsParseAndCompare () {
+        const resultUrls = [ {}, {} ];
+        const urls = this.$$('input[type=text]').map(one => one.value ? new URL(one.value) : '');
+        let paramKeys = [];
 
-        let RsltUrls = [ {}, {} ],
-            SrchPrmKys = [];
+        urls.forEach((url, index) => {
+          if (!url) { return; }
 
-        Urls.forEach((Url, Idx) => {
-          if (!Url) { return; }
+          this.PrprtyKys.forEach(key => { resultUrls[index][key] = urls[index][key]; });
 
-          this.PrprtyKys.forEach(Ky => { RsltUrls[Idx][Ky] = Urls[Idx][Ky]; });
-
-          RsltUrls[Idx].SrchPrmsObjct = this.SearchParamsToObject(Urls[Idx].searchParams);
-          SrchPrmKys = [ ...SrchPrmKys, ...Object.keys(RsltUrls[Idx].SrchPrmsObjct) ];
+          resultUrls[index].SrchPrmsObjct = this.SearchParamsToObject(urls[index].searchParams);
+          paramKeys = [ ...paramKeys, ...Object.keys(resultUrls[index].SrchPrmsObjct) ];
         });
 
-        SrchPrmKys = SrchPrmKys.filter((Vl, Idx, Arr) => Arr.indexOf(Vl) == Idx);
+        paramKeys = paramKeys.filter((value, index, array) => array.indexOf(value) === index);
 
-        let EqlKys = []; // equal keys.
+        const equalKeys = []; // equal keys.
 
-        this.PrprtyKys.forEach(Ky => {
-          let IsEql = true;
+        this.PrprtyKys.forEach(key => {
+          let isEqual = true;
 
-          for (let i = 1; i < RsltUrls.length; i++) {
-            IsEql &= (RsltUrls[i][Ky] === RsltUrls[i - 1][Ky]);
+          for (let i = 1; i < resultUrls.length; i++) {
+            isEqual &= (resultUrls[i][key] === resultUrls[i - 1][key]);
           }
 
-          if (IsEql) { EqlKys.push(Ky); }
+          if (isEqual) { equalKeys.push(key); }
         });
 
-        SrchPrmKys.forEach(Ky => {
-          let IsEql = true;
+        paramKeys.forEach(key => {
+          let isEqual = true;
 
-          for (let i = 1; i < RsltUrls.length; i++) {
-            if (!RsltUrls[i].SrchPrmsObjct || !RsltUrls[i - 1].SrchPrmsObjct) {
-              IsEql = false;
+          for (let i = 1; i < resultUrls.length; i++) {
+            if (!resultUrls[i].SrchPrmsObjct || !resultUrls[i - 1].SrchPrmsObjct) {
+              isEqual = false;
 
               break;
             }
 
-            IsEql &= (RsltUrls[i].SrchPrmsObjct[Ky] === RsltUrls[i - 1].SrchPrmsObjct[Ky]);
+            isEqual &= (resultUrls[i].SrchPrmsObjct[key] === resultUrls[i - 1].SrchPrmsObjct[key]);
           }
 
-          if (IsEql) { EqlKys.push(Ky); }
+          if (isEqual) { equalKeys.push(key); }
         })
 
-        this.update({ EqlKys, SrchPrmKys, Urls: RsltUrls });
+        this.update({ equalKeys: equalKeys, searchParamKeys: paramKeys, urls: resultUrls });
       }
     }
   </script>

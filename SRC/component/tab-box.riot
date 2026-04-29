@@ -1,18 +1,18 @@
 <tab-box>
-  <ul class='TbBx'>
-    <li each={Tb in state.Tbs} class='{Tb.Pckd ? 'Pckd' : ''}' onclick={!Tb.Pckd && Switch}>{Tb.Nm}</li>
+  <ul >
+    <li each={tab in state.tabs} class='{tab.picked ? 'picked' : ''}' onclick={!tab.picked && Switch}>{tab.name}</li>
   </ul>
   <div class='Cntx'>
-    <div if={state.Idx === 0}><slot name='tab0'/></div>
-    <div if={state.Idx === 1}><slot name='tab1'/></div>
-    <div if={state.Idx === 2}><slot name='tab2'/></div>
-    <div if={state.Idx === 3}><slot name='tab3'/></div>
-    <div if={state.Idx === 4}><slot name='tab4'/></div>
-    <div if={state.Idx === 5}><slot name='tab5'/></div>
-    <div if={state.Idx === 6}><slot name='tab6'/></div>
-    <div if={state.Idx === 7}><slot name='tab7'/></div>
-    <div if={state.Idx === 8}><slot name='tab8'/></div>
-    <div if={state.Idx === 9}><slot name='tab9'/></div>
+    <div if={state.index === 0}><slot name='tab0'/></div>
+    <div if={state.index === 1}><slot name='tab1'/></div>
+    <div if={state.index === 2}><slot name='tab2'/></div>
+    <div if={state.index === 3}><slot name='tab3'/></div>
+    <div if={state.index === 4}><slot name='tab4'/></div>
+    <div if={state.index === 5}><slot name='tab5'/></div>
+    <div if={state.index === 6}><slot name='tab6'/></div>
+    <div if={state.index === 7}><slot name='tab7'/></div>
+    <div if={state.index === 8}><slot name='tab8'/></div>
+    <div if={state.index === 9}><slot name='tab9'/></div>
   </div>
   <style>
     :host>ul {
@@ -28,7 +28,7 @@
         color: #c0c0c0;
         cursor: pointer;
 
-        .Pckd {
+        .picked {
           border-bottom: 1px solid #000000;
           color: #000000;
           cursor: default;
@@ -39,30 +39,30 @@
   <script>
     export default {
       state: {
-        Idx: 0,
-        Tbs: []
+        index: 0,
+        tabs: []
       },
 
       onBeforeMount (props, state) {
         if (props.tabs.length > 10) { alert('tab-box can not handle >10 tabs.'); } // to do.
 
-        const Idx = props.index || 0; // index, fallback idx.
+        const index = props.index || 0; // index, fallback idx.
 
-        let Tbs = props.tabs.map(tab => { return { Nm: tab, Pckd: false }; });
+        const tabs = props.tabs.map(tab => { return { name: tab, picked: false }; });
 
-        Tbs[Idx].Pckd = true;
-        this.state.Idx = Idx;
-        this.state.Tbs = Tbs;
+        tabs[index].picked = true;
+        state.index = index;
+        state.tabs = tabs;
       },
 
-      Switch (Evt) {
-        let { Idx, Tbs } = this.state;
+      Switch (event) {
+        const newIdx = Array.from(this.$$('ul>li')).indexOf(event.target);
+        const { index, tabs } = this.state;
 
-        Tbs[Idx].Pckd = false;
-        Idx = Array.from(this.$$('ul.TbBx>li')).indexOf(Evt.target);
-        Tbs[Idx].Pckd = true;
+        tabs[index].picked = false;
+        tabs[newIdx].picked = true;
 
-        this.update({ Idx, Tbs });
+        this.update({ index, tabs });
       }
     }
   </script>

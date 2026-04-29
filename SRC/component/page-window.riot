@@ -1,31 +1,15 @@
 <page-window>
   <page-layout>
     <table>
+      <thead>
+        <tr>
+          <th>Manual</th>
+          <th>Name</th>
+          <th>Value</th>
+          <th>Explain</th>
+        </tr>
+      </thead>
       <tbody>
-        <tr>
-          <td>Manual</td>
-          <td>Name</td>
-          <td>Value</td>
-          <td>Explain</td>
-        </tr>
-        <tr>
-          <td><input type='checkbox'/></td>
-          <td>channelmode</td>
-          <td>yes: <input type='radio' name='channelmode'/> no: <input type='radio' name='channelmode'/></td>
-          <td>Default is no. IE only.<br/>Whether or not to display the window in theater mode.</td>
-        </tr>
-        <tr>
-          <td><input type='checkbox'/></td>
-          <td>directories</td>
-          <td>yes: <input type='radio' name='directories' checked='true'/> no: <input type='radio' name='directories'/></td>
-          <td> Default is yes. IE only.<br/>Whether or not to add directory buttons.</td>
-        </tr>
-        <tr>
-          <td><input type='checkbox'/></td>
-          <td>fullscreen</td>
-          <td>yes: <input type='radio' name='fullscreen'/> no: <input type='radio' name='fullscreen' checked='true'/></td>
-          <td> Default is no. IE only.<br/>A window in full-screen mode must also be in theater mode.<br/>Whether or not to display the browser in full-screen mode.</td>
-        </tr>
         <tr>
           <td><input type='checkbox'/></td>
           <td>height</td>
@@ -82,12 +66,6 @@
         </tr>
         <tr>
           <td><input type='checkbox'/></td>
-          <td>top</td>
-          <td><input type='text'/></td>
-          <td>IE only.<br/>The top position of the window.</td>
-        </tr>
-        <tr>
-          <td><input type='checkbox'/></td>
           <td>width</td>
           <td><input type='text' value='100'/></td>
           <td>Min. value is 100.<br/>The width of the window.</td>
@@ -96,16 +74,16 @@
     </table>
     <br/><hr/><br/>
     <div>
-      URL: <input id='URL' type='text'/>
-      Name: <input id='Nm' type='text'/>
+      URL: <input type='text'/>
+      Name: <input type='text'/>
       <select id=''>
         <option value='_blank'>_blank - URL is loaded into a new window. This is default.</option>
         <option value='_parent'>_parent - URL is loaded into the parent frame.</option>
         <option value='_self'>_self - URL replaces the current page</option>
         <option value='_top'>_top - URL replaces any framesets that may be loaded.</option>
       </select>
-      <input type='button' value='Make Script' onclick={ScriptMake}/>
-      <input type='button' value='Open Test' onclick={Test}/><br/>
+      <input type='button' value='Make Script' onclick={scriptMake}/>
+      <input type='button' value='Open Test' onclick={test}/><br/>
       <textarea id='ScptBx' cols='80'></textarea>
     </div>
     <div>
@@ -120,7 +98,7 @@
     }
   </style>
   <script>
-    import dom from 'rzjs/browser/dom.mjs';
+    import 'rzjs/browser/dom.mjs';
 
     import pageLayout from './page-layout.riot';
 
@@ -128,51 +106,47 @@
       components: { pageLayout },
 
       /* Parse each Option to string.
-        Return: string of option. */
-      OptionParse () {
-        let TRA = dom.find('tr'),
-            Info = '';
+        < string of option. */
+      optionParse () {
+        const trElements = this.$$('tbody>tr');
+        let info = '';
 
-        TRA = TRA.slice(1);
-
-        for (let i = 0; i < TRA.length; i++) {
-          const TDA = TRA[i].getChildren();
+        for (let i = 0; i < trElements.length; i++) {
+          const TDA = trElements[i].getChildren();
 
           if (!TDA[0].getChildren()[0].checked) { continue; }
 
           const TA = TDA[2].getChildren();
-          const Tp = TA[0].getAttribute('type');
 
-          if (Tp === 'radio') {
-            Info += TDA[1].innerHTML + '=' + (TA[0].checked ? 'yes' : 'no') + ', ';
+          const type = TA[0].getAttribute('type');
+
+          if (type === 'radio') {
+            info += TDA[1].innerHTML + '=' + (TA[0].checked ? 'yes' : 'no') + ', ';
           }
           else {
-            Info += TDA[1].innerHTML + '=' + TA[0].value + ', ';
+            info += TDA[1].innerHTML + '=' + TA[0].value + ', ';
           }
         }
-        TRA = null;
 
-        if (Info.length > 2) {
-          Info = Info.substr(0, Info.length - 2);
+        if (info.length > 2) {
+          info = info.substr(0, info.length - 2);
         }
 
-        return Info;
+        return info;
       },
 
-      ScriptMake () {
-        const Info = this.OptionParse(),
-              URL = dom.find('#URL')[0].value,
-              Nm = dom.find('#Nm')[0].value;
+      scriptMake () {
+        const [ url, name ] = this.$$('div>input[type=text]').map(one => one.value);
+        const info = this.optionParse();
 
-        dom.find('#ScptBx')[0].innerHTML = 'window.open(\'' + URL + '\', \'' + Nm + '\', \'' + Info + '\');';
+        this.$('textarea').value = `window.open('${url}', '${name}', '${info}')`;
       },
 
-      Test (Evt) {
-        const Info = this.OptionParse(),
-              URL = dom.find('#URL')[0].value,
-              Nm = dom.find('#Nm')[0].value;
+      test () {
+        const [ url, name ] = this.$$('div>input[type=text]').map(one => one.value);
+        const info = this.optionParse();
 
-        window.open(URL, Nm, Info);
+        window.open(url, name, info);
       }
     }
   </script>

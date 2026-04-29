@@ -5,17 +5,14 @@
   "main": "webtool.mjs",
   "dependencies": {
     "feedparser": "^2.2.9",
+    "json5": "^2.2.3",
     "request": "^2.88.2",
-    "riot-4-fun": "^0.3.8",
+    "riot-4-fun": "^0.3.10",
     "rzjs": "github:rzfang/Js"
   },
   "devDependencies": {
     "@eslint/css": "^1",
-    "@eslint/js": "^10",
-    "@eslint/json": "^1",
-    "@eslint/markdown": "^8",
     "@fastify/pre-commit": "^2",
-    "@stylistic/eslint-plugin": "^5",
     "eslint": "^10",
     "globals": "^17",
     "nodemon": "^3"

@@ -68,80 +68,80 @@
       },
 
       /* convert CSS Color code from hex to RGBA format.
-        'Str' = color string in hex format.
-        Return: CSS color code with RGBA format. */
-      Color16ToRGBA (Str) {
-        if (Str.charAt(0) === '#') { Str = Str.substr(0); }
+        @ color string in hex format.
+        < CSS color code with RGBA format. */
+      Color16ToRGBA (string) {
+        if (string.charAt(0) === '#') { string = string.substr(0); }
 
-        let B = '255',
-            G = '255',
-            R = '255',
-            A = '1';
+        let b;
+        let g;
+        let r;
+        let a;
 
-        if (Str.length < 6) {
-          R = parseInt(Str.charAt(0) + '0', 16).toString();
-          G = parseInt(Str.charAt(1) + '0', 16).toString();
-          B = parseInt(Str.charAt(2) + '0', 16).toString();
-          A = '1';
+        if (string.length < 6) {
+          r = parseInt(string.charAt(0) + '0', 16).toString();
+          g = parseInt(string.charAt(1) + '0', 16).toString();
+          b = parseInt(string.charAt(2) + '0', 16).toString();
+          a = '1';
         }
         else {
-          R = parseInt(Str.substr(0, 2), 16).toString();
-          G = parseInt(Str.substr(2, 2), 16).toString();
-          B = parseInt(Str.substr(4, 2), 16).toString();
-          A = (parseInt(Str.substr(6, 2), 16) / 256).toString() || '255';
+          r = parseInt(string.substr(0, 2), 16).toString();
+          g = parseInt(string.substr(2, 2), 16).toString();
+          b = parseInt(string.substr(4, 2), 16).toString();
+          a = (parseInt(string.substr(6, 2), 16) / 256).toString() || '255';
         }
 
-        return `rgba(${R}, ${G}, ${B}, ${A})`;
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
       },
 
       /* convert CSS Color code from RGB to hex format.
-        'R' = Red color value.
-        Return: CSS color code with hex format. */
-      ColorRGBATo16 (R, G, B, A) {
-        R = parseInt(R, 10).toString(16).padStart(2, '0');
-        G = parseInt(G, 10).toString(16).padStart(2, '0');
-        B = parseInt(B, 10).toString(16).padStart(2, '0');
-        A = Math.round(parseFloat(A) * 255).toString(16).padStart(2, '0');
+        < CSS color code with hex format. */
+      ColorRGBATo16 (r, g, b, a) {
+        r = parseInt(r, 10).toString(16).padStart(2, '0');
+        g = parseInt(g, 10).toString(16).padStart(2, '0');
+        b = parseInt(b, 10).toString(16).padStart(2, '0');
+        a = Math.round(parseFloat(a) * 255).toString(16).padStart(2, '0');
 
-        return `#${R}${G}${B}${A}`;
+        return `#${r}${g}${b}${a}`;
       },
 
-      ColorTagAdd (Evt) {
-        const Bx = document.createElement('div'),
-              Fmt = parseInt(Evt.target.dataset.format, 10);
+      ColorTagAdd (event) {
+        const format = parseInt(event.target.dataset.format, 10);
 
-        let Clr = '',
-            Clr16 = '#ffffffff',
-            CrntRGBA = this.state.CrntRGBA;
+        let color
+        let color16
+        let currentRGBA = this.state.CrntRGBA;
 
-        if (Fmt === 1) {
-          let R = this.$('#R').value,
-              G = this.$('#G').value,
-              B = this.$('#B').value,
-              A = this.$('#A').value;
+        if (format === 1) {
+          const r = this.$('#R').value;
+          const g = this.$('#G').value;
+          const b = this.$('#B').value;
+          const a = this.$('#A').value;
 
-          Clr = `rgba(${R}, ${G}, ${B}, ${A})`;
-          Clr16 = this.ColorRGBATo16(R, G, B, A);
+          color = `rgba(${r}, ${g}, ${b}, ${a})`;
+          color16 = this.ColorRGBATo16(r, g, b, a);
         }
         else {
-          Clr16 = this.$('#Clr').value.toLowerCase();
-          Clr = this.Color16ToRGBA(Clr16);
-          Clr16 = '#' + Clr16;
-          CrntRGBA = Clr;
+          color16 = this.$('#Clr').value.toLowerCase();
+
+          color = this.Color16ToRGBA(color16);
+          currentRGBA = color;
+
+          color16 = '#' + color16;
         }
 
-        this.state.Clrs.push({ Clr, Clr16 });
-        this.update({ Clrs: this.state.Clrs, CrntRGBA });
+        this.state.Clrs.push({ Clr: color, Clr16: color16 });
+        this.update({ Clrs: this.state.Clrs, currentRGBA });
       },
 
       ColorTagsClear () {
         this.update({ Clrs: [] });
       },
 
-      KeyboardTrigger (Evt) {
-        if (Evt.keyCode !== 13) { return 0; }
+      KeyboardTrigger (event) {
+        if (event.keyCode !== 13) { return 0; }
 
-        this.ColorTagAdd(Evt);
+        this.ColorTagAdd(event);
       }
     }
   </script>

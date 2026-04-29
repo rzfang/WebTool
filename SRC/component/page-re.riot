@@ -1,14 +1,22 @@
 <page-re>
   <page-layout>
     Pattern<br/>
-    / <input type='text' id='Pattern'/> / <input type='text' id='ExtraOption'/><br/><br/>
+    /
+    <input type='text' id='Pattern'/>
+    /
+    <select>
+      <option value=''></option>
+      <option value='g'>g</option>
+      <option value='i'>i</option>
+      <option value='ig'>ig</option>
+    </select><br/><br/>
 
     Test String<br/>
     <textarea id='TestString' rows='3'></textarea>
     <button onclick={RETest}>Test</button><br/><br/>
 
     Report: <span id='Report'>?</span><br/>
-    <textarea id='MatchList' rows='5'></textarea><br/><br/>
+    <textarea id='MatchList' readonly rows='5'></textarea><br/><br/>
 
     Reference:<br/>
     <a href='http://www.rubular.com/' target='_blank'>Rubular</a>
@@ -16,63 +24,61 @@
   <style>
     :host {
       #Pattern { min-width: 355px; }
-      #ExtraOption { width: 50px; }
       #TestString, #MatchList { min-width: 380px; }
       #Report { color: #ff0000; }
     }
   </style>
   <script>
+    import is from 'rzjs/is.mjs';
+
     import pageLayout from './page-layout.riot';
 
     export default {
       components: { pageLayout },
 
       /* find all substr matched the regular expression pattern.
-        'Ptn' = Pattern, can be a RegExp Object, or a String.
-        'Str' = String for testing.
-        'ExtOpt' = Extra option, ex: 'g' or 'gi'...
-        Return: array of match, [] as error. */
-      REMatch (Ptn, Str, ExtOpt) {
-        if ((typeof Ptn != 'function' && //for chrome, a RegExp is a function.
-            typeof Ptn != 'object' && typeof Ptn != 'string') || typeof Str != 'string') {
+        @ Pattern, can be a RegExp Object, or a String.
+        @ String for testing.
+        @ Extra option, ex: 'g' or 'gi'...
+        < array of match, [] as error. */
+      REMatch (pattern, str, extraOption) {
+        if ((!is.RegExp(pattern) && !is.String(pattern)) || !is.String(str)) {
           return [];
         }
 
-        if (typeof ExtOpt !== 'string') { ExtOpt = ''; }
+        if (typeof extraOption !== 'string') { extraOption = ''; }
 
-        const RE = new RegExp(Ptn, ExtOpt);
-        const Mch = Str.match(RE);
+        const re = new RegExp(pattern, extraOption);
+        const match = str.match(re);
 
-        if (typeof Mch !== 'object' || Mch === null) { return []; }
+        if (typeof match !== 'object' || match === null) { return []; }
 
-        let Rst = [];
+        let result = [];
 
-        if (typeof Mch[1] === 'string') { Rst = Mch; }
-        else { Rst.push(Mch[0]); }
+        if (typeof match[1] === 'string') { result = match; }
+        else { result.push(match[0]); }
 
-        return Rst;
+        return result;
       },
 
       RETest () {
-        const Ptn = document.getElementById('Pattern').value,
-              Ext = document.getElementById('ExtraOption').value,
-              Str = document.getElementById('TestString').value,
-              Rpt = document.getElementById('Report');
-        const MchLst = this.REMatch(Ptn, Str, Ext);
+        const pattern = this.$('#Pattern').value;
+        const extraOption = this.$('select').value;
+        const str = this.$('#TestString').value;
+        const reportElement = this.$('#Report');
+        const matchList = this.REMatch(pattern, str, extraOption);
 
-        let Mch = document.getElementById('MatchList');
+        const matchElement = this.$('#MatchList');
 
-        if (MchLst.length === 0) {
-          Rpt.innerText ? (Rpt.innerText = 'false') : (Rpt.textContent = 'false'); // for both IE & FireFox compatible.
-
-          Mch = '';
+        if (matchList.length === 0) {
+          reportElement.innerText = 'false';
+          matchElement.value = '';
 
           return;
         }
 
-        Rpt.innerText ? (Rpt.innerText = 'true') : (Rpt.textContent = 'true');
-
-        Mch.value = MchLst.join("\n");
+        reportElement.innerText ? (reportElement.innerText = 'true') : (reportElement.textContent = 'true');
+        matchElement.value = matchList.join('\n');
       }
     }
   </script>

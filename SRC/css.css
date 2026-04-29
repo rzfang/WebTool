@@ -76,9 +76,10 @@ textarea {
 }
 
 a,
+button,
 input,
 option,
-button {
+select {
   font-size: 16px;
 }
 

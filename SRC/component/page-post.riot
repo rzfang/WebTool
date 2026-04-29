@@ -34,50 +34,50 @@
         Prms: [],
       },
 
-      RowUpdate (Evt) {
-        const Idx = parseInt(Evt.currentTarget.dataset.index, 10);
+      RowUpdate (event) {
+        const index = parseInt(event.currentTarget.dataset.index, 10);
 
-        this.state.Prms[Idx].Vl = Evt.currentTarget.value;
+        this.state.Prms[index].Vl = event.currentTarget.value;
       },
 
-      RowDelete (Evt) {
-        const Idx = parseInt(Evt.currentTarget.dataset.index, 10);
+      RowDelete (event) {
+        const index = parseInt(event.currentTarget.dataset.index, 10);
 
-        this.state.Prms.splice(Idx, 1);
+        this.state.Prms.splice(index, 1);
         this.update();
       },
 
       RowAdd () {
-        const Nm = this.$('#name');
-        const Ky = Nm.value;
+        const nameElement = this.$('#name');
 
-        if (Ky.length === 0) { return 0; }
+        const key = nameElement.value;
 
-        this.state.Prms.push({ Ky, Vl: '' });
+        if (key.length === 0) { return 0; }
+
+        this.state.Prms.push({ Ky: key, Vl: '' });
         this.update();
 
         setTimeout(
           () => {
-            Nm.value = '';
+            nameElement.value = '';
             this.$('#param-form>ul>li:last-child>input[type=text]').focus();
           },
           50
         );
       },
 
-      Key2RowAdd (Evt) {
-        if (Evt.keyCode !== 13) { return 0; }
+      Key2RowAdd (event) {
+        if (event.keyCode !== 13) { return 0; }
 
         this.RowAdd();
       },
 
       PostData () {
-        const Url = this.$('#url').value?.trim();
+        const form = this.$('#param-form');
+        const url = this.$('#url').value?.trim();
 
-        let Frm = this.$('#param-form');
-
-        Frm.action = Url;
-        Frm.submit();
+        form.action = url;
+        form.submit();
       }
     }
   </script>

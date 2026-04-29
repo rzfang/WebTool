@@ -1,26 +1,26 @@
 import cch from 'rzjs/node/cache.mjs';
 
-export default function Read (Rqst, URLInfo, Clbck) {
-  let Rst = [];
+export default function read (request, urlInfo, callback) {
+  let result = [];
 
-  if (!URLInfo || !URLInfo.query || URLInfo.query.indexOf('t=') < 0) {
-    return Clbck(1, Rst);
+  if (!urlInfo || !urlInfo.query || urlInfo.query.indexOf('t=') < 0) {
+    return callback(1, result);
   }
 
-  const RERst = URLInfo.query.match(/t=([^&]+)/); // regular expression result.
+  const reResult = urlInfo.query.match(/t=([^&]+)/); // regular expression result.
 
-  if (!RERst || RERst.length < 2) {
-    return Clbck(2, Rst);
+  if (!reResult || reResult.length < 2) {
+    return callback(2, result);
   }
 
-  const TrnsfrKy = RERst[1]; // transfering key.
+  const tranferingKey = reResult[1];
 
-  if (!cch.Has(TrnsfrKy)) {
-    return Clbck(3, Rst);
+  if (!cch.Has(tranferingKey)) {
+    return callback(3, result);
   }
 
-  Rst = cch.Get(TrnsfrKy).split('_|_').map(Url => { return { FdUrl: Url, HsBnLdd: false }; });
+  result = cch.Get(tranferingKey)?.split('_|_').map(one => ({ FdUrl: one, HsBnLdd: false })) || [];
 
-  Rqst.RMI.StoreSet('FEEDS', () => Rst);
-  Clbck(0, Rst);
+  request.riotPlugin.StoreSet('FEEDS', () => result);
+  callback(0, result);
 }

@@ -27,28 +27,27 @@
       components: { pageLayout },
 
       Convert () {
-        const FlsBx = this.$('input[type=file]'); // file box.
-        const Fls = FlsBx.files; // files.
+        const fileElement = this.$('input[type=file]');
+        const files = fileElement.files; // files.
 
-        if (Fls.length === 0) {
+        if (files.length === 0) {
           alert('尚未選擇檔案。');
 
           return -1;
         }
 
-        const Fl = Fls[0]; // file.
+        const fields = this.$$('table > tbody > tr > td:nth-child(2)');
+        const file = files[0];
+        const fileReader = new FileReader();
+        const textareaElement = this.$('textarea');
 
-        let Flds = this.$$('table > tbody > tr > td:nth-child(2)'), // fields.
-            FR = new FileReader(),
-            Txtara = this.$('textarea');
-
-        FR.onloadend = function () {
-          Flds[0].innerHTML = Fl.name;
-          Flds[1].innerHTML = this.result.substr(0, 64).replace(/^data:(.+);base64,.+$/, '$1')
-          Txtara.value = this.result;
+        fileReader.onloadend = function () {
+          fields[0].innerHTML = file.name;
+          fields[1].innerHTML = this.result.substr(0, 64).replace(/^data:(.+);base64,.+$/, '$1')
+          textareaElement.value = this.result;
         }
 
-        FR.readAsDataURL(Fl);
+        fileReader.readAsDataURL(file);
       }
     }
   </script>

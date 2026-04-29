@@ -59,6 +59,7 @@
   </style>
   <script>
     import is from 'rzjs/is.mjs';
+
     import pageLayout from './page-layout.riot';
 
     export default {
@@ -75,75 +76,75 @@
         }
       },
 
-      DateToNowString (Dt) {
-        if (!Dt || !is.Date(Dt)) {
+      DateToNowString (date) {
+        if (!date || !is.Date(date)) {
           return '';
         }
 
-        let TZOH = Dt.getTimezoneOffset() / 60; // 'TZOH' = Time Zone Offset Hour.
+        let offsetHour = date.getTimezoneOffset() / 60; // 'offsetHour' = Time Zone Offset Hour.
 
-        TZOH = (TZOH > 0 ? '-' : '+') + Math.abs(TZOH).toString().padStart(2, '0');
+        offsetHour = (offsetHour > 0 ? '-' : '+') + Math.abs(offsetHour).toString().padStart(2, '0');
 
-        return Dt.getFullYear() + '-' +
-          (Dt.getMonth() + 1).toString().padStart(2, '0') + '-' +
-          Dt.getDate().toString().padStart(2, '0') + ' ' +
-          Dt.getHours().toString().padStart(2, '0') + ':' +
-          Dt.getMinutes().toString().padStart(2, '0') + ':' +
-          Dt.getSeconds().toString().padStart(2, '0') + '.' +
-          Dt.getMilliseconds().toString().padStart(3, '0') +
-          ' (' + Dt.getDay() + ') ' +
-          TZOH;
+        return date.getFullYear() + '-' +
+          (date.getMonth() + 1).toString().padStart(2, '0') + '-' +
+          date.getDate().toString().padStart(2, '0') + ' ' +
+          date.getHours().toString().padStart(2, '0') + ':' +
+          date.getMinutes().toString().padStart(2, '0') + ':' +
+          date.getSeconds().toString().padStart(2, '0') + '.' +
+          date.getMilliseconds().toString().padStart(3, '0') +
+          ' (' + date.getDay() + ') ' +
+          offsetHour;
       },
 
-      DateToUtcString (Dt) {
-        if (!Dt || !is.Date(Dt)) {
+      DateToUtcString (date) {
+        if (!date || !is.Date(date)) {
           return '';
         }
 
-        return  Dt.getUTCFullYear() + '-' +
-          (Dt.getUTCMonth() + 1).toString().padStart(2, '0') + '-' +
-          Dt.getUTCDate().toString().padStart(2, '0') + ' ' +
-          Dt.getUTCHours().toString().padStart(2, '0') + ':' +
-          Dt.getUTCMinutes().toString().padStart(2, '0') + ':' +
-          Dt.getUTCSeconds().toString().padStart(2, '0') + '.' +
-          Dt.getUTCMilliseconds().toString().padStart(3, '0') +
-          ' (' + Dt.getUTCDay() + ')';
+        return  date.getUTCFullYear() + '-' +
+          (date.getUTCMonth() + 1).toString().padStart(2, '0') + '-' +
+          date.getUTCDate().toString().padStart(2, '0') + ' ' +
+          date.getUTCHours().toString().padStart(2, '0') + ':' +
+          date.getUTCMinutes().toString().padStart(2, '0') + ':' +
+          date.getUTCSeconds().toString().padStart(2, '0') + '.' +
+          date.getUTCMilliseconds().toString().padStart(3, '0') +
+          ' (' + date.getUTCDay() + ')';
       },
 
-      DateToSecondString (Dt) {
-        if (!Dt || !is.Date(Dt)) {
+      DateToSecondString (date) {
+        if (!date || !is.Date(date)) {
           return '';
         }
 
-        let Scds = Dt.getTime().toString(); // 'Scds' = Seconds.
+        const seconds = date.getTime().toString();
 
-        return Scds.substr(0, Scds.length - 3) + '.' + Scds.substr(Scds.length - 3);
+        return seconds.substr(0, seconds.length - 3) + '.' + seconds.substr(seconds.length - 3);
       },
 
-      DateUpdate (Evt) {
-        let Mlscd = 0;
+      DateUpdate (event) {
+        let ms = 0; // milliseconds.
 
-        if (Evt && Evt?.target?.value) {
-          Mlscd = parseInt(this.$(Evt.target.value).value, 10);
+        if (event && event?.target?.value) {
+          ms = parseInt(this.$(event.target.value).value, 10);
         }
 
-        const Dt = Mlscd ? new Date(Mlscd) : new Date();
+        const date = ms ? new Date(ms) : new Date();
 
-        this.update({ date: Dt });
+        this.update({ date });
       },
 
       DateToSecond () {
-        const DtA = this.$$('#DtStrBx>*');
-        const Dt = new Date(
-          DtA[0].value,
-          (DtA[1].value - 1),
-          DtA[2].value,
-          DtA[3].value,
-          DtA[4].value,
-          DtA[5].value,
-          DtA[6].value);
+        const dates = this.$$('#DtStrBx>*');
+        const date = new Date(
+          dates[0].value,
+          (dates[1].value - 1),
+          dates[2].value,
+          dates[3].value,
+          dates[4].value,
+          dates[5].value,
+          dates[6].value);
 
-        this.$('#Scd').innerHTML = Dt.getTime() / 1000;
+        this.$('#Scd').innerHTML = date.getTime() / 1000;
       }
     }
   </script>

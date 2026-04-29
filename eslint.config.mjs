@@ -1,10 +1,12 @@
 import css from '@eslint/css';
 import globals from 'globals';
-import js from '@eslint/js';
-import json from '@eslint/json';
-import markdown from '@eslint/markdown';
-import stylistic from '@stylistic/eslint-plugin'
 import { defineConfig, globalIgnores } from 'eslint/config';
+
+import jsonConfig from 'rzjs/eslint/config.json.mjs';
+import jsStrictConfig from 'rzjs/eslint/config.js.strict.mjs';
+import jsStyleConfig from 'rzjs/eslint/config.js.style.mjs';
+import mdConfig from 'rzjs/eslint/config.markdown.mjs';
+import r4fConfig from 'riot-4-fun/eslint/config.mjs';
 
 export default defineConfig([
   globalIgnores ([ '**/*.riot.*.mjs', 'package-lock.json', '.r4f' ]),
@@ -14,18 +16,11 @@ export default defineConfig([
       globals: { ...globals.browser, ...globals.node },
     },
   },
-  {
-    extends: [ 'json/recommended' ],
-    files: [ '**/*.json' ],
-    language: 'json/json',
-    plugins: { json },
-  },
-  {
-    extends: [ 'markdown/recommended' ],
-    files: [ '**/*.md' ],
-    language: 'markdown/gfm',
-    plugins: { markdown },
-  },
+  jsonConfig,
+  jsStrictConfig,
+  jsStyleConfig,
+  mdConfig,
+  r4fConfig,
   {
     extends: [ 'css/recommended' ],
     files: [ '**/*.css' ],
@@ -33,21 +28,6 @@ export default defineConfig([
     plugins: { css },
     rules: {
       'css/use-baseline': [ 'error', { allowSelectors: [ 'nesting' ] } ],
-    },
-  },
-  {
-    extends: [ 'js/recommended' ],
-    files: [ '**/*.{js,mjs,cjs}' ],
-    plugins: { '@stylistic': stylistic, js },
-    rules: {
-      '@stylistic/array-bracket-spacing': [ 'error', 'always' ],
-      '@stylistic/comma-dangle': [ 'error', 'always-multiline' ],
-      '@stylistic/dot-location': [ 'error', 'property' ],
-      '@stylistic/indent': [ 'error', 2 ],
-      '@stylistic/max-len': [ 'error', { code: 120, ignoreComments: true } ],
-      '@stylistic/quote-props': [ 'error', 'as-needed' ],
-      '@stylistic/quotes': [ 'error', 'single', { avoidEscape: true, allowTemplateLiterals: 'avoidEscape' } ],
-      'prefer-const': [ 'error' ],
     },
   },
 ]);

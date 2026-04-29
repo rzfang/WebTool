@@ -22,48 +22,50 @@
     :host :last-child>div { margin: 10px 0; }
   </style>
   <script>
+    import log from 'rzjs/is.mjs';
+
     export default {
       /*
         @ new props.
         @ current props.
         < true | false. */
-      shouldUpdate (NwPrps, CrntPrps) {
-        return (NwPrps.HsBnLdd !== CrntPrps.HsBnLdd) || (!CrntPrps.Itms && NwPrps.Itms);
+      shouldUpdate (newProps, oldProps) {
+        return (newProps.HsBnLdd !== oldProps.HsBnLdd) || (!oldProps.Itms && newProps.Itms);
       },
 
-      TargetFeedIndexGet (Fds, Url) {
-        return Fds.findIndex(Fd => Fd.FdUrl === Url);
+      TargetFeedIndexGet (feeds, url) {
+        return feeds.findIndex(one => one.FdUrl === url);
       },
 
-      Load (Evt) {
+      Load () {
         this.ServiceCall(
           '/service/feed',
           { URL: this.props.FdUrl },
           'FEEDS',
-          (Sto, Rst) => {
-            if (!Sto) { Sto = []; }
+          (store, result) => {
+            if (!store) { store = []; }
 
-            if (!Rst) {
-              console.log('can not get feed result for ' +  this.props.FdUrl);
+            if (!result) {
+              log('can not get feed result for ' +  this.props.FdUrl);
 
-              Rst = { HsBnLdd: true };
+              result = { HsBnLdd: true };
             }
-            else { Rst.HsBnLdd = true; }
+            else { result.HsBnLdd = true; }
 
-            const Idx = this.TargetFeedIndexGet(Sto, this.props.FdUrl), // target store feed index.
-                  Lth = Sto.length;
+            const index = this.TargetFeedIndexGet(store, this.props.FdUrl); // target store feed index.
+            const length = store.length;
 
-            Rst.FdUrl = this.props.FdUrl;
+            result.FdUrl = this.props.FdUrl;
 
-            if (Lth === 0 || Idx < 0) { Sto.push(Rst); }
-            else { Sto[Idx] = Rst; }
+            if (length === 0 || index < 0) { store.push(result); }
+            else { store[index] = result; }
 
-            return Sto;
+            return store;
           });
       },
 
-      Delete (Evt) {
-          this.props.Delete && this.props.Delete(this.props.FdUrl);
+      Delete () {
+        this.props.Delete && this.props.Delete(this.props.FdUrl);
       }
     }
   </script>
@@ -119,22 +121,22 @@
         TrnsfrLnk: '' // transfer link.
       },
 
-      onBeforeHydrate (Prps, Stt) {
+      onBeforeHydrate () {
         if (this.StoreGet('FEEDS')) { this.state.HsTrnsfrCnfrm = true; } // has feeds before hydrate means these feeds are from server transfering.
 
-        this.StoreListen('FEEDS', Sto => { this.update({ Fds: Sto }); });
+        this.StoreListen('FEEDS', store => { this.update({ Fds: store }); });
 
         this.StoreListen(
           'TRANSFER',
-          (Sto, TskPrms) => {
+          store => {
             this.update({
               IsTrnsfrOt: true,
-              TrnsfrLnk: Sto ? (window.location.origin + '/read?t=' + Sto) : 'can not transer data.'
+              TrnsfrLnk: store ? (window.location.origin + '/read?t=' + store) : 'can not transer data.'
             });
           });
       },
 
-      onHydrated (Prps, Stt) {
+      onHydrated () {
         if (!window.localStorage.FdURLs) {
           window.localStorage.FdURLs = '';
         }
@@ -142,36 +144,36 @@
         if (!this.state.HsTrnsfrCnfrm) { this.TransferIgnore(null); }
       },
 
-      UrlsFilter (Urls) {
-        if (!is.Array(Urls)) { return []; }
+      UrlsFilter (urls) {
+        if (!is.Array(urls)) { return []; }
 
-        return Urls.filter(Url => { return is.URL(Url); });
+        return urls.filter(one => { return is.URL(one); });
       },
 
-      OneFeedAdd (Evt) {
-        const FdUrls = window.localStorage.FdURLs,
-              Url = this.$('input[type=text]').value;
+      OneFeedAdd () {
+        const feedUrls = window.localStorage.FdURLs;
+        const url = this.$('input[type=text]').value;
 
-        if (!is.URL(Url)) { return alert('this is not a standard Url.'); }
+        if (!is.URL(url)) { return alert('this is not a standard Url.'); }
 
-        if (FdUrls.indexOf(Url) > -1) { return alert('this url has been added before.'); }
+        if (feedUrls.indexOf(url) > -1) { return alert('this url has been added before.'); }
 
-        window.localStorage.FdURLs += '_|_' + Url;
+        window.localStorage.FdURLs += '_|_' + url;
 
-        this.state.Fds.push({FdUrl: Url, HsBnLdd: false });
+        this.state.Fds.push({FdUrl: url, HsBnLdd: false });
         this.update();
       },
 
-      OneFeedRemove (Url) {
-        if (!Url) { return; }
+      OneFeedRemove (url) {
+        if (!url) { return; }
 
-        const FdUrls = window.localStorage.FdURLs,
-              Fds = this.state.Fds;
+        const feedUrls = window.localStorage.FdURLs;
+        const feeds = this.state.Fds;
 
-        window.localStorage.FdURLs = FdUrls.replace(Url, '').replace(/_\|__\|_/g, '_|_').replace(/^_\|_|_\|_$/g, '');
+        window.localStorage.FdURLs = feedUrls.replace(url, '').replace(/_\|__\|_/g, '_|_').replace(/^_\|_|_\|_$/g, '');
 
-        for (let i = 0; i < Fds.length; i++) {
-          if (Fds[i].FdUrl === Url) {
+        for (let i = 0; i < feeds.length; i++) {
+          if (feeds[i].FdUrl === url) {
             this.state.Fds.splice(i, 1);
 
             break;
@@ -183,71 +185,71 @@
 
       /* load all feeds in the beginning. */
       AllFeedsFirstLoad () {
-        const Btns = this.$$('.BtnBx>button:first-child'), // buttons.
-              BtnLngth = Btns.length;
+        const buttons = this.$$('.BtnBx>button:first-child');
 
-        function OneLoad (Idx) {
-          if (Idx >= BtnLngth) { return; }
+        const buttonLength = buttons.length;
+
+        function oneLoad (index) {
+          if (index >= buttonLength) { return; }
 
           setTimeout(
             () => {
-              Btns[Idx].click();
-              OneLoad(Idx + 1);
+              buttons[index].click();
+              oneLoad(index + 1);
             },
             1000);
         }
 
-        setTimeout(() => { OneLoad(0); }, 2000);
+        setTimeout(() => { oneLoad(0); }, 2000);
       },
 
-      Transfer (Evt) {
+      Transfer () {
         this.ServiceCall(
           '/service/transfer',
           { Ctn: window.localStorage.FdURLs },
           'TRANSFER',
-          (Sto, Rst) => { return Rst; });
+          (_, result) => result);
       },
 
-      TransferModeEnd (Evt) {
+      TransferModeEnd () {
         this.update({ IsTrnsfrOt: false });
       },
 
-      TransferIgnore (Evt) {
-        const Fds = this.UrlsFilter(window.localStorage.FdURLs.split('_|_'))
-                        .map(Url => { return { FdUrl: Url, HsBnLdd: false }; }); // feed url, has been loaded
+      TransferIgnore () {
+        const feeds = this
+          .UrlsFilter(window.localStorage.FdURLs.split('_|_'))
+          .map(one => { return { FdUrl: one, HsBnLdd: false }; }); // feed url, has been loaded
 
         this.state.HsTrnsfrCnfrm = false;
 
-        this.StoreSet('FEEDS', Sto => Fds);
+        this.StoreSet('FEEDS', () => feeds);
         this.AllFeedsFirstLoad();
       },
 
-      TransferMerge (Evt) {
-        const LclFds = this.UrlsFilter(window.localStorage.FdURLs.split('_|_'))
-                           .map(Url => { return { FdUrl: Url, HsBnLdd: false }; }), // local feeds, feed url, has been loaded
-              RmtFds = this.state.Fds, // remote feeds.
-              LclFdUrls = LclFds.map(Fd => Fd.FdUrl), // local feed urls.
-              RmtFdUrls = RmtFds.map(Fd => Fd.FdUrl), // remote feed urls.
-              RmtFdUrlsLngth = RmtFdUrls.length; // remote feeds urls length.
+      TransferMerge () {
+        const remoteFeeds = this.state.Fds;
+        const localFeeds = this
+          .UrlsFilter(window.localStorage.FdURLs.split('_|_'))
+          .map(one => { return { FdUrl: one, HsBnLdd: false }; }); // feed url, has been loaded.
 
-        for (let i = 0; i < RmtFdUrlsLngth; i++) {
-          if (!LclFdUrls.includes(RmtFdUrls[i])) { LclFds.push(RmtFds[i]); }
-        }
+        const localUrls = localFeeds.map(one => one.FdUrl);
+        const remoteUrls = remoteFeeds.map(one => one.FdUrl);
 
-        const FdUrls = LclFds.map(Fd => Fd.FdUrl);
+        remoteUrls.forEach((one, index) => {
+          if (!localUrls.includes(one)) { localFeeds.push(remoteFeeds[index]); }
+        });
 
-        window.localStorage.FdURLs = FdUrls.join('_|_');
+        window.localStorage.FdURLs = localFeeds.map(one => one.FdUrl).join('_|_');
         this.state.HsTrnsfrCnfrm = false;
 
-        this.StoreSet('FEEDS', Sto => LclFds);
+        this.StoreSet('FEEDS', () => localFeeds);
         this.AllFeedsFirstLoad();
       },
 
       TransferReplace () {
-        const RmtFds = this.state.Fds, // remote feeds.
-              RmtFdUrls = RmtFds.map(Fd => Fd.FdUrl); // remote feed urls.
+        const remoteFeeds = this.state.Fds;
 
-        window.localStorage.FdURLs = RmtFds.map(Fd => Fd.FdUrl).join('_|_');
+        window.localStorage.FdURLs = remoteFeeds.map(one => one.FdUrl).join('_|_');
 
         this.update({ HsTrnsfrCnfrm: false });
         this.AllFeedsFirstLoad();

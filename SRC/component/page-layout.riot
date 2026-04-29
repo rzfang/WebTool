@@ -90,18 +90,18 @@
         { Ttl: 'Feed Read',               URL: 'read' },
         { Ttl: 'Countdown Notify',        URL: 'countdown' },
         // { Ttl: 'Moment Chat',             URL: 'chat' },
-        { Ttl: '----',                    URL: '' }
+        { Ttl: '----',                    URL: '' },
       ],
       TgtItm: null, // target item.
 
-      onBeforeMount (Prps, Stt) {
+      onBeforeMount () {
         this.TgtItm = this.Itms[0];
 
-        let PthNm = ''
+        let pathName = ''
 
-        this.OnNode(Rqst => { PthNm = Rqst.url; });
+        this.OnNode(request => { pathName = request.url; });
         this.OnBrowser(() => {
-          PthNm = location.pathname;
+          pathName = location.pathname;
 
           this.state.IsDkMd = window.localStorage.getItem('darkMode') === 'true';
 
@@ -111,7 +111,7 @@
         });
 
         for (let i = 0; i < this.Itms.length; i++) {
-          if (this.Itms[i].URL === PthNm.substr(1)) {
+          if (this.Itms[i].URL === pathName.substr(1)) {
             this.Itms[i].IsTgt = true;
             this.TgtItm = this.Itms[i];
 
@@ -122,19 +122,19 @@
         }
       },
 
-      DarkModeToggle (Evt) {
-        const Bd = document.querySelector('body'),
-              IsDkMd = !this.state.IsDkMd;
+      DarkModeToggle () {
+        const body = document.querySelector('body');
+        const isDarkMode = !this.state.IsDkMd;
 
-        this.update({ IsDkMd });
+        this.update({ IsDkMd: isDarkMode });
 
-        if (IsDkMd) {
-          Bd.className += ' dark-mode';
+        if (isDarkMode) {
+          body.className += ' dark-mode';
 
           window.localStorage.setItem('darkMode', 'true');
         }
         else {
-          Bd.className = Bd.className.replace(/ ?dark-mode ?/g, '');
+          body.className = body.className.replace(/ ?dark-mode ?/g, '');
 
           window.localStorage.setItem('darkMode', '');
         }
@@ -176,31 +176,31 @@
       onMounted () {
         if (!this.OnBrowser()) { return; }
 
-        const Btn = this.$('button');
+        const button = this.$('button');
 
         // scroll to toggle button.
         window.addEventListener(
           'scroll',
-          Evt => {
-            const Y = window.scrollY || Evt.pageY || null;
+          event => {
+            const Y = window.scrollY || event.pageY || null;
 
             if (!Y || Y < 40) {
-              if (Btn.style.display === 'none') { return; }
+              if (button.style.display === 'none') { return; }
 
-              Btn.style.display = 'none';
+              button.style.display = 'none';
 
               return;
             }
 
-            if (Btn.style.display !== 'none') { return; }
+            if (button.style.display !== 'none') { return; }
 
-            Btn.style.display = 'inline-block';
+            button.style.display = 'inline-block';
           });
 
-        Btn.style.display = 'inline-block';
+        button.style.display = 'inline-block';
       },
 
-      ScrollToTop (Evt) {
+      ScrollToTop () {
         window.scrollTo(0, 0);
       }
     }

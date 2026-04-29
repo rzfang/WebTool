@@ -53,8 +53,10 @@
     }
   </style>
   <script>
+    import JSON5 from 'json5';
     import dom from 'rzjs/browser/dom.mjs';
     import is from 'rzjs/is.mjs';
+    import log from 'rzjs/log.mjs';
 
     import pageLayout from './page-layout.riot';
 
@@ -64,18 +66,17 @@
       onMounted () {
         if (this.OnNode()) { return; }
 
-        const RtNd = this.$('#Rt');
+        const buttonElements = this.$$('#IptBx > div > button');
+        const rootElement = this.$('#Rt');
 
-        let Btns = this.$$('#IptBx > div > button');
+        rootElement.addEvent('click', this.TreeToggle);
+        rootElement.addEvent('click', this.DataEdit);
 
-        RtNd.addEvent('click', this.TreeToggle);
-        RtNd.addEvent('click', this.DataEdit);
+        buttonElements[0].onclick = this.DataReplace;
+        buttonElements[1].onclick = function (event) { event.target.above(2).style.display = 'none'; };
 
-        Btns[0].onclick = this.DataReplace;
-        Btns[1].onclick = function (Evt) { Evt.target.above(2).style.display = 'none'; };
-
-        // this.$('#IptBx > textarea').onkeyup = function (Evt) {
-        //   switch (Evt.keyCode) {
+        // this.$('#IptBx > textarea').onkeyup = function (event) {
+        //   switch (event.keyCode) {
         //     case 27:
         //       this.above().style.display = 'none';
         //       break;
@@ -83,148 +84,144 @@
         // };
       },
 
-      JSONLoad (Evt) {
-        const Fl = Evt.target.files[0];
+      JSONLoad (event) {
+        const file = event.target.files[0];
 
-        if (!Fl) {
+        if (!file) {
           alert('please select a JSON file.');
 
           return -1;
         }
 
-        if (Fl.size > 1048576) {
+        if (file.size > 1048576) {
           alert('the file size is more than 1mb.');
 
           return -2;
         }
 
-        let FR = new FileReader();
+        const fileReader = new FileReader();
 
-        FR.onloadend = () => this.JSONRender(FR.result);
+        fileReader.onloadend = () => this.JSONRender(fileReader.result);
 
-        FR.readAsText(Fl);
+        fileReader.readAsText(file);
       },
 
-      JSONRead (Evt) {
-        const Txt = Evt.target.previousSibling.value.replace(/\n/g, '');
+      JSONRead (event) {
+        const text = event.target.previousSibling.value.replace(/\n/g, '');
 
-        this.JSONRender(Txt);
+        this.JSONRender(text);
       },
 
       JSONRender (string) {
-        const Is5 = this.$('#FctnBx input[type=checkbox]').checked; // 'Is5' = Is using JSON5.
-        let JO = null,
-            Rt = this.$('#Rt');
+        const is5 = this.$('#FctnBx input[type=checkbox]').checked; // 'is5' = Is using JSON5.
+        const rootElement = this.$('#Rt');
+        let jsonObj;
 
-        try { JO = Is5 ? JSON5.parse(string) : JSON.parse(string); }
-        catch (Ecpt) {
+        try { jsonObj = is5 ? JSON5.parse(string) : JSON.parse(string); }
+        catch (error) {
           alert('the stream is not JSON.');
+          log(error, 'error');
 
           return -1;
         }
 
-        if (JO === null) {
+        if (jsonObj === null) {
           alert('the stream is not JSON.');
 
           return -2;
         }
 
-        Rt.innerHTML = '';
-        Rt.className = '';
+        rootElement.innerHTML = '';
+        rootElement.className = '';
 
-        if (is.Number(JO)) {
-          Rt.className = 'EdtNd number';
+        if (is.Number(jsonObj)) {
+          rootElement.className = 'EdtNd number';
 
-          Rt.appendChild(document.createTextNode(JO.toString()));
+          rootElement.append(document.createTextNode(jsonObj.toString()));
         }
-        else if (is.String(JO)) {
-          Rt.className = 'EdtNd string';
+        else if (is.String(jsonObj)) {
+          rootElement.className = 'EdtNd string';
 
-          Rt.appendChild(document.createTextNode('"' + JO + '"'));
+          rootElement.appendChild(document.createTextNode('"' + jsonObj + '"'));
         }
-        else if (is.Number(JO.length)) { QuoteMarkRender(Rt, JO, 'array'); }
-        else { QuoteMarkRender(Rt, JO, 'object'); }
+        else if (is.Number(jsonObj.length)) { quoteMarkRender(rootElement, jsonObj, 'array'); }
+        else { quoteMarkRender(rootElement, jsonObj, 'object'); }
 
         return 0;
 
         /*
-          'Rt' = DOM Root node object.
-          'Obj' = Object to render.
-          'Tp' = Type of object. optional, 'object'|'array', default 'object'. */
-        function QuoteMarkRender (Rt, Obj, Tp) {
-          let FstNd = document.createElement('span'),
-              LstNd = document.createElement('span');
+          @ DOM Root node object.
+          @ Object to render.
+          @ Type of object. optional, 'object'|'array', default 'object'. */
+        function quoteMarkRender (rootElement, obj, type) {
+          const firstElement = dom.newNode('span');
+          const lastElement = dom.newNode('span');
 
-          FstNd.className = 'TglNd';
-          FstNd.dataset.suffix = '-';
+          firstElement.className = 'TglNd';
+          firstElement.dataset.suffix = '-';
 
-          if (!is.Object(Rt) || !is.Object(Obj)) { return -1; }
+          if (!is.Object(rootElement) || !is.Object(obj)) { return -1; }
 
-          if (Tp === 'array') {
-            FstNd.textContent = '[';
-            LstNd.textContent = ']';
-            Rt.className = 'array';
+          if (type === 'array') {
+            firstElement.textContent = '[';
+            lastElement.textContent = ']';
+            rootElement.className = 'array';
           }
           else {
-            FstNd.textContent = '{';
-            LstNd.textContent = '}';
-            Rt.className = 'object';
+            firstElement.textContent = '{';
+            lastElement.textContent = '}';
+            rootElement.className = 'object';
           }
 
-          Rt.appendChild(FstNd);
-          Rt.appendChild(ObjectRender(Obj));
-          Rt.appendChild(LstNd);
+          rootElement.append(firstElement);
+          rootElement.append(objectRender(obj));
+          rootElement.append(lastElement);
 
           return 0;
         }
 
-        function ObjectRender (Obj) {
-          let Rt = document.createElement('ul'),
-              IsA = false;
+        function objectRender (obj) {
+          const rootElement = dom.newNode('ul');
+          let isArray = false;
 
-          if (!is.Object(Obj) || Obj === null) { return document.createElement('span'); }
+          if (!is.Object(obj) || obj === null) { return dom.newNode('span'); }
 
-          if (is.Number(Obj.length)) { IsA = true; }
+          if (is.Number(obj.length)) { isArray = true; }
 
-          for (let i in Obj) {
-            const NdStt = IsA ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : ');
+          for (const i in obj) {
+            const element = dom.newNode('li');
+            const html = isArray ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : ');
 
-            let Nd;
-
-            switch (typeof Obj[i]) {
+            switch (typeof obj[i]) {
               case 'string':
-                Nd = document.createElement('li');
-                Nd.className = 'string';
-                Nd.innerHTML = NdStt + '<pre class=\'EdtNd\'>"' + Obj[i] + '"</pre>';
+                element.className = 'string';
+                element.innerHTML = html + '<pre class=\'EdtNd\'>"' + obj[i] + '"</pre>';
 
-                Rt.appendChild(Nd);
+                rootElement.append(element);
 
                 break;
 
               case 'number':
-                Nd = document.createElement('li');
-                Nd.className = 'number';
-                Nd.innerHTML = NdStt + '<span class=\'EdtNd\'>' + Obj[i] + '</span>';
+                element.className = 'number';
+                element.innerHTML = html + '<span class=\'EdtNd\'>' + obj[i] + '</span>';
 
-                Rt.appendChild(Nd);
+                rootElement.append(element);
 
                 break;
 
               case 'object':
-                Nd = document.createElement('li');
+                if (is.Array(obj[i]) && is.Number(obj[i].length)) {
+                  element.innerHTML = html;
 
-                if (is.Array(Obj[i]) && is.Number(Obj[i].length)) {
-                  Nd.innerHTML = NdStt;
-
-                  QuoteMarkRender(Nd, Obj[i], 'array');
+                  quoteMarkRender(element, obj[i], 'array');
                 }
                 else {
-                  Nd.innerHTML = NdStt;
+                  element.innerHTML = html;
 
-                  QuoteMarkRender(Nd, Obj[i], 'object');
+                  quoteMarkRender(element, obj[i], 'object');
                 }
 
-                Rt.appendChild(Nd);
+                rootElement.append(element);
 
                 break;
 
@@ -232,159 +229,158 @@
             }
           }
 
-          return Rt;
+          return rootElement;
         }
       },
 
-      DataEdit (Evt) {
-        const Nd = Evt.target;
+      DataEdit (event) {
+        const element = event.target;
+        const imputBox = this.$('#IptBx');
 
-        let IptBx = dom.find('#IptBx')[0],
-            IptNd = IptBx.getChildren('textarea')[0];
+        const imputElement = imputBox.getChildren('textarea')[0];
 
-        if (Nd.className.indexOf('EdtNd') < 0) { return -1; }
+        if (element.className.indexOf('EdtNd') < 0) { return -1; }
 
-        IptNd.style.width = (Nd.offsetWidth * 1.3) + 'px';
-        IptNd.style.height = Nd.offsetHeight + 'px';
-        IptNd.value = Nd.textContent;
-        IptBx.style.left = Nd.offsetLeft + 'px';
-        IptBx.style.top = Nd.offsetTop + 'px';
-        IptBx.style.display = 'inline-block';
-        IptBx.target = Nd;
+        imputElement.style.width = (element.offsetWidth * 1.3) + 'px';
+        imputElement.style.height = element.offsetHeight + 'px';
+        imputElement.value = element.textContent;
+        imputBox.style.left = element.offsetLeft + 'px';
+        imputBox.style.top = element.offsetTop + 'px';
+        imputBox.style.display = 'inline-block';
+        imputBox.target = element;
 
-        IptNd.focus();
+        imputElement.focus();
 
         return 0;
       },
 
-      TreeToggle (Evt) {
-        let Nd = Evt.target,
-            TrNd;
+      TreeToggle (event) {
+        const element = event.target;
 
-        if (Nd.className.indexOf('TglNd') < 0) { return -1; }
+        if (element.className.indexOf('TglNd') < 0) { return -1; }
 
-        TrNd = Nd.above().getChildren('ul')[0];
+        const ulElement = element.above().getChildren('ul')[0];
 
-        if (TrNd.style.display === 'none') {
-          Nd.dataset.suffix = '-';
-          TrNd.style.display = '';
+        if (ulElement.style.display === 'none') {
+          element.dataset.suffix = '-';
+          ulElement.style.display = '';
         }
         else {
-          Nd.dataset.suffix = '+';
-          TrNd.style.display = 'none';
+          element.dataset.suffix = '+';
+          ulElement.style.display = 'none';
         }
 
         return 0;
       },
 
-      DataReplace (Evt) {
-        let IptStr = '';
+      DataReplace (event) {
+        let inputString = '';
 
-        let TgtNd = null,
-            IptBx = Evt
-              .target
-              .above()
-              .process(function (Self) { IptStr = Self.prev().value; })
-              .above()
-              .process(function (Self) { TgtNd = Self.target; });
+        let targetElement = null;
+        const inputBox = event
+          .target
+          .above()
+          .process(self => { inputString = self.prev().value; })
+          .above()
+          .process(self => { targetElement = self.target; });
 
-        if (!TgtNd) {
+        if (!targetElement) {
           alert('there\'s no target you point.');
 
           return -1;
         }
 
-        if (IptStr.length === 0) {
+        if (inputString.length === 0) {
           alert('you should never give a empty string.')
 
           return -2;
         }
 
-        TgtNd.textContent = IptStr;
-        IptBx.style.display = 'none';
+        targetElement.textContent = inputString;
+        inputBox.style.display = 'none';
 
         return 0;
       },
 
-      JSONToString (Evt) {
-        const RtNd = this.$('#Rt');
+      JSONToString (event) {
+        const rootElement = this.$('#Rt');
 
-        let Obj = RtNd.className === 'array' ? [] : {},
-            Nds = RtNd.querySelectorAll(':scope>ul>li');
+        const elements = rootElement.querySelectorAll(':scope>ul>li');
+        const obj = rootElement.className === 'array' ? [] : {};
 
-        NodesLoop(Nds, Obj);
+        nodesLoop(elements, obj);
 
-        Evt.target.nextSibling.nextSibling.value = JSON.stringify(Obj);
+        event.target.nextSibling.nextSibling.value = JSON.stringify(obj);
 
         return;
 
         /*
-          'Nds' = Nodes array.
-          'Obj' = Object to collect JSON data. */
-        function NodesLoop (Nds, Obj) {
-          if (!is.Object(Nds) || !is.Number(Nds.length)) { return -1; }
+          @ Nodes array.
+          @ Object to collect JSON data. */
+        function nodesLoop (elements, obj) {
+          if (!is.Object(elements) || !is.Number(elements.length)) { return -1; }
 
-          for (let i = 0; i < Nds.length; i++) {
-            if (Nds[i].nodeType !== 1 || Nds[i].nodeName !== 'LI') { return -2; }
+          for (let i = 0; i < elements.length; i++) {
+            if (elements[i].nodeType !== 1 || elements[i].nodeName !== 'LI') { return -2; }
 
-            DataFetch(Nds[i], Obj);
+            dataFetch(elements[i], obj);
           }
 
           return 0;
         }
 
         /*
-          'RtNd' = Root Node.
-          'Obj' = Object to collect JSON data. */
-        function DataFetch (RtNd, Obj) {
-          if (!is.Object(RtNd) || !is.String(RtNd.nodeName) || !is.Object(Obj)) { return -1; }
+          @ Root Node.
+          @ Object to collect JSON data. */
+        function dataFetch (rootElement, obj) {
+          if (!is.Object(rootElement) || !is.String(rootElement.nodeName) || !is.Object(obj)) { return -1; }
 
-          let Nds = RtNd.querySelectorAll(':scope>*');
+          const elements = rootElement.querySelectorAll(':scope>*');
 
-          if (Nds.length === 0) { return -2; }
+          if (elements.length === 0) { return -2; }
 
-          if (Nds[0].textContent.length === 0) { // is array.
-            switch (RtNd.className) {
+          if (elements[0].textContent.length === 0) { // is array.
+            switch (rootElement.className) {
               case 'string':
-                Obj.push(Nds[1].textContent.replace(/^"(.?)"$/, "\$1"));
+                obj.push(elements[1].textContent.replace(/^"(.?)"$/, '$1'));
                 break;
 
               case 'number':
-                Obj.push(window.parseFloat(Nds[1].textContent));
+                obj.push(window.parseFloat(elements[1].textContent));
                 break;
 
               case 'array':
-                Obj.push([]);
-                NodesLoop(Nds[2].querySelectorAll(':scope>*'), Obj[Obj.length - 1]);
+                obj.push([]);
+                nodesLoop(elements[2].querySelectorAll(':scope>*'), obj[obj.length - 1]);
                 break;
 
               case 'object':
-                Obj.push({});
-                NodesLoop(Nds[2].querySelectorAll(':scope>*'), Obj[Obj.length - 1]);
+                obj.push({});
+                nodesLoop(elements[2].querySelectorAll(':scope>*'), obj[obj.length - 1]);
                 break;
 
               default:
             }
           }
           else {
-            switch (RtNd.className) {
+            switch (rootElement.className) {
               case 'string':
-                Obj[Nds[0].textContent] = Nds[1].textContent.replace(/^"|"$/g, '');
+                obj[elements[0].textContent] = elements[1].textContent.replace(/^"|"$/g, '');
                 break;
 
               case 'number':
-                Obj[Nds[0].textContent] = window.parseFloat(Nds[1].textContent);
+                obj[elements[0].textContent] = window.parseFloat(elements[1].textContent);
                 break;
 
               case 'array':
-                Obj[Nds[0].textContent] = [];
+                obj[elements[0].textContent] = [];
 
-                NodesLoop(Nds[2].querySelectorAll(':scope>*'), Obj[Nds[0].textContent]);
+                nodesLoop(elements[2].querySelectorAll(':scope>*'), obj[elements[0].textContent]);
                 break;
 
               case 'object':
-                Obj[Nds[0].textContent] = {};
-                NodesLoop(Nds[2].querySelectorAll(':scope>*'), Obj[Nds[0].textContent]);
+                obj[elements[0].textContent] = {};
+                nodesLoop(elements[2].querySelectorAll(':scope>*'), obj[elements[0].textContent]);
                 break;
 
               default:

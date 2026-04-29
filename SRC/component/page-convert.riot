@@ -52,28 +52,28 @@
     export default {
       components: { pageLayout },
 
-      TableSwitch (Evt) {
-        let TgtIdx = 0; // target index.
+      TableSwitch (event) {
+        let targetIndex = 0;
 
-        this.$$('#List button').forEach((Btn, Idx) => {
-          if (Btn === Evt.target) {
-            TgtIdx = Idx;
-            Btn.disabled = 'true';
+        this.$$('#List button').forEach((one, index) => {
+          if (one === event.target) {
+            targetIndex = index;
+            one.disabled = 'true';
 
             return;
           }
 
-          if (Btn.disabled !== '') { Btn.disabled = ''; }
+          if (one.disabled !== '') { one.disabled = ''; }
         });
 
-        this.$$('#Table>div').forEach((Tbl, Idx) => {
-          if ((Idx === TgtIdx) && (Tbl.style.display !== 'block')) {
-            Tbl.style.display = 'block';
+        this.$$('#Table>div').forEach((one, index) => {
+          if ((index === targetIndex) && (one.style.display !== 'block')) {
+            one.style.display = 'block';
 
             return;
           }
 
-          if (Tbl.style.display !== 'none') { Tbl.style.display = 'none'; }
+          if (one.style.display !== 'none') { one.style.display = 'none'; }
         });
       }
     }

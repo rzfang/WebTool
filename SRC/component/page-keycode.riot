@@ -35,52 +35,51 @@
     export default {
       components: { pageLayout },
 
-      KeyDown (Evt) {
-        this.KeyCodeGet(Evt, 'KeyDown');
+      KeyDown (event) {
+        this.KeyCodeGet(event, 'KeyDown');
       },
 
-      KeyPress (Evt) {
-        this.KeyCodeGet(Evt, 'KeyPress');
+      KeyPress (event) {
+        this.KeyCodeGet(event, 'KeyPress');
       },
 
-      KeyUp (Evt) {
-        this.KeyCodeGet(Evt, 'KeyUp');
+      KeyUp (event) {
+        this.KeyCodeGet(event, 'KeyUp');
       },
 
-      KeyCodeGet (Evt, ID) {
+      KeyCodeGet (event, id) {
         /*==== current state show. ====*/
 
-        let Elt = dom.find('#' + ID)[0], // 'Elt' = Element.
-            KyStr = 'keyCode: ' + Evt.keyCode + ' (0x' + Evt.keyCode.toString(16) + ')'; // 'KyStr' = Key String.
+        const element = dom.find('#' + id)[0];
+        let keyString = 'keyCode: ' + event.keyCode + ' (0x' + event.keyCode.toString(16) + ')';
 
-        if (Evt.keyCode === 0)
-        { KyStr += ', charCode: ' + Evt.charCode + ' (0x' + Evt.charCode.toString(16) + ')'; }
+        if (event.keyCode === 0)
+        { keyString += ', charCode: ' + event.charCode + ' (0x' + event.charCode.toString(16) + ')'; }
 
-        if (Evt.key)
-        { KyStr += ', key: ' + Evt.key; }
+        if (event.key)
+        { keyString += ', key: ' + event.key; }
 
-        Elt.innerHTML = KyStr;
+        element.innerHTML = keyString;
 
         /*==== history log process. ====*/
 
-        const ChkIDMpO = { 'KeyDown': 'LgDwnChk', 'KeyPress': 'LgPrsChk', 'KeyUp': 'LgUpChk' };
-        const ChkElt = dom.find('#' + ChkIDMpO[ID])[0];
+        const checkIdMap = { KeyDown: 'LgDwnChk', KeyPress: 'LgPrsChk', KeyUp: 'LgUpChk' };
 
-        let HstElt, // history element.
-            LgElt; // log element.
+        const checkElement = dom.find('#' + checkIdMap[id])[0];
 
-        if (!ChkElt.checked) { return -1; }
+        if (!checkElement.checked) { return -1; }
 
-        HstElt = dom.find('#Hst')[0];
-        LgElt = dom.newNode('tr');
+        const historyElement = dom.find('#Hst')[0];
+        const logElement = dom.newNode('tr');
 
-        LgElt.innerHTML = '<td>' + ID + '</td><td>' + KyStr + '</td>';
+        logElement.innerHTML = '<td>' + id + '</td><td>' + keyString + '</td>';
 
-        HstElt.prepend(LgElt);
+        historyElement.prepend(logElement);
 
-        HstElt.getChildren()
-              .filter(function (Elt, Idx) { return (Idx > (20 - 1)); })
-              .forEach(function (Elt, Idx) { Elt.remove(); });
+        historyElement
+          .getChildren()
+          .filter((_, index) => { return (index > (20 - 1)); })
+          .forEach(one => { one.remove(); });
       },
 
       HistoryClear () {
