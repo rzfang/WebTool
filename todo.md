@@ -38,7 +38,6 @@
 * 20260423
   helper > helper.client
   cover-box.riot by 'dialog'.
-  lint aligns to r4f.
 
 * 20260424
   npm install no dev dependencies.
@@ -46,5 +45,4 @@
 * 20260428
   js innerText to be textContent
   OnBrowser in onMounted can be onHydrated.
-  request.RMI is gone.
-  count down notification is not working on firefox.
+  count down notification is not working on Raspberry PI firefox.
