@@ -154,8 +154,8 @@
           @ Object to render.
           @ Type of object. optional, 'object'|'array', default 'object'. */
         function quoteMarkRender (rootElement, obj, type) {
-          const firstElement = dom.newNode('span');
-          const lastElement = dom.newNode('span');
+          const firstElement = dom.create('span');
+          const lastElement = dom.create('span');
 
           firstElement.className = 'TglNd';
           firstElement.dataset.suffix = '-';
@@ -181,15 +181,15 @@
         }
 
         function objectRender (obj) {
-          const rootElement = dom.newNode('ul');
+          const rootElement = dom.create('ul');
           let isArray = false;
 
-          if (!is.Object(obj) || obj === null) { return dom.newNode('span'); }
+          if (!is.Object(obj) || obj === null) { return dom.create('span'); }
 
           if (is.Number(obj.length)) { isArray = true; }
 
           for (const i in obj) {
-            const element = dom.newNode('li');
+            const element = dom.create('li');
             const html = isArray ? '<span></span>' : ('<span class=\'EdtNd\'>' + i + '</span> : ');
 
             switch (typeof obj[i]) {

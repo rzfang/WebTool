@@ -11,7 +11,7 @@ export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
     return Clbck(-1, null);
   }
 
-  let FdInfo = cch.Get(RqstInfo.Bd.URL); // feed info object.
+  let FdInfo = cch.get(RqstInfo.Bd.URL); // feed info object.
 
   if (FdInfo) { return Clbck(1, FdInfo); }
 
@@ -85,6 +85,6 @@ export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
       FdInfo.Itms = FdInfo.Itms.slice(0, 5);
 
       Clbck(0, FdInfo);
-      cch.Set(RqstInfo.Bd.URL, FdInfo, 1800);
+      cch.set(RqstInfo.Bd.URL, FdInfo, 1800);
     });
 }

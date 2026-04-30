@@ -8,7 +8,7 @@
     "json5": "^2.2.3",
     "request": "^2.88.2",
     "riot-4-fun": "^0.3.10",
-    "rzjs": "github:rzfang/Js"
+    "rzjs": "github:rzfang/Js#v0.6.9"
   },
   "devDependencies": {
     "@eslint/css": "^1",

@@ -15,11 +15,11 @@ export default function Payment (Rqst, URLInfo, Clbck) {
 
   const TrnsfrKy = RERst[1]; // transfering key.
 
-  if (!cch.Has(TrnsfrKy)) {
+  if (!cch.has(TrnsfrKy)) {
     return Clbck(3, Rst);
   }
 
-  Rst.TrnsfrData = cch.Get(TrnsfrKy);
+  Rst.TrnsfrData = cch.get(TrnsfrKy);
 
   Clbck(0, Rst);
 }

@@ -70,7 +70,7 @@
         if (!checkElement.checked) { return -1; }
 
         const historyElement = dom.find('#Hst')[0];
-        const logElement = dom.newNode('tr');
+        const logElement = dom.create('tr');
 
         logElement.innerHTML = '<td>' + id + '</td><td>' + keyString + '</td>';
 

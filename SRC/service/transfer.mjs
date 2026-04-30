@@ -17,11 +17,11 @@ export default function transfer (_request, _response, requestInfo, callback) {
 
   let key = keyGenerate(requestInfo.Bd.Ctn + date.getTime().toString());
 
-  while(cch.Has(key)) {
+  while(cch.has(key)) {
     key = keyGenerate(key);
   }
 
-  cch.Set(key, requestInfo.Bd.Ctn, 600);
+  cch.set(key, requestInfo.Bd.Ctn, 600);
 
   return callback(0, key);
 }

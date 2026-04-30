@@ -15,11 +15,11 @@ export default function read (request, urlInfo, callback) {
 
   const tranferingKey = reResult[1];
 
-  if (!cch.Has(tranferingKey)) {
+  if (!cch.has(tranferingKey)) {
     return callback(3, result);
   }
 
-  result = cch.Get(tranferingKey)?.split('_|_').map(one => ({ FdUrl: one, HsBnLdd: false })) || [];
+  result = cch.get(tranferingKey)?.split('_|_').map(one => ({ FdUrl: one, HsBnLdd: false })) || [];
 
   request.riotPlugin.StoreSet('FEEDS', () => result);
   callback(0, result);
