@@ -43,6 +43,8 @@
   npm install no dev dependencies.
 
 * 20260428
-  js innerText to be textContent
   OnBrowser in onMounted can be onHydrated.
   count down notification is not working on Raspberry PI firefox.
+
+* 20260430
+  lint.

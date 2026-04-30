@@ -71,13 +71,13 @@
         const matchElement = this.$('#MatchList');
 
         if (matchList.length === 0) {
-          reportElement.innerText = 'false';
+          reportElement.textContent = 'false';
           matchElement.value = '';
 
           return;
         }
 
-        reportElement.innerText ? (reportElement.innerText = 'true') : (reportElement.textContent = 'true');
+        reportElement.textContent ? (reportElement.textContent = 'true') : (reportElement.textContent = 'true');
         matchElement.value = matchList.join('\n');
       }
     }
