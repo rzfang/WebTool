@@ -13,10 +13,12 @@ const TMP_PTH = path.resolve(dirname, './DAT/temp');
 
 const defaultPageRoute = { // here should handle 404.
   title: 'Web Tool',
-  description: '網頁工具。tools for web engineer life easier.',
-  keywords: '網頁, 工具, Web, Tool',
-  author: 'RZ Fang',
   favicon: '',
+  meta: [
+    { name: 'author', content: 'RZ Fang' },
+    { name: 'description', content: '網頁工具。tools for web engineer life easier.' },
+    { name: 'keywords', content: '網頁, 工具, Web, Tool' },
+  ],
   css: [ './SRC/css.css' ],
   js: [],
 };

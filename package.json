@@ -1,14 +1,14 @@
 {
   "name": "web_tool",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "web tool",
   "main": "webtool.mjs",
   "dependencies": {
     "feedparser": "^2.2.9",
     "json5": "^2.2.3",
     "request": "^2.88.2",
-    "riot-4-fun": "^0.3.10",
-    "rzjs": "github:rzfang/Js#v0.6.9"
+    "riot-4-fun": "^0.4.0",
+    "rzjs": "github:rzfang/Js#v0.6.10"
   },
   "devDependencies": {
     "@eslint/css": "^1",
