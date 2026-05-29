@@ -13,61 +13,37 @@
         <tr>
           <td><input type='checkbox'/></td>
           <td>height</td>
-          <td><input type='text' value='100'/></td>
+          <td><input type='number' name='height' value='100'/></td>
           <td> Min. value is 100.<br/>The height of the window.</td>
         </tr>
         <tr>
           <td><input type='checkbox'/></td>
           <td>left</td>
-          <td><input type='text'/></td>
+          <td><input type='number' name='left' value='0' /></td>
           <td>The left position of the window.</td>
         </tr>
         <tr>
           <td><input type='checkbox'/></td>
-          <td>location</td>
-          <td>yes: <input type='radio' name='location' checked='true'/> no: <input type='radio' name='location'/></td>
-          <td>Default is yes.<br/>Whether or not to display the address field.</td>
+          <td>noopener</td>
+          <td>yes: <input type='radio' name='noopener' checked='true'/> no: <input type='radio' name='noopener'/></td>
+          <td>Prevents the new window from accessing the opening window via window.opener.</td>
         </tr>
         <tr>
           <td><input type='checkbox'/></td>
-          <td>menubar</td>
-          <td>yes: <input type='radio' name='menubar' checked='true'/> no: <input type='radio' name='menubar'/></td>
-          <td>Default is yes.<br/>Whether or not to display the menu bar.</td>
+          <td>popup</td>
+          <td>yes: <input type='radio' name='popup' checked='true'/> no: <input type='radio' name='popup'/></td>
+          <td>Default is yes.<br/>pop up a simple window.</td>
         </tr>
         <tr>
           <td><input type='checkbox'/></td>
-          <td>resizable</td>
-          <td>yes: <input type='radio' name='resizable' checked='true'/> no: <input type='radio' name='resizable'/></td>
-          <td>Default is yes.<br/>Whether or not the window is resizable.</td>
-        </tr>
-        <tr>
-          <td><input type='checkbox'/></td>
-          <td>scrollbars</td>
-          <td>yes: <input type='radio' name='scrollbars' checked='true'/> no: <input type='radio' name='scrollbars'/></td>
-          <td>Default is yes.<br/>Whether or not to display scroll bars.</td>
-        </tr>
-        <tr>
-          <td><input type='checkbox'/></td>
-          <td>status</td>
-          <td>yes: <input type='radio' name='status' checked='true'/> no: <input type='radio' name='status'/></td>
-          <td>Default is yes.<br/>Whether or not to add a status bar.</td>
-        </tr>
-        <tr>
-          <td><input type='checkbox'/></td>
-          <td>titlebar</td>
-          <td>yes: <input type='radio' name='titlebar' checked='true'/> no: <input type='radio' name='titlebar'/></td>
-          <td>Default is yes.<br/>Whether or not to display the title bar. Ignored unless the calling application is an HTML Application or a trusted dialog box.</td>
-        </tr>
-        <tr>
-          <td><input type='checkbox'/></td>
-          <td>toolbar</td>
-          <td>yes: <input type='radio' name='toolbar' checked='true'/> no: <input type='radio' name='toolbar'/></td>
-          <td>Default is yes.<br/>Whether or not to display the browser toolbar.</td>
+          <td>top</td>
+          <td><input type='number' name='top' value='0'/></td>
+          <td>The top position of the window.</td>
         </tr>
         <tr>
           <td><input type='checkbox'/></td>
           <td>width</td>
-          <td><input type='text' value='100'/></td>
+          <td><input type='number' name='width' value='100'/></td>
           <td>Min. value is 100.<br/>The width of the window.</td>
         </tr>
       </tbody>
@@ -75,13 +51,13 @@
     <br/><hr/><br/>
     <div>
       URL: <input type='text'/>
-      Name: <input type='text'/>
-      <select id=''>
-        <option value='_blank'>_blank - URL is loaded into a new window. This is default.</option>
-        <option value='_parent'>_parent - URL is loaded into the parent frame.</option>
-        <option value='_self'>_self - URL replaces the current page</option>
-        <option value='_top'>_top - URL replaces any framesets that may be loaded.</option>
-      </select>
+      Name: <input type='text' list='name-option' />
+      <datalist id='name-option'>
+        <option value='_blank'>_blank - open a new window. Default.</option>
+        <option value='_parent'>_parent - open to the parent frame.</option>
+        <option value='_self'>_self - replaces the current frame</option>
+        <option value='_top'>_top - replaces ancient frame.</option>
+      </datalist>
       <input type='button' value='Make Script' onclick={scriptMake}/>
       <input type='button' value='Open Test' onclick={test}/><br/>
       <textarea id='ScptBx' cols='80'></textarea>
@@ -89,17 +65,14 @@
     <div>
       Reference:
       <a href='http://www.w3schools.com/jsref/met_win_open.asp'>W3C School - Window open() Method</a> |
-      <a href='http://weblog.gilbert.tw/public/scripts/js_windowopen.html'>Javascript - window.open() Syntax Generator </a>
     </div>
   </page-layout>
   <style>
     :host {
-      table td { max-width: 500px; margin: 0px; padding: 5px; border: 1px solid; }
+      table td { max-width: 500px; margin: 0px; padding: 5px; border: 1px solid var(--color-border); }
     }
   </style>
   <script>
-    import 'rzjs/browser/dom.mjs';
-
     import pageLayout from './page-layout.riot';
 
     export default {
@@ -108,31 +81,23 @@
       /* Parse each Option to string.
         < string of option. */
       optionParse () {
-        const trElements = this.$$('tbody>tr');
-        let info = '';
+        const options = this.$$('tbody>tr')
+          .map(one => {
+            const [ checkedElement, valueElemet ] = one.querySelectorAll('td>input:first-child');
 
-        for (let i = 0; i < trElements.length; i++) {
-          const TDA = trElements[i].getChildren();
+            if (!checkedElement.checked) { return ''; }
 
-          if (!TDA[0].getChildren()[0].checked) { continue; }
+            const type = valueElemet.type;
 
-          const TA = TDA[2].getChildren();
+            if (type === 'radio') {
+              return valueElemet.name + '=' + (valueElemet.checked ? 'yes' : 'no');
+            }
 
-          const type = TA[0].getAttribute('type');
+            return valueElemet.name + '=' + parseInt(valueElemet.value, 10);
+          })
+          .filter(one => one !== '');
 
-          if (type === 'radio') {
-            info += TDA[1].innerHTML + '=' + (TA[0].checked ? 'yes' : 'no') + ', ';
-          }
-          else {
-            info += TDA[1].innerHTML + '=' + TA[0].value + ', ';
-          }
-        }
-
-        if (info.length > 2) {
-          info = info.substr(0, info.length - 2);
-        }
-
-        return info;
+        return options.join(', ');
       },
 
       scriptMake () {
