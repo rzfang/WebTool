@@ -1,90 +1,163 @@
 <page-keycode>
   <page-layout>
-    Key in:
-    <input type='text' id='Keyin' onkeydown={KeyDown} onkeypress={KeyPress} onkeyup={KeyUp}/><br/>
-    <span class='Title'>Key Down:</span><span id='KeyDown'>?</span><br/>
-    <span class='Title'>Key Press:</span><span id='KeyPress'>?</span><br/>
-    <span class='Title'>Key Up:</span><span id='KeyUp'>?</span>
-    <hr/>
-    History:<br/>
-    <table>
-      <tbody id='Hst'></tbody>
-    </table>
-    <div class='log-panel'>
-      Log with:<br/>
-      <label><input type='checkbox' id='LgDwnChk' checked='true'/> KeyDown</label><br/>
-      <label><input type='checkbox' id='LgPrsChk' checked='true'/> KeyPress</label><br/>
-      <label><input type='checkbox' id='LgUpChk' checked='true'/> KeyUp</label><br/>
-      <button onclick={HistoryClear}>Clear</button>
+    <div class='key-in-box'>
+      <b>Key in</b>
+      <input type='text' id='Keyin' onkeydown={recordKey} onkeypress={recordKey} onkeyup={recordKey} />
+    </div>
+    <div class='option-panel'>
+      <b>Record with</b>
+      <label>
+        <input type='checkbox' value='keyDown' checked={state.recordOn.keyDown} onchange={toggleRecord} />
+        KeyDown
+      </label>
+      <label>
+        <input type='checkbox' value='keyPress' checked={state.recordOn.keyPress} onchange={toggleRecord} />
+        KeyPress
+      </label>
+      <label>
+        <input type='checkbox' value='keyUp' checked={state.recordOn.keyUp} onchange={toggleRecord} />
+        KeyUp
+      </label>
+    </div>
+    <div class='record-box'>
+      <b>Records</b>
+      <button onclick={clearRecords}>Clear</button>
+      <table>
+        <thead>
+          <th>type</th>
+          <th>code</th>
+          <th>key</th>
+          <th>keyCode</th>
+        </thead>
+        <tbody>
+          <tr each={one in state.records}>
+            <td>{one.type}</td>
+            <td>{one.code}</td>
+            <td>{one.key}</td>
+            <td>{one.keyCode}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </page-layout>
   <style>
     :host {
-      .Title { display: inline-block; width: 100px; }
+      b {
+        margin-right: 5px;
+      }
 
-      table { display: inline-block; }
+      .key-in-box,
+      .option-panel,
+      .record-box {
+        margin-bottom: 20px;
+        border-left: 1px solid var(--color-border);
+        border-radius: 0;
+        padding-left: 10px;
+      }
 
-      .log-panel { display: inline-block; padding: 5px; border: 1px solid; border-radius: 5px; vertical-align: top; }
+      .option-panel {
+        >label {
+          margin-right: 5px;
+          border: 1px solid var(--color-border);
+          border-radius: 5px;
+          padding: 5px;
+          cursor: pointer;
+
+          >* {
+            vertical-align: center;
+          }
+        }
+      }
+
+      .record-box {
+        >table {
+          border-spacing: 0;
+
+          td {
+            border-radius: 0;
+            padding: 5px;
+          }
+
+          >tbody>tr:hover>td {
+            background-color: #808080;
+          }
+        }
+      }
     }
   </style>
   <script>
-    import dom from 'rzjs/browser/dom.mjs';
-
     import pageLayout from './page-layout.riot';
 
     export default {
       components: { pageLayout },
 
-      KeyDown (event) {
-        this.KeyCodeGet(event, 'KeyDown');
+      state: {
+        records: [],
+        recordOn: {
+          keyDown: true,
+          keyPress: true,
+          keyUp: true,
+        },
       },
 
-      KeyPress (event) {
-        this.KeyCodeGet(event, 'KeyPress');
+      getIsRecordingByEventType (type) {
+        switch (type) {
+          case 'keydown':
+            return this.state.recordOn.keyDown;
+
+          case 'keypress':
+            return this.state.recordOn.keyPress;
+
+          case 'keyup':
+            return this.state.recordOn.keyUp;
+        }
+
+        return false;
       },
 
-      KeyUp (event) {
-        this.KeyCodeGet(event, 'KeyUp');
+      recordKey (event) {
+        if (!this.getIsRecordingByEventType(event.type)) {
+          return;
+        }
+
+        this.update({
+          records: [
+            {
+              code: event.code,
+              key: event.key,
+              type: event.type,
+              keyCode: event.keyCode && `${event.keyCode} (0x${event.keyCode.toString(16)})` || '',
+            },
+            ...this.state.records,
+          ],
+        });
       },
 
-      KeyCodeGet (event, id) {
-        /*==== current state show. ====*/
-
-        const element = dom.find('#' + id)[0];
-        let keyString = 'keyCode: ' + event.keyCode + ' (0x' + event.keyCode.toString(16) + ')';
-
-        if (event.keyCode === 0)
-        { keyString += ', charCode: ' + event.charCode + ' (0x' + event.charCode.toString(16) + ')'; }
-
-        if (event.key)
-        { keyString += ', key: ' + event.key; }
-
-        element.innerHTML = keyString;
-
-        /*==== history log process. ====*/
-
-        const checkIdMap = { KeyDown: 'LgDwnChk', KeyPress: 'LgPrsChk', KeyUp: 'LgUpChk' };
-
-        const checkElement = dom.find('#' + checkIdMap[id])[0];
-
-        if (!checkElement.checked) { return -1; }
-
-        const historyElement = dom.find('#Hst')[0];
-        const logElement = dom.create('tr');
-
-        logElement.innerHTML = '<td>' + id + '</td><td>' + keyString + '</td>';
-
-        historyElement.prepend(logElement);
-
-        historyElement
-          .getChildren()
-          .filter((_, index) => { return (index > (20 - 1)); })
-          .forEach(one => { one.remove(); });
+      clearRecords () {
+        this.update({ records: [] });
       },
 
-      HistoryClear () {
-        dom.find('#Hst')[0].innerHTML = '';
-      }
+      toggleRecord (event) {
+        const recordOn = this.state.recordOn;
+        const { checked, value } = event.target;
+
+        switch (value) {
+          case 'keyDown':
+            recordOn.keyDown = checked;
+
+            break;
+
+          case 'keyPress':
+            recordOn.keyPress = checked;
+
+            break;
+
+          case 'keyUp':
+            recordOn.keyUp = checked;
+
+            break;
+        }
+      },
     }
   </script>
 </page-keycode>
