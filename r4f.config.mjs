@@ -18,13 +18,7 @@ const defaultPageRoute = { // here should handle 404.
   author: 'RZ Fang',
   favicon: '',
   css: [ './SRC/css.css' ],
-  js: [
-    { // for google ads.
-      async: '',
-      crossorigin: 'anonymous',
-      src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5447666979551687',
-    },
-  ],
+  js: [],
 };
 
 const config = {
