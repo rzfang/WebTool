@@ -14,21 +14,21 @@
         </li>
       </ul>
     </div>
-    <table class='output-box'>
-      <tbody class={state.hideEqual ? 'hide-equal' : ''}>
-        <tr each={Ky in PrprtyKys} class={state.equalKeys.includes(Ky) ? 'is-equal' : ''}>
-            <td>{Ky}</td>
-            <td each={Url in state.urls}>{Url[Ky]}</td>
-        </tr>
-        <tr>
-          <td colspan='3'>parsed searchParams</td>
-        </tr>
-        <tr each={Ky in state.searchParamKeys} class={state.equalKeys.includes(Ky) ? 'is-equal' : ''}>
-          <td>{Ky}</td>
-          <td each={Url in state.urls}>{Url && Url.SrchPrmsObjct && Url.SrchPrmsObjct[Ky] || ''}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class={'output-box ' + (state.hideEqual ? 'hide-equal' : '')}>
+      <div each={key in propertyKeys} class={state.equalKeys.includes(key) ? 'is-equal' : ''}>
+        <dl>
+          <dt>{key}</dt>
+          <dd each={url in state.urls}>{url[key] || ' '}</dd>
+        </dl>
+      </div>
+      <h4>parsed searchParams</h4>
+      <div each={key in state.searchParamKeys} class={state.equalKeys.includes(key) ? 'is-equal' : ''}>
+        <dl>
+          <dt>{key}</dt>
+          <dd each={url in state.urls}>{url && url.searchParamsObject && url.searchParamsObject[key] || ' '}</dd>
+        </dl>
+      </div>
+    </div>
   </page-layout>
   <style>
     :host {
@@ -43,22 +43,45 @@
       }
 
       .output-box {
-        width: 100%;
+        &.hide-equal .is-equal {
+          display: none;
+        }
 
-        >tbody {
-          >tr {
-            &:hover { background-color: #f8f8f8; }
+        >div {
+          &.is-equal { color: #808080; }
 
-            &.is-equal { color: #808080; }
-
-            >td {
-              word-break: break-all;
-
-              &[colspan='3'] { text-align: center; font-size: 1.5rem; }
-            }
+          &:hover {
+            background-color: #80808080;
           }
 
-          &.hide-equal tr.is-equal { display: none; }
+          >dl {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas: 't t' 'l r';
+
+            >dt {
+              grid-area: t;
+              font-weight: bold;
+            }
+
+            >dd {
+              margin: 0;
+              word-break: break-all;
+
+              &:first-child {
+                grid-area: l;
+              }
+
+              &:last-child {
+                grid-area: r;
+              }
+            }
+          }
+        }
+
+        >h4 {
+          text-align: center;
         }
       }
     }
@@ -69,7 +92,7 @@
     export default {
       components: { pageLayout },
 
-      PrprtyKys: [
+      propertyKeys: [
         'origin',
         'username',
         'password',
@@ -114,17 +137,17 @@
         urls.forEach((url, index) => {
           if (!url) { return; }
 
-          this.PrprtyKys.forEach(key => { resultUrls[index][key] = urls[index][key]; });
+          this.propertyKeys.forEach(key => { resultUrls[index][key] = urls[index][key]; });
 
-          resultUrls[index].SrchPrmsObjct = this.SearchParamsToObject(urls[index].searchParams);
-          paramKeys = [ ...paramKeys, ...Object.keys(resultUrls[index].SrchPrmsObjct) ];
+          resultUrls[index].searchParamsObject = this.SearchParamsToObject(urls[index].searchParams);
+          paramKeys = [ ...paramKeys, ...Object.keys(resultUrls[index].searchParamsObject) ];
         });
 
         paramKeys = paramKeys.filter((value, index, array) => array.indexOf(value) === index);
 
         const equalKeys = []; // equal keys.
 
-        this.PrprtyKys.forEach(key => {
+        this.propertyKeys.forEach(key => {
           let isEqual = true;
 
           for (let i = 1; i < resultUrls.length; i++) {
@@ -138,13 +161,13 @@
           let isEqual = true;
 
           for (let i = 1; i < resultUrls.length; i++) {
-            if (!resultUrls[i].SrchPrmsObjct || !resultUrls[i - 1].SrchPrmsObjct) {
+            if (!resultUrls[i].searchParamsObject || !resultUrls[i - 1].searchParamsObject) {
               isEqual = false;
 
               break;
             }
 
-            isEqual &= (resultUrls[i].SrchPrmsObjct[key] === resultUrls[i - 1].SrchPrmsObjct[key]);
+            isEqual &= (resultUrls[i].searchParamsObject[key] === resultUrls[i - 1].searchParamsObject[key]);
           }
 
           if (isEqual) { equalKeys.push(key); }
