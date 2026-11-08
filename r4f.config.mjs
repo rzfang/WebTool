@@ -34,81 +34,126 @@ const config = {
     //   body: [ 'header.tag', 'chat.tag', 'component/footer.part.html' ]},
     '/colors': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '顏色, 色票, 樣式, color, 工具, 開發, Web, Tool, Develop' },
+      ],
       title: 'Color Conside - Web Tool',
-      keywords: '顏色, 色票, 樣式, color, 工具, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-colors.riot' }},
     '/convert': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '轉換, 換算, 查表, convert, list, 工具, 開發, Web, Tool, Develop' },
+      ],
       title: 'Convert Table - Web Tool',
-      keywords: '轉換, 換算, 查表, convert, list, 工具, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-convert.riot' }},
     '/countdown': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '倒數計時, 計時, countdown, 工具, Tool' },
+      ],
       title: 'Countdown Notify - Web Tool',
-      keywords: '倒數計時, 計時, countdown, 工具, Tool',
       body: { component: './SRC/component/page-countdown.riot' }},
     '/datauri': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '資料, 轉換, datauri, 工具, 開發, Web, Tool, Develop' },
+      ],
       title: 'File to Data URI - Web Tool',
-      keywords: '資料, 轉換, datauri, 工具, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-datauri.riot' }},
     '/datetime': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '時間格式轉換, datetime transform, 工具, 開發, Web, Tool, Develop' },
+      ],
       title: 'Datetime Transform - Web Tool',
-      keywords: '時間格式轉換, datetime transform, 工具, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-datetime.riot' }},
     '/endecode': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '編碼, 解碼, encoding, decoding, 工具, 開發, Web, Tool, Develop' },
+      ],
       title: 'String Encode/Decode - Web Tool',
-      keywords: '編碼, 解碼, encoding, decoding, 工具, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-endecode.riot' }},
     '/ipv426': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: 'ipv6, 工具, 程式, 開發, Web, Tool, Develop' },
+      ],
       title: 'IPv4 to v6 convert - Web Tool',
-      keywords: 'ipv6, 工具, 程式, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-ipv426.riot' }},
     '/json': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: 'JSON, edit, 編輯, 工具, 開發, Web, Tool, Develop' },
+      ],
       title: 'JSON Edit - Web Tool',
-      keywords: 'JSON, edit, 編輯, 工具, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-json.riot' }},
     '/keycode': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '鍵盤代碼, keyboard, keyCode, 工具, 開發, Web, Tool, Develop' },
+      ],
       title: 'Key Code Detect - Web Tool',
-      keywords: '鍵盤代碼, keyboard, keyCode, 工具, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-keycode.riot' }},
     '/payment': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: 'payment, 記帳, 編輯, 網頁, 工具, Web, Tool' },
+      ],
       title: 'Payment - Web Tool',
-      keywords: 'payment, 記帳, 編輯, 網頁, 工具, Web, Tool',
       body: {
         component: './SRC/component/page-payment.riot',
         // initialize: payment,
       }},
     '/post': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '送出資料, form, post, 工具, 開發, Web, Tool, Develop' },
+      ],
       title: 'Form Post - Web Tool',
-      keywords: '送出資料, form, post, 工具, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-post.riot' }},
     '/re': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '正規表示式, RegExp, regular expression, 工具, 開發, Web, Tool, Develop' },
+      ],
       title: 'Regula Expression - Web Tool',
-      keywords: '正規表示式, RegExp, regular expression, 工具, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-re.riot' }},
     '/read': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '閱讀器, RSS, Atom, 工具, Web, Tool' },
+      ],
       title: 'Feed Read - Web Tool',
-      keywords: '閱讀器, RSS, Atom, 工具, Web, Tool',
       body: { component: './SRC/component/page-read.riot', initialize: read }},
     '/url': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '網址比對, url, compare, 工具, Web, Tool' },
+      ],
       title: 'URL Compare - Web Tool',
-      keywords: '網址比對, url, compare, 工具, Web, Tool',
       body: { component: './SRC/component/page-url.riot' }},
     '/window': {
       ...defaultPageRoute,
+      meta: [
+        ...defaultPageRoute.meta,
+        { name: 'keywords', content: '開新視窗, window.open, 工具, 開發, Web, Tool, Develop' },
+      ],
       title: 'Window Open Script - Web Tool',
-      keywords: '開新視窗, window.open, 工具, 開發, Web, Tool, Develop',
       body: { component: './SRC/component/page-window.riot' }},
     '/': { // as keycode
       ...defaultPageRoute,
