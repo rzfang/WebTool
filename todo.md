@@ -48,3 +48,9 @@
 
 * 20260430
   lint.
+
+* 20260529
+  request npm package is not safe, try node-fetch.
+
+* 20261122
+  act element's disabled colors.

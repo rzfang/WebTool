@@ -1,23 +1,62 @@
+/*@media (prefers-color-scheme: light) {
+}
+
+@media (prefers-color-scheme: dark) {
+}*/
+
 /* === Gloabal Variable === */
 
 :root {
-  --color-background: #ffffff;
-  --color-background-alpha: #ffffffe0;
-  --color-border: #808080;
+  --color-background: #f8f8f8;
+  --color-background-alpha: #f8f8f8e0;
+  --color-border: #c0c0c0;
   --color-font: #202020;
-  --color-link: #0000ff;
-  --color-link-hover: #400080;
-  --color-link-visited: #400080;
+
+  --color-act-font: #0060c0;
+  --color-act-font-hover: #0080ff;
+  --color-act-border: #80b8e8;
+  --color-act-border-hover: #408ed0;
+  --color-act-background: #f0f7ff;
+  --color-act-background-hover: #e0efff;
 }
 
-.dark-mode {
+:root .dark-mode {
   --color-background: #101010;
   --color-background-alpha: #101010e0;
   --color-border: #404040;
   --color-font: #d0d0d0;
-  --color-link: #40ff40;
-  --color-link-hover: #208020;
-  --color-link-visited: #208020;
+
+  /*Green*/
+  /*--color-act-font: #00c000;
+  --color-act-font-hover: #00ff00;
+  --color-act-border: #004000;
+  --color-act-border-hover: #008000;
+  --color-act-background: #001000;
+  --color-act-background-hover: #002000;*/
+
+  /*Indigo*/
+  --color-act-font: #818cf8;
+  --color-act-font-hover: #a5b4fc;
+  --color-act-border: #3730a3;
+  --color-act-border-hover: #4f46e5;
+  --color-act-background: #101025;
+  --color-act-background-hover: #1a1a40;
+
+  /*Cyan*/
+  /*--color-act-font: #22d3ee;
+  --color-act-font-hover: #67e8f9;
+  --color-act-border: #155e75;
+  --color-act-border-hover: #0891b2;
+  --color-act-background: #08202a;
+  --color-act-background-hover: #0c2d38;*/
+
+  /*Amber*/
+  /*--color-act-font: #fbbf24;
+  --color-act-font-hover: #fcd34d;
+  --color-act-border: #92400e;
+  --color-act-border-hover: #b45309;
+  --color-act-background: #241707;
+  --color-act-background-hover: #30200a;*/
 }
 
 /* === Normal Element === */
@@ -36,15 +75,11 @@ nav,
 ul,
 li,
 td,
-button,
-input[type=button],
-input[type=submit],
 input[type=text],
 input[type=number],
-select,
+label,
 textarea {
   border-color: var(--color-border);
-  border-style: solid;
 }
 
 div,
@@ -57,22 +92,32 @@ input[type=button],
 input[type=submit],
 input[type=text],
 input[type=number],
+label,
 select,
 textarea {
-  border-radius: 3px;
+  border-style: solid;
+  border-radius: 4px;
+}
+
+button,
+input[type=button],
+input[type=submit],
+input[type=text],
+input[type=number],
+label,
+select,
+textarea {
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 div,
 ul,
 li,
+label,
 td {
   border-width: 0;
-}
-
-input[type=text],
-input[type=number],
-textarea {
-  border-width: 1px;
 }
 
 a,
@@ -83,37 +128,12 @@ select {
   font-size: 16px;
 }
 
-a {
-  text-decoration: none;
-  color: var(--color-link);
-
-  &:hover {
-    text-decoration: underline;
-    color: var(--color-link-hover);
-  }
-
-  &:visited {
-    color: var(--color-link-visited);
-  }
-}
-
 button,
 input[type=button],
 input[type=submit],
 select {
   border-width: 1px;
   cursor: pointer;
-}
-
-button,
-input[type=button],
-input[type=submit],
-input[type=text],
-input[type=number],
-select,
-textarea {
-  color: var(--color-font);
-  background-color: var(--color-background);
 }
 
 /* === Structure === */
@@ -129,6 +149,61 @@ textarea {
     right: 15px;
     bottom: 25px;
     padding: 0 3px;
+  }
+}
+
+/* === Custom Element Style */
+
+a {
+  text-decoration: none;
+  color: var(--color-act-font);
+
+  &:hover {
+    text-decoration: underline;
+    color: var(--color-act-font-hover);
+  }
+}
+
+input[type=text],
+input[type=number],
+textarea {
+  border-width: 1px;
+  color: var(--color-font);
+  background-color: var(--color-background);
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-act-border-hover);
+  }
+
+  &:focus:not(:disabled) {
+    border-color: var(--color-act-border);
+    outline: 1px solid var(--color-act-border);
+  }
+}
+
+button,
+input[type=button],
+input[type=submit],
+select {
+  border-color: var(--color-act-border);
+  color: var(--color-act-font);
+  background-color: var(--color-act-background);
+
+  &:disabled {
+    border-color: var(--color-border);
+    color: var(--color-font);
+    background-color: var(--color-background);
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-act-border-hover);
+    color: var(--color-act-font-hover);
+    background-color: var(--color-act-background-hover);
+  }
+
+  &:focus:not(:disabled) {
+    border-color: var(--color-act-border);
+    outline: 1px solid var(--color-act-border);
   }
 }
 
