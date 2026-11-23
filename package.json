@@ -6,7 +6,6 @@
   "dependencies": {
     "feedparser": "^2.2.9",
     "json5": "^2.2.3",
-    "request": "^2.88.2",
     "riot-4-fun": "^0.5.0",
     "rzjs": "github:rzfang/Js#v0.7.0"
   },

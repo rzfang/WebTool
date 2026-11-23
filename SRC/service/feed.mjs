@@ -1,7 +1,7 @@
 import cch from 'rzjs/node/cache.mjs';
 import feedparser from 'feedparser';
 import is from 'rzjs/is.mjs';
-import request from 'request';
+import { Readable } from 'node:stream';
 
 /*
   @ request info object.
@@ -16,15 +16,19 @@ export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
   if (FdInfo) { return Clbck(1, FdInfo); }
 
   const FdPrsr = new feedparser(); // feed parser.
-  const SvcRqst = request(encodeURI(RqstInfo.Bd.URL)); // server request.
 
   let IsEnd = false; // is end flag.
 
-  FdInfo = { FdURL: RqstInfo.Bd.URL, Itms: [] }; // default, feed url, items.
-
-  SvcRqst.on(
-    'error',
-    () => {
+  fetch(encodeURI(RqstInfo.Bd.URL)).then(
+    response => {
+      if (response.status !== 200) {
+        throw new Error('Bad status code');
+      }
+      else {
+        Readable.fromWeb(response.body).pipe(FdPrsr);
+      }
+    },
+    error => {
       if (IsEnd) { return; }
 
       Clbck(-2, null);
@@ -32,14 +36,7 @@ export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
       IsEnd = true;
     });
 
-  SvcRqst.on(
-    'response',
-    function (Rspns) {
-      const Strm = this; // stream object.
-
-      if (Rspns.statusCode !== 200) { this.emit('error', new Error('Bad status code')); }
-      else { Strm.pipe(FdPrsr); }
-    });
+  FdInfo = { FdURL: RqstInfo.Bd.URL, Itms: [] }; // default, feed url, items.
 
   FdPrsr.on(
     'error',

@@ -44,13 +44,9 @@
 
 * 20260428
   OnBrowser in onMounted can be onHydrated.
-  count down notification is not working on Raspberry PI firefox.
 
 * 20260430
   lint.
-
-* 20260529
-  request npm package is not safe, try node-fetch.
 
 * 20261122
   act element's disabled colors.
