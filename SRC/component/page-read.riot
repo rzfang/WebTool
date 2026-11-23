@@ -2,8 +2,8 @@
   <div>
     <a if={!props.title} href={props.feedUrl}>{props.feedUrl}</a>
     <a href='{props.link}' target='_blank'>{props.title}</a>
-    <div>{props.Dscrptn}</div>
-    <div class='BtnBx'>
+    <div>{props.description}</div>
+    <div class='button-box'>
       <button if={!props.title} onclick={Load}>Reload</button>
       <button onclick={Delete}>X</button>
     </div>
@@ -14,12 +14,23 @@
     </div>
   </div>
   <style>
-    :host { display: block; margin: 10px 0; padding: 5px; border: 1px solid; border-radius: 3px; }
-    :host>div:first-child { position: relative; }
-    :host>div:first-child>div { font-size: 14px; color: #808080; }
-    :host .BtnBx { position: absolute; right: 0px; top: 0px;  };
-    :host .BtnBx>button { margin-left: 5px; padding: 0 5px; background-color: #ffffff; }
-    :host :last-child>div { margin: 10px 0; }
+    :host {
+      margin: 10px 0; padding: 5px; border-width: 1px;
+
+      >div:first-child {
+        position: relative;
+
+        >div { font-size: 14px; color: #808080; }
+      }
+
+      .button-box {
+        position: absolute; right: 0px; top: 0px;
+
+        >button { margin-left: 5px; padding: 0 5px; }
+      }
+
+      :last-child>div { margin: 10px 0; }
+    }
   </style>
   <script>
     import log from 'rzjs/is.mjs';
@@ -79,7 +90,7 @@
       <button onclick={Transfer}>Transfer</button>
     </div>
     <div>
-      <feed each={Fd in state.Fds} Delete={OneFeedRemove} {...Fd}/>
+      <div is='feed' each={Fd in state.Fds} Delete={OneFeedRemove} {...Fd}/>
     </div>
     <cover-box if={state.IsTrnsfrOt}>
       <p>please finish the transfering in 10 minutes by visit followed link in your device which you want the data transfer to.</p>
@@ -96,14 +107,26 @@
       </div>
     </cover-box>
   </page-layout>
-  <style scoped>
-    :host { display: block; padding-top: 5px; }
-    :host>div:first-child>* { margin-right: 10px; }
-    :host>div:first-child>button { padding: 0 5px; }
-    cover-box>div { position: relative; }
-    cover-box p { max-width: 480px; }
-    cover-box>div>div { margin: 10px 0; text-align: center; }
-    cover-box button { margin: 10px 5px 0 5px; padding: 0 5px; }
+  <style>
+    :host {
+      display: block; padding-top: 5px;
+
+      >div:first-child {
+        >* { margin-right: 10px; }
+        >button { padding: 0 5px; }
+      }
+    }
+
+    cover-box {
+      >div {
+        position: relative;
+
+        >div { margin: 10px 0; text-align: center; }
+      }
+
+      p { max-width: 480px; }
+      button { margin: 10px 5px 0 5px; padding: 0 5px; }
+    }
   </style>
   <script>
     import is from 'rzjs/is.mjs';
@@ -185,7 +208,7 @@
 
       /* load all feeds in the beginning. */
       AllFeedsFirstLoad () {
-        const buttons = this.$$('.BtnBx>button:first-child');
+        const buttons = this.$$('.button-box>button:first-child');
 
         const buttonLength = buttons.length;
 
