@@ -3,85 +3,81 @@ import feedparser from 'feedparser';
 import is from 'rzjs/is.mjs';
 import { Readable } from 'node:stream';
 
-/*
-  @ request info object.
-  @ callback function. */
-export default function Feed (Rqst, Rspns, RqstInfo, Clbck) {
-  if (!RqstInfo.Bd || !RqstInfo.Bd || !RqstInfo.Bd.URL || !is.String(RqstInfo.Bd.URL)) {
-    return Clbck(-1, null);
+export default function feed (request, response, requestInfo, callback) {
+  if (!requestInfo.Bd || !requestInfo.Bd || !requestInfo.Bd.URL || !is.String(requestInfo.Bd.URL)) {
+    return callback(-1, null);
   }
 
-  let FdInfo = cch.get(RqstInfo.Bd.URL); // feed info object.
+  let feedInfo = cch.get(requestInfo.Bd.URL);
 
-  if (FdInfo) { return Clbck(1, FdInfo); }
+  if (feedInfo) { return callback(1, feedInfo); }
 
-  const FdPrsr = new feedparser(); // feed parser.
+  const fpi = new feedparser(); // feed parser instance.
 
-  let IsEnd = false; // is end flag.
+  let isEnd = false; // is end flag.
 
-  fetch(encodeURI(RqstInfo.Bd.URL)).then(
+  fetch(encodeURI(requestInfo.Bd.URL)).then(
     response => {
       if (response.status !== 200) {
         throw new Error('Bad status code');
       }
       else {
-        Readable.fromWeb(response.body).pipe(FdPrsr);
+        Readable.fromWeb(response.body).pipe(fpi); // covert from Web API steam to Node stream.
       }
     },
-    error => {
-      if (IsEnd) { return; }
+    _error => {
+      if (isEnd) { return; }
 
-      Clbck(-2, null);
+      callback(-2, null);
 
-      IsEnd = true;
+      isEnd = true;
     });
 
-  FdInfo = { FdURL: RqstInfo.Bd.URL, Itms: [] }; // default, feed url, items.
+  feedInfo = {
+    feedUrl: requestInfo.Bd.URL,
+    items: [],
+  }; // default, feed url, items.
 
-  FdPrsr.on(
+  fpi.on(
     'error',
     () => {
-      if (IsEnd) { return; }
+      if (isEnd) { return; }
 
-      Clbck(-3, null);
+      callback(-3, null);
 
-      IsEnd = true;
+      isEnd = true;
     });
 
-  FdPrsr.on(
+  fpi.on(
     'meta',
-    ({ title: Ttl = '', description: Dscrptn = '', link: Lnk = '', date: Dt = '', author: Athr = '' }) => {
-      FdInfo = Object.assign(FdInfo, { Ttl, Dscrptn, Lnk, Dt, Athr});
+    ({ title = '', description = '', link = '', date = '', author = '' }) => {
+      feedInfo = Object.assign(feedInfo, { author, description, date, link, title });
     });
 
-  FdPrsr.on(
+  fpi.on(
     'readable',
     function () {
-      const Strm = this;
+      const stream = this;
 
-      let Itm = Strm.read(); // stream object.
+      let item = stream.read(); // stream object.
 
-      while (Itm) {
-        const {
-          title: Ttl = '',
-          date: Dt = '',
-          link: Lnk = '',
-        } = Itm;
+      while (item) {
+        const { date = '', link = '', title = '' } = item;
 
-        FdInfo.Itms.push({ Ttl, Dt, Lnk });
+        feedInfo.items.push({ date, link, title });
 
-        Itm = Strm.read();
+        item = stream.read();
       }
     });
 
-  FdPrsr.on(
+  fpi.on(
     'end',
     () => {
-      if (IsEnd) { return; }
+      if (isEnd) { return; }
 
-      FdInfo.Itms = FdInfo.Itms.slice(0, 5);
+      feedInfo.items = feedInfo.items.slice(0, 5);
 
-      Clbck(0, FdInfo);
-      cch.set(RqstInfo.Bd.URL, FdInfo, 1800);
+      callback(0, feedInfo);
+      cch.set(requestInfo.Bd.URL, feedInfo, 1800);
     });
 }

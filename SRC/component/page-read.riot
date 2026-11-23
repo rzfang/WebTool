@@ -1,16 +1,16 @@
 <feed>
   <div>
-    <a if={!props.Ttl} href={props.FdUrl}>{props.FdUrl}</a>
-    <a href='{props.Lnk}' target='_blank'>{props.Ttl}</a>
+    <a if={!props.title} href={props.feedUrl}>{props.feedUrl}</a>
+    <a href='{props.link}' target='_blank'>{props.title}</a>
     <div>{props.Dscrptn}</div>
     <div class='BtnBx'>
-      <button if={!props.Ttl} onclick={Load}>Reload</button>
+      <button if={!props.title} onclick={Load}>Reload</button>
       <button onclick={Delete}>X</button>
     </div>
   </div>
   <div>
-    <div each={Itm in props.Itms}>
-      <a href='{Itm.Lnk}' target='_blank'>{Itm.Ttl}</a>
+    <div each={one in props.items}>
+      <a href='{one.link}' target='_blank'>{one.title}</a>
     </div>
   </div>
   <style>
@@ -30,32 +30,32 @@
         @ current props.
         < true | false. */
       shouldUpdate (newProps, oldProps) {
-        return (newProps.HsBnLdd !== oldProps.HsBnLdd) || (!oldProps.Itms && newProps.Itms);
+        return (newProps.HsBnLdd !== oldProps.HsBnLdd) || (!oldProps.items && newProps.items);
       },
 
       TargetFeedIndexGet (feeds, url) {
-        return feeds.findIndex(one => one.FdUrl === url);
+        return feeds.findIndex(one => one.feedUrl === url);
       },
 
       Load () {
         this.ServiceCall(
           '/service/feed',
-          { URL: this.props.FdUrl },
+          { URL: this.props.feedUrl },
           'FEEDS',
           (store, result) => {
             if (!store) { store = []; }
 
             if (!result) {
-              log('can not get feed result for ' +  this.props.FdUrl);
+              log('can not get feed result for ' +  this.props.feedUrl);
 
               result = { HsBnLdd: true };
             }
             else { result.HsBnLdd = true; }
 
-            const index = this.TargetFeedIndexGet(store, this.props.FdUrl); // target store feed index.
+            const index = this.TargetFeedIndexGet(store, this.props.feedUrl); // target store feed index.
             const length = store.length;
 
-            result.FdUrl = this.props.FdUrl;
+            result.feedUrl = this.props.feedUrl;
 
             if (length === 0 || index < 0) { store.push(result); }
             else { store[index] = result; }
@@ -65,7 +65,7 @@
       },
 
       Delete () {
-        this.props.Delete && this.props.Delete(this.props.FdUrl);
+        this.props.Delete && this.props.Delete(this.props.feedUrl);
       }
     }
   </script>
@@ -160,7 +160,7 @@
 
         window.localStorage.FdURLs += '_|_' + url;
 
-        this.state.Fds.push({FdUrl: url, HsBnLdd: false });
+        this.state.Fds.push({ feedUrl: url, HsBnLdd: false });
         this.update();
       },
 
@@ -173,7 +173,7 @@
         window.localStorage.FdURLs = feedUrls.replace(url, '').replace(/_\|__\|_/g, '_|_').replace(/^_\|_|_\|_$/g, '');
 
         for (let i = 0; i < feeds.length; i++) {
-          if (feeds[i].FdUrl === url) {
+          if (feeds[i].feedUrl === url) {
             this.state.Fds.splice(i, 1);
 
             break;
@@ -218,7 +218,7 @@
       TransferIgnore () {
         const feeds = this
           .UrlsFilter(window.localStorage.FdURLs.split('_|_'))
-          .map(one => { return { FdUrl: one, HsBnLdd: false }; }); // feed url, has been loaded
+          .map(one => { return { feedUrl: one, HsBnLdd: false }; }); // feed url, has been loaded
 
         this.state.HsTrnsfrCnfrm = false;
 
@@ -230,16 +230,16 @@
         const remoteFeeds = this.state.Fds;
         const localFeeds = this
           .UrlsFilter(window.localStorage.FdURLs.split('_|_'))
-          .map(one => { return { FdUrl: one, HsBnLdd: false }; }); // feed url, has been loaded.
+          .map(one => { return { feedUrl: one, HsBnLdd: false }; }); // feed url, has been loaded.
 
-        const localUrls = localFeeds.map(one => one.FdUrl);
-        const remoteUrls = remoteFeeds.map(one => one.FdUrl);
+        const localUrls = localFeeds.map(one => one.feedUrl);
+        const remoteUrls = remoteFeeds.map(one => one.feedUrl);
 
         remoteUrls.forEach((one, index) => {
           if (!localUrls.includes(one)) { localFeeds.push(remoteFeeds[index]); }
         });
 
-        window.localStorage.FdURLs = localFeeds.map(one => one.FdUrl).join('_|_');
+        window.localStorage.FdURLs = localFeeds.map(one => one.feedUrl).join('_|_');
         this.state.HsTrnsfrCnfrm = false;
 
         this.StoreSet('FEEDS', () => localFeeds);
@@ -249,7 +249,7 @@
       TransferReplace () {
         const remoteFeeds = this.state.Fds;
 
-        window.localStorage.FdURLs = remoteFeeds.map(one => one.FdUrl).join('_|_');
+        window.localStorage.FdURLs = remoteFeeds.map(one => one.feedUrl).join('_|_');
 
         this.update({ HsTrnsfrCnfrm: false });
         this.AllFeedsFirstLoad();
