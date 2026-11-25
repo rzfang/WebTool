@@ -39,7 +39,8 @@ const config = {
         { name: 'keywords', content: '顏色, 色票, 樣式, color, 工具, 開發, Web, Tool, Develop' },
       ],
       title: 'Color Conside - Web Tool',
-      body: { component: './SRC/component/page-colors.riot' }},
+      body: { component: './SRC/component/page-colors.riot' },
+    },
     '/convert': {
       ...defaultPageRoute,
       meta: [
@@ -47,7 +48,8 @@ const config = {
         { name: 'keywords', content: '轉換, 換算, 查表, convert, list, 工具, 開發, Web, Tool, Develop' },
       ],
       title: 'Convert Table - Web Tool',
-      body: { component: './SRC/component/page-convert.riot' }},
+      body: { component: './SRC/component/page-convert.riot' },
+    },
     '/countdown': {
       ...defaultPageRoute,
       meta: [
@@ -55,7 +57,8 @@ const config = {
         { name: 'keywords', content: '倒數計時, 計時, countdown, 工具, Tool' },
       ],
       title: 'Countdown Notify - Web Tool',
-      body: { component: './SRC/component/page-countdown.riot' }},
+      body: { component: './SRC/component/page-countdown.riot' },
+    },
     '/datauri': {
       ...defaultPageRoute,
       meta: [
@@ -63,7 +66,8 @@ const config = {
         { name: 'keywords', content: '資料, 轉換, datauri, 工具, 開發, Web, Tool, Develop' },
       ],
       title: 'File to Data URI - Web Tool',
-      body: { component: './SRC/component/page-datauri.riot' }},
+      body: { component: './SRC/component/page-datauri.riot' },
+    },
     '/datetime': {
       ...defaultPageRoute,
       meta: [
@@ -71,7 +75,8 @@ const config = {
         { name: 'keywords', content: '時間格式轉換, datetime transform, 工具, 開發, Web, Tool, Develop' },
       ],
       title: 'Datetime Transform - Web Tool',
-      body: { component: './SRC/component/page-datetime.riot' }},
+      body: { component: './SRC/component/page-datetime.riot' },
+    },
     '/endecode': {
       ...defaultPageRoute,
       meta: [
@@ -79,7 +84,8 @@ const config = {
         { name: 'keywords', content: '編碼, 解碼, encoding, decoding, 工具, 開發, Web, Tool, Develop' },
       ],
       title: 'String Encode/Decode - Web Tool',
-      body: { component: './SRC/component/page-endecode.riot' }},
+      body: { component: './SRC/component/page-endecode.riot' },
+    },
     '/ipv426': {
       ...defaultPageRoute,
       meta: [
@@ -87,7 +93,8 @@ const config = {
         { name: 'keywords', content: 'ipv6, 工具, 程式, 開發, Web, Tool, Develop' },
       ],
       title: 'IPv4 to v6 convert - Web Tool',
-      body: { component: './SRC/component/page-ipv426.riot' }},
+      body: { component: './SRC/component/page-ipv426.riot' },
+    },
     '/json': {
       ...defaultPageRoute,
       meta: [
@@ -95,7 +102,8 @@ const config = {
         { name: 'keywords', content: 'JSON, edit, 編輯, 工具, 開發, Web, Tool, Develop' },
       ],
       title: 'JSON Edit - Web Tool',
-      body: { component: './SRC/component/page-json.riot' }},
+      body: { component: './SRC/component/page-json.riot' },
+    },
     '/keycode': {
       ...defaultPageRoute,
       meta: [
@@ -103,7 +111,8 @@ const config = {
         { name: 'keywords', content: '鍵盤代碼, keyboard, keyCode, 工具, 開發, Web, Tool, Develop' },
       ],
       title: 'Key Code Detect - Web Tool',
-      body: { component: './SRC/component/page-keycode.riot' }},
+      body: { component: './SRC/component/page-keycode.riot' },
+    },
     '/payment': {
       ...defaultPageRoute,
       meta: [
@@ -114,7 +123,8 @@ const config = {
       body: {
         component: './SRC/component/page-payment.riot',
         // initialize: payment,
-      }},
+      },
+    },
     '/post': {
       ...defaultPageRoute,
       meta: [
@@ -122,7 +132,8 @@ const config = {
         { name: 'keywords', content: '送出資料, form, post, 工具, 開發, Web, Tool, Develop' },
       ],
       title: 'Form Post - Web Tool',
-      body: { component: './SRC/component/page-post.riot' }},
+      body: { component: './SRC/component/page-post.riot' },
+    },
     '/re': {
       ...defaultPageRoute,
       meta: [
@@ -130,7 +141,8 @@ const config = {
         { name: 'keywords', content: '正規表示式, RegExp, regular expression, 工具, 開發, Web, Tool, Develop' },
       ],
       title: 'Regula Expression - Web Tool',
-      body: { component: './SRC/component/page-re.riot' }},
+      body: { component: './SRC/component/page-re.riot' },
+    },
     '/read': {
       ...defaultPageRoute,
       meta: [
@@ -138,7 +150,17 @@ const config = {
         { name: 'keywords', content: '閱讀器, RSS, Atom, 工具, Web, Tool' },
       ],
       title: 'Feed Read - Web Tool',
-      body: { component: './SRC/component/page-read.riot', initialize: read }},
+      body: { component: './SRC/component/page-read.riot', initialize: read },
+    },
+    // '/transmit': {
+    //   ...defaultPageRoute,
+    //   meta: [
+    //     ...defaultPageRoute.meta,
+    //     { name: '', content: '' },
+    //   ],
+    //   title: 'File Transmit - Web Tool',
+    //   body: { component: './SRC/component/page-transmit.riot' },
+    // },
     '/url': {
       ...defaultPageRoute,
       meta: [
@@ -146,7 +168,8 @@ const config = {
         { name: 'keywords', content: '網址比對, url, compare, 工具, Web, Tool' },
       ],
       title: 'URL Compare - Web Tool',
-      body: { component: './SRC/component/page-url.riot' }},
+      body: { component: './SRC/component/page-url.riot' },
+    },
     '/window': {
       ...defaultPageRoute,
       meta: [
@@ -154,7 +177,8 @@ const config = {
         { name: 'keywords', content: '開新視窗, window.open, 工具, 開發, Web, Tool, Develop' },
       ],
       title: 'Window Open Script - Web Tool',
-      body: { component: './SRC/component/page-window.riot' }},
+      body: { component: './SRC/component/page-window.riot' },
+    },
     '/': { // as keycode
       ...defaultPageRoute,
       body: { component: './SRC/component/page-keycode.riot' },

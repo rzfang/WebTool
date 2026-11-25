@@ -19,7 +19,11 @@ export default function read (request, urlInfo, callback) {
     return callback(3, result);
   }
 
-  result = cch.get(tranferingKey)?.split('_|_').map(one => ({ FdUrl: one, HsBnLdd: false })) || [];
+  result = cch
+    .get(tranferingKey)
+    ?.split('_|_')
+    .filter(one => !!one)
+    .map(one => ({ feedUrl: one, isLoaded: false })) || [];
 
   request.riotPlugin.StoreSet('FEEDS', () => result);
   callback(0, result);

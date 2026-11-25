@@ -1,12 +1,12 @@
 {
   "name": "web_tool",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "web tool",
   "main": "webtool.mjs",
   "dependencies": {
     "feedparser": "^2.2.9",
     "json5": "^2.2.3",
-    "riot-4-fun": "^0.5.0",
+    "riot-4-fun": "^0.6.1",
     "rzjs": "github:rzfang/Js#v0.7.0"
   },
   "devDependencies": {

@@ -41,7 +41,7 @@
         @ current props.
         < true | false. */
       shouldUpdate (newProps, oldProps) {
-        return (newProps.HsBnLdd !== oldProps.HsBnLdd) || (!oldProps.items && newProps.items);
+        return (newProps.isLoaded !== oldProps.isLoaded) || (!oldProps.items && newProps.items);
       },
 
       TargetFeedIndexGet (feeds, url) {
@@ -49,7 +49,7 @@
       },
 
       Load () {
-        this.ServiceCall(
+        this.serviceCall(
           '/service/feed',
           { URL: this.props.feedUrl },
           'FEEDS',
@@ -59,9 +59,9 @@
             if (!result) {
               log('can not get feed result for ' +  this.props.feedUrl);
 
-              result = { HsBnLdd: true };
+              result = { isLoaded: true };
             }
-            else { result.HsBnLdd = true; }
+            else { result.isLoaded = true; }
 
             const index = this.TargetFeedIndexGet(store, this.props.feedUrl); // target store feed index.
             const length = store.length;
@@ -183,7 +183,7 @@
 
         window.localStorage.FdURLs += '_|_' + url;
 
-        this.state.Fds.push({ feedUrl: url, HsBnLdd: false });
+        this.state.Fds.push({ feedUrl: url, isLoaded: false });
         this.update();
       },
 
@@ -241,7 +241,7 @@
       TransferIgnore () {
         const feeds = this
           .UrlsFilter(window.localStorage.FdURLs.split('_|_'))
-          .map(one => { return { feedUrl: one, HsBnLdd: false }; }); // feed url, has been loaded
+          .map(one => { return { feedUrl: one, isLoaded: false }; });
 
         this.state.HsTrnsfrCnfrm = false;
 
@@ -253,7 +253,7 @@
         const remoteFeeds = this.state.Fds;
         const localFeeds = this
           .UrlsFilter(window.localStorage.FdURLs.split('_|_'))
-          .map(one => { return { feedUrl: one, HsBnLdd: false }; }); // feed url, has been loaded.
+          .map(one => { return { feedUrl: one, isLoaded: false }; });
 
         const localUrls = localFeeds.map(one => one.feedUrl);
         const remoteUrls = remoteFeeds.map(one => one.feedUrl);

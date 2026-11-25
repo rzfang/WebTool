@@ -90,6 +90,7 @@
         { Ttl: 'Feed Read',               URL: 'read' },
         { Ttl: 'Countdown Notify',        URL: 'countdown' },
         // { Ttl: 'Moment Chat',             URL: 'chat' },
+        // { Ttl: 'File Transmit',           URL: 'transmit' },
         { Ttl: '----',                    URL: '' },
       ],
       TgtItm: null, // target item.
@@ -174,7 +175,7 @@
       Btn: null,
 
       onMounted () {
-        if (!this.OnBrowser()) { return; }
+        // if (!this.onBrowser()) { return; }
 
         const button = this.$('button');
 
